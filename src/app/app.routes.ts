@@ -28,19 +28,19 @@ export const routes: Routes = [
   {
     path: "dashboard",
     loadComponent: () => import("./features/dashboard/dashboard.component").then((m) => m.DashboardComponent),
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
   },
   {
     path: "add-product",
     loadComponent: () =>
       import("./features/products/add-product/add-product.component").then((m) => m.AddProductComponent),
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
   },
   {
     path: "my-products",
     loadComponent: () =>
       import("./features/products/my-products/my-products.component").then((m) => m.MyProductsComponent),
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
   },
   {
     path: "orders",
@@ -50,17 +50,17 @@ export const routes: Routes = [
   {
     path: "profile",
     loadComponent: () => import("./features/profile/profile.component").then((m) => m.ProfileComponent),
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
   },
   {
     path: "wallet",
     loadComponent: () => import("./features/wallet/wallet.component").then((m) => m.WalletComponent),
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
   },
   {
     path: "admin",
     loadChildren: () => import("./features/admin/admin.routes").then((m) => m.adminRoutes),
-    canActivate: [AdminGuard],
+    // canActivate: [AdminGuard],
   },
   {
     path: "**",
