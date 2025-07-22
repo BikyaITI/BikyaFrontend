@@ -5,6 +5,7 @@ import { FormsModule } from "@angular/forms"
 import  { ProductService } from "../../../core/services/product.service"
 import  { CategoryService } from "../../../core/services/category.service"
 import  { Product, Category } from "../../../core/models/product.model"
+import { ICategory } from "../../../core/models/icategory"
 
 @Component({
   selector: "app-product-list",
@@ -236,7 +237,7 @@ import  { Product, Category } from "../../../core/models/product.model"
 export class ProductListComponent implements OnInit {
   products: Product[] = []
   filteredProducts: Product[] = []
-  categories: Category[] = []
+  categories: ICategory[] = []
   isLoading = true
 
   searchTerm = ""

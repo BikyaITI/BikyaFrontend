@@ -1,0 +1,190 @@
+<div class="container mt-4">
+  <h3 class="mb-4 fw-bold"><i class="bi bi-card-checklist me-2"></i>Categories List</h3>
+
+  <div *ngIf="apiError" class="alert alert-danger">{{ apiError }}</div>
+
+  <div class="table-responsive">
+    <table class="table table-hover align-middle shadow-sm rounded">
+      <thead class="table-primary">
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Icon</th>
+          <th>Parent</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let category of categories">
+          <td>{{ category.name }}</td>
+          <td>{{ category.description }}</td>
+          <td>
+            <img *ngIf="category.iconUrl" [src]="category.iconUrl" class="rounded-circle" width="40" height="40" />
+          </td>
+          <td>{{ category.parentName || '—' }}</td>
+          <td>
+            <button class="btn btn-outline-primary btn-sm me-2" (click)="editCategory(category.id)">
+              <i class="bi bi-pencil-square"></i>
+            </button>
+            <button class="btn btn-outline-danger btn-sm" (click)="openConfirm(category.id)">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h4 class="mt-5 mb-3 fw-bold"><i class="bi bi-plus-circle-fill me-2"></i>Add New Category</h4>
+
+  <form [formGroup]="categoryForm" (ngSubmit)="submitForm()">
+    <div formArrayName="categoryArray">
+      <div *ngFor="let category of categoryArray.controls; let i = index" [formGroupName]="i"
+        class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <div class="row g-3">
+
+            <!-- Name -->
+            <div class="col-md-6">
+              <label class="form-label">Name <span class="text-danger">*</span></label>
+              <input type="text" formControlName="name" class="form-control"
+                [ngClass]="{ 'is-invalid': category.get('name')?.invalid && category.get('name')?.touched }" />
+              <div class="invalid-feedback" *ngIf="category.get('name')?.invalid && category.get('name')?.touched">
+                Name is required.
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="col-md-6">
+              <label class="form-label">Description <span class="text-danger">*</span></label>
+              <input type="text" formControlName="description" class="form-control"
+                [ngClass]="{ 'is-invalid': category.get('description')?.invalid && category.get('description')?.touched }" />
+              <div class="invalid-feedback"
+                *ngIf="category.get('description')?.invalid && category.get('description')?.touched">
+                Description is required.
+              </div>
+            </div>
+
+            <!-- Upload Image -->
+            <div class="col-md-6">
+              <label class="form-label">Upload Image</label>
+              <input type="file" class="form-control" (change)="handleImageChange($event, 'add', i)" />
+              <div *ngIf="getPreviewUrl(category)" class="mt-2">
+                <img [src]="getPreviewUrl(category)" class="img-thumbnail" style="max-height: 150px;" />
+              </div>
+            </div>
+
+            <!-- Parent Category -->
+            <div class="col-md-6">
+              <label class="form-label">Parent Category</label>
+              <select class="form-select" formControlName="parentCategoryId">
+                <option [ngValue]="null">— No Parent —</option>
+                <option *ngFor="let cat of categories" [ngValue]="cat.id">{{ cat.name }}</option>
+              </select>
+            </div>
+
+            <!-- Remove / Reset -->
+            <div class="col-12 text-end mt-2">
+              <button class="btn btn-outline-danger btn-sm me-2" (click)="removeCategoryGroup(i)" type="button">
+                <i class="bi bi-x-circle"></i> Remove
+              </button>
+              <button class="btn btn-outline-secondary btn-sm" (click)="resetForm(i)" type="button">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add & Submit -->
+    <div class="mb-3">
+      <button class="btn btn-primary me-2" type="button" (click)="addCategoryGroup()">
+        <i class="bi bi-plus-circle"></i> Add Another
+      </button>
+      <button class="btn btn-success" type="submit">
+        <i class="bi bi-check-circle"></i> Submit
+      </button>
+    </div>
+  </form>
+
+  <!-- ✅ Confirm Delete Modal -->
+<div class="modal fade show d-block" tabindex="-1" *ngIf="showConfirm"
+  style="background-color: rgba(0, 0, 0, 0.5); z-index: 1050;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Delete</h5>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="closeConfirm()"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this category?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" (click)="closeConfirm()">Cancel</button>
+        <button class="btn btn-danger btn-sm" (click)="confirmDelete()">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- 🟡 Edit Modal -->
+<div class="modal fade show d-block" tabindex="-1" *ngIf="isEditing && selectedCategory"
+  style="background-color: rgba(0, 0, 0, 0.5); z-index: 1050;">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="bi bi-pencil-fill me-2"></i>Edit Category</h5>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="isEditing = false"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="submitEditForm()">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Name<span class="text-danger">*</span></label>
+              <input [(ngModel)]="selectedCategory.name" name="name" class="form-control" #nameRef="ngModel" required />
+              <div class="invalid-feedback d-block" *ngIf="nameRef.invalid && nameRef.touched">
+                Name is required.
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Description<span class="text-danger">*</span></label>
+              <input [(ngModel)]="selectedCategory.description" name="description" class="form-control"
+                #descriptionRef="ngModel" required />
+              <div class="invalid-feedback d-block" *ngIf="descriptionRef.invalid && descriptionRef.touched">
+                Description is required.
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Upload New Image</label>
+              <input type="file" class="form-control" (change)="handleImageChange($event, 'edit')" />
+              <div *ngIf="isEditing && selectedCategory?.iconUrl" class="mt-2">
+                <img [src]="selectedCategory.iconUrl" alt="Preview" class="img-thumbnail" style="max-height: 150px;" />
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Parent Category</label>
+              <select [(ngModel)]="selectedCategory.parentCategoryId" name="parentCategoryId" class="form-select">
+                <option [ngValue]="null">— No Parent —</option>
+                <option *ngFor="let cat of categories" [ngValue]="cat.id">{{ cat.name }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between mt-4">
+            <button type="button" class="btn btn-secondary" (click)="isEditing = false">
+              <i class="bi bi-x-circle"></i> Cancel
+            </button>
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-check-circle"></i> Update
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" (click)="clearForm()" type="button">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset
+              </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

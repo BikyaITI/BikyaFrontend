@@ -5,6 +5,7 @@ import  { Router } from "@angular/router"
 import  { ProductService } from "../../../core/services/product.service"
 import  { CategoryService } from "../../../core/services/category.service"
 import  { Category } from "../../../core/models/product.model"
+import { ICategory } from "../../../core/models/icategory"
 
 @Component({
   selector: "app-add-product",
@@ -262,7 +263,7 @@ import  { Category } from "../../../core/models/product.model"
 })
 export class AddProductComponent implements OnInit {
   productForm: FormGroup
-  categories: Category[] = []
+  categories: ICategory[] = []
   mainImage: File | null = null
   additionalImages: File[] = []
   mainImagePreview: string | null = null

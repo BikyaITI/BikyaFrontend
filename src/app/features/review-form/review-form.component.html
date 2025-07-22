@@ -1,0 +1,42 @@
+<div class="card shadow-sm p-4 rounded-4 border-0 w-50">
+  <h4 class="mb-4 text-muted">
+     Leave a Review
+  </h4>
+
+  <form [formGroup]="reviewForm" (ngSubmit)="submitReview()">
+    <!-- ⭐ Rating -->
+    <div class="mb-3">
+      <label for="rating" class="form-label fw-semibold">⭐ Rating</label>
+      <select class="form-select rounded-3 shadow-sm" id="rating" formControlName="rating">
+        <option value="" disabled>Select rating</option>
+        <option *ngFor="let r of [1,2,3,4,5]" [value]="r">{{ r }} Star{{ r > 1 ? 's' : '' }}</option>
+      </select>
+      <div *ngIf="reviewForm.get('rating')?.touched && reviewForm.get('rating')?.invalid" class="form-text text-danger">
+        Please select a rating.
+      </div>
+    </div>
+
+    <!-- 💬 Comment -->
+    <div class="mb-3">
+      <label for="comment" class="form-label fw-semibold">💬 Comment</label>
+      <textarea
+        class="form-control rounded-3 shadow-sm"
+        id="comment"
+        rows="4"
+        formControlName="comment"
+        placeholder="Share your experience..."
+      ></textarea>
+      <div *ngIf="reviewForm.get('comment')?.touched && reviewForm.get('comment')?.invalid" class="form-text text-danger">
+        Comment is required and should not exceed 500 characters.
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="d-grid">
+      <button type="submit" class="btn btn-dark btn-lg rounded-3" [disabled]="reviewForm.invalid || isSubmitting">
+        <span *ngIf="!isSubmitting"> Submit Review</span>
+        <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
+      </button>
+    </div>
+  </form>
+</div>

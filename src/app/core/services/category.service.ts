@@ -1,39 +1,62 @@
-import { Injectable } from "@angular/core"
-import  { HttpClient } from "@angular/common/http"
-import  { Observable } from "rxjs"
-import  { ApiResponse } from "../models/api-response.model"
-import  { Category } from "../models/product.model"
-import { environment } from "../../../environments/environment"
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { ApiResponse } from '../models/api-response.model';
+import { ICategory, PaginatedCategoryResponse } from '../models/icategory';
+import { IProduct } from '../models/product.model';
+
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root'
 })
 export class CategoryService {
-  private readonly API_URL = `${environment.apiUrl}/api/Category`
+
+  private baseUrl = 'https://localhost:65162/api/Category'; // ✅ غيّرها حسب API بتاعتك
 
   constructor(private http: HttpClient) {}
 
-  getAll(page = 1, pageSize = 10, search?: string): Observable<ApiResponse<Category[]>> {
-    let params = `?page=${page}&pageSize=${pageSize}`
-    if (search) {
-      params += `&search=${search}`
-    }
-    return this.http.get<ApiResponse<Category[]>>(`${this.API_URL}${params}`)
-  }
+getAll(): Observable<ApiResponse<ICategory[]>> {
+  return this.http.get<ApiResponse<ICategory[]>>(`${this.baseUrl}/all`);
+}
 
-  getById(id: number): Observable<ApiResponse<Category>> {
-    return this.http.get<ApiResponse<Category>>(`${this.API_URL}/${id}`)
-  }
+getPaginated(page: number, pageSize: number): Observable<ApiResponse<PaginatedCategoryResponse>> {
+  return this.http.get<ApiResponse<PaginatedCategoryResponse>>(`${this.baseUrl}/paged?page=${page}&pageSize=${pageSize}`);
+}
 
-  create(category: { name: string; description: string }): Observable<ApiResponse<Category>> {
-    return this.http.post<ApiResponse<Category>>(`${this.API_URL}`, category)
-  }
+getById(id: number): Observable<ApiResponse<ICategory>> {
+  return this.http.get<ApiResponse<ICategory>>(`${this.baseUrl}/${id}`);
+}
 
-  update(id: number, category: { name: string; description: string }): Observable<ApiResponse<Category>> {
-    return this.http.put<ApiResponse<Category>>(`${this.API_URL}/${id}`, category)
-  }
+getByIdWithProducts(id: number): Observable<ApiResponse<{ category: ICategory, products: IProduct[] }>> {
+  return this.http.get<ApiResponse<{ category: ICategory, products: IProduct[] }>>(`${this.baseUrl}/${id}/with-products`);
+}
 
-  delete(id: number): Observable<ApiResponse<boolean>> {
-    return this.http.delete<ApiResponse<boolean>>(`${this.API_URL}/${id}`)
-  }
+create(category: ICategory): Observable<ApiResponse<ICategory>> {
+  return this.http.post<ApiResponse<ICategory>>(this.baseUrl, category);
+}
+
+update(id: number, category: ICategory): Observable<ApiResponse<ICategory>> {
+  return this.http.put<ApiResponse<ICategory>>(`${this.baseUrl}/${id}`, category);
+}
+
+delete(id: number): Observable<ApiResponse<null>> {
+  return this.http.delete<ApiResponse<null>>(`${this.baseUrl}/${id}`);
+}
+
+bulkCreate(categories: ICategory[]): Observable<ApiResponse<ICategory[]>> {
+  return this.http.post<ApiResponse<ICategory[]>>(`${this.baseUrl}/bulk`, { categories });
+}
+
+//   get userRole(): string | null {
+//   const token = localStorage.getItem('token');
+//   if (!token) return null;
+
+//   const payload = JSON.parse(atob(token.split('.')[1]));
+//   return payload['role'] || null;
+// }
+
+// get isAdmin(): boolean {
+//   return this.userRole === 'Admin';
+// }
+
 }

@@ -1,6 +1,6 @@
 import  { User } from "./user.model" // Assuming User model is in user.model.ts
 
-export interface Product {
+export interface IProduct {
   id: number
   title: string
   description: string
@@ -13,13 +13,13 @@ export interface Product {
   user: User
   isApproved: boolean
   createdAt: Date
-  images: ProductImage[]
+  images: IProductImage[]
   viewCount?: number
   likeCount?: number
   inquiryCount?: number
 }
 
-export interface ProductImage {
+export interface IProductImage {
   id: number
   productId: number
   imageUrl: string
