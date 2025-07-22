@@ -277,6 +277,7 @@ export class RegisterComponent {
           this.isLoading = false
           if (response.success) {
             this.router.navigate(["/dashboard"])
+            console.log(this.registerForm.value)
           } else {
             this.errorMessage = response.message
           }

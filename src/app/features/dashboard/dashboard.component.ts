@@ -7,6 +7,7 @@ import  { OrderService } from "../../core/services/order.service"
 import  { User } from "../../core/models/user.model"
 import  { IProduct} from "../../core/models/product.model"
 import  { Order } from "../../core/models/order.model"
+import { CategoryService } from "../../core/services/category.service"
 
 @Component({
   selector: "app-dashboard",
@@ -86,6 +87,17 @@ import  { Order } from "../../core/models/order.model"
               <h5>My Products</h5>
               <p>Manage your listed products</p>
               <a routerLink="/my-products" class="btn btn-primary">View Products</a>
+            </div>
+          </div>
+
+<div class="col-lg-3 col-md-6 mb-4">
+            <div class="feature-card text-center">
+              <div class="feature-icon">
+                <i class="fas fa-plus"></i>
+              </div>
+              <h5>Add Category</h5>
+              <p>List new Categories</p>
+              <a routerLink="/categories" class="btn btn-primary">Get Started</a>
             </div>
           </div>
 
@@ -252,6 +264,7 @@ export class DashboardComponent implements OnInit {
     private authService: AuthService,
     private productService: ProductService,
     private orderService: OrderService,
+    private categoryService: CategoryService
   ) {}
 
   ngOnInit(): void {

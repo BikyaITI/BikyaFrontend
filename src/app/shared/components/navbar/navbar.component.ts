@@ -30,6 +30,9 @@ import  { User } from "../../../core/models/user.model"
             <li class="nav-item">
               <a class="nav-link" routerLink="/products" routerLinkActive="active">Products</a>
             </li>
+             <li class="nav-item">
+              <a class="nav-link" routerLink="/allcategories" routerLinkActive="active">Categories</a>
+            </li>
             <li class="nav-item" *ngIf="currentUser">
               <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
             </li>
