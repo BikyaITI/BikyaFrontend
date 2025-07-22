@@ -4,7 +4,7 @@ import { RouterModule } from "@angular/router"
 import { FormsModule } from "@angular/forms"
 import  { ProductService } from "../../../core/services/product.service"
 import  { CategoryService } from "../../../core/services/category.service"
-import  { Product, Category } from "../../../core/models/product.model"
+import  { IProduct, Category } from "../../../core/models/product.model"
 import { ICategory } from "../../../core/models/icategory"
 
 @Component({
@@ -235,8 +235,8 @@ import { ICategory } from "../../../core/models/icategory"
   `,
 })
 export class ProductListComponent implements OnInit {
-  products: Product[] = []
-  filteredProducts: Product[] = []
+  products: IProduct[] = []
+  filteredProducts: IProduct[] = []
   categories: ICategory[] = []
   isLoading = true
 
@@ -368,7 +368,7 @@ export class ProductListComponent implements OnInit {
     this.currentPage = 1
   }
 
-  sortProducts(products: Product[]): Product[] {
+  sortProducts(products: IProduct[]): IProduct[] {
     switch (this.sortBy) {
       case "price-low":
         return products.sort((a, b) => a.price - b.price)
@@ -399,7 +399,7 @@ export class ProductListComponent implements OnInit {
     this.applyFilters()
   }
 
-  getMainImage(product: Product): string {
+  getMainImage(product: IProduct): string {
     const mainImage = product.images?.find((img) => img.isMain)
     return mainImage?.imageUrl || "/placeholder.svg?height=250&width=250"
   }
@@ -434,12 +434,12 @@ export class ProductListComponent implements OnInit {
     return Math.round(((original - currentPrice) / original) * 100)
   }
 
-  addToCart(product: Product): void {
+  addToCart(product: IProduct): void {
     // Implement add to cart logic
     console.log("Added to cart:", product)
   }
 
-  addToWishlist(product: Product): void {
+  addToWishlist(product: IProduct): void {
     // Implement add to wishlist logic
     console.log("Added to wishlist:", product)
   }

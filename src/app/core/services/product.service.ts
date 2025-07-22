@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core"
 import  { HttpClient } from "@angular/common/http"
 import  { Observable } from "rxjs"
 import  { ApiResponse } from "../models/api-response.model"
-import  { Product, CreateProductRequest } from "../models/product.model"
+import  {  CreateProductRequest, IProduct } from "../models/product.model"
 import { environment } from "../../../environments/environment"
 
 @Injectable({
@@ -13,20 +13,20 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
-  getApprovedProducts(): Observable<ApiResponse<Product[]>> {
-    return this.http.get<ApiResponse<Product[]>>(`${this.API_URL}/ApprovedProducts`)
+  getApprovedProducts(): Observable<ApiResponse<IProduct[]>> {
+    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/ApprovedProducts`)
   }
 
-  getProductById(id: number): Observable<ApiResponse<Product>> {
-    return this.http.get<ApiResponse<Product>>(`${this.API_URL}/ApprovedProducts/${id}`)
+  getProductById(id: number): Observable<ApiResponse<IProduct>> {
+    return this.http.get<ApiResponse<IProduct>>(`${this.API_URL}/ApprovedProducts/${id}`)
   }
 
-  getProductsByUser(userId: number): Observable<ApiResponse<Product[]>> {
-    return this.http.get<ApiResponse<Product[]>>(`${this.API_URL}/UserProduct/${userId}`)
+  getProductsByUser(userId: number): Observable<ApiResponse<IProduct[]>> {
+    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/UserProduct/${userId}`)
   }
 
-  getProductsByCategory(categoryId: number): Observable<ApiResponse<Product[]>> {
-    return this.http.get<ApiResponse<Product[]>>(`${this.API_URL}/CategoryProducts/${categoryId}`)
+  getProductsByCategory(categoryId: number): Observable<ApiResponse<IProduct[]>> {
+    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/CategoryProducts/${categoryId}`)
   }
 
   createProduct(product: CreateProductRequest): Observable<ApiResponse<boolean>> {
@@ -46,12 +46,12 @@ export class ProductService {
   }
 
   // Admin methods
-  getAllProducts(): Observable<ApiResponse<Product[]>> {
-    return this.http.get<ApiResponse<Product[]>>(`${this.API_URL}/AllProduct`)
+  getAllProducts(): Observable<ApiResponse<IProduct[]>> {
+    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/AllProduct`)
   }
 
-  getNotApprovedProducts(): Observable<ApiResponse<Product[]>> {
-    return this.http.get<ApiResponse<Product[]>>(`${this.API_URL}/NotApprovedProducts`)
+  getNotApprovedProducts(): Observable<ApiResponse<IProduct[]>> {
+    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/NotApprovedProducts`)
   }
 
   approveProduct(id: number): Observable<ApiResponse<boolean>> {

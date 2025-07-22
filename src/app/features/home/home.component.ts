@@ -2,7 +2,7 @@ import { Component,  OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { RouterModule } from "@angular/router"
 import  { ProductService } from "../../core/services/product.service"
-import  { Product } from "../../core/models/product.model"
+import  { IProduct } from "../../core/models/product.model"
 
 @Component({
   selector: "app-home",
@@ -167,7 +167,7 @@ import  { Product } from "../../core/models/product.model"
   `,
 })
 export class HomeComponent implements OnInit {
-  featuredProducts: Product[] = []
+  featuredProducts: IProduct[] = []
   isLoadingProducts = true
 
   constructor(private productService: ProductService) {}
@@ -190,7 +190,7 @@ export class HomeComponent implements OnInit {
     })
   }
 
-  getMainImage(product: Product): string {
+  getMainImage(product: IProduct): string {
     const mainImage = product.images?.find((img) => img.isMain)
     return mainImage?.imageUrl || "/placeholder.svg?height=250&width=250"
   }

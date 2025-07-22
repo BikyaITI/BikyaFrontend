@@ -5,7 +5,7 @@ import  { AuthService } from "../../core/services/auth.service"
 import  { ProductService } from "../../core/services/product.service"
 import  { OrderService } from "../../core/services/order.service"
 import  { User } from "../../core/models/user.model"
-import  { Product } from "../../core/models/product.model"
+import  { IProduct} from "../../core/models/product.model"
 import  { Order } from "../../core/models/order.model"
 
 @Component({
@@ -237,7 +237,7 @@ import  { Order } from "../../core/models/order.model"
 })
 export class DashboardComponent implements OnInit {
   currentUser: User | null = null
-  recentProducts: Product[] = []
+  recentProducts: IProduct[] = []
   recentOrders: Order[] = []
   recentActivity: any[] = []
 
@@ -310,16 +310,16 @@ export class DashboardComponent implements OnInit {
     ]
   }
 
-  getMainImage(product: Product): string {
+  getMainImage(product: IProduct): string {
     const mainImage = product.images?.find((img) => img.isMain)
     return mainImage?.imageUrl || "/placeholder.svg?height=50&width=50"
   }
 
-  getProductStatus(product: Product): string {
+  getProductStatus(product: IProduct): string {
     return product.isApproved ? "Approved" : "Pending"
   }
 
-  getProductStatusClass(product: Product): string {
+  getProductStatusClass(product: IProduct): string {
     return product.isApproved ? "bg-success" : "bg-warning"
   }
 

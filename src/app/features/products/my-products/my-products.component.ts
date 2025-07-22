@@ -3,8 +3,9 @@ import { CommonModule } from "@angular/common"
 import { RouterModule } from "@angular/router"
 import  { ProductService } from "../../../core/services/product.service"
 import  { AuthService } from "../../../core/services/auth.service"
-import  { Product } from "../../../core/models/product.model"
+
 import  { User } from "../../../core/models/user.model"
+import { IProduct } from "../../../core/models/product.model"
 
 @Component({
   selector: "app-my-products",
@@ -228,14 +229,14 @@ import  { User } from "../../../core/models/user.model"
   ],
 })
 export class MyProductsComponent implements OnInit {
-  allProducts: Product[] = []
-  approvedProducts: Product[] = []
-  pendingProducts: Product[] = []
+  allProducts: IProduct[] = []
+  approvedProducts: IProduct[] = []
+  pendingProducts: IProduct[] = []
   activeTab = "all"
   isLoading = true
   isDeleting = false
   currentUser: User | null = null
-  productToDelete: Product | null = null
+  productToDelete: IProduct | null = null
 
   constructor(
     private productService: ProductService,
@@ -275,7 +276,7 @@ export class MyProductsComponent implements OnInit {
     this.activeTab = tab
   }
 
-  getFilteredProducts(): Product[] {
+  getFilteredProducts(): IProduct[] {
     switch (this.activeTab) {
       case "approved":
         return this.approvedProducts
@@ -286,26 +287,26 @@ export class MyProductsComponent implements OnInit {
     }
   }
 
-  getMainImage(product: Product): string {
+  getMainImage(product: IProduct): string {
     const mainImage = product.images?.find((img) => img.isMain)
     return mainImage?.imageUrl || "/placeholder.svg?height=250&width=300"
   }
 
-  getProductStatus(product: Product): string {
+  getProductStatus(product: IProduct): string {
     return product.isApproved ? "Approved" : "Pending Review"
   }
 
-  getStatusBadgeClass(product: Product): string {
+  getStatusBadgeClass(product: IProduct): string {
     return product.isApproved ? "bg-success" : "bg-warning"
   }
 
-  editProduct(product: Product): void {
+  editProduct(product: IProduct): void {
     // Navigate to edit product page
     // For now, just show an alert
     alert("Edit functionality will be implemented")
   }
 
-  deleteProduct(product: Product): void {
+  deleteProduct(product: IProduct): void {
     this.productToDelete = product
     const modal = new (window as any).bootstrap.Modal(document.getElementById("deleteModal"))
     modal.show()

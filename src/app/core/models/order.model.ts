@@ -1,4 +1,4 @@
-import  { Product } from "./product.model"
+import  { IProduct } from "./product.model"
 import  { User } from "./user.model"
 
 export interface Order {
@@ -10,7 +10,7 @@ export interface Order {
   totalAmount: number
   status: OrderStatus
   createdAt: Date
-  product: Product
+  product: IProduct
   buyer: User
   seller: User
   shippingInfo?: ShippingInfo

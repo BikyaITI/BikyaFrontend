@@ -5,7 +5,7 @@ import { ReactiveFormsModule,  FormBuilder,  FormGroup, Validators } from "@angu
 import  { ProductService } from "../../../core/services/product.service"
 import  { AuthService } from "../../../core/services/auth.service"
 import  { OrderService } from "../../../core/services/order.service"
-import  { Product } from "../../../core/models/product.model"
+import  { IProduct } from "../../../core/models/product.model"
 import  { User } from "../../../core/models/user.model"
 
 @Component({
@@ -77,7 +77,7 @@ import  { User } from "../../../core/models/user.model"
                   </div>
                 </div>
                 <div>
-                  <h6 class="mb-0">{{product.user?.fullName || 'Unknown Seller'}}</h6>
+                  <h6 class="mb-0">{{product.user.fullName || 'Unknown Seller'}}</h6>
                   <small class="text-muted">
                     <i class="bi bi-calendar3"></i>
                     Listed {{product.createdAt | date:'mediumDate'}}
@@ -96,7 +96,7 @@ import  { User } from "../../../core/models/user.model"
               <div class="row">
                 <div class="col-6">
                   <strong>Category:</strong>
-                  <span class="badge bg-light text-dark ms-2">{{product.category?.name}}</span>
+                  <span class="badge bg-light text-dark ms-2">{{product.category.name}}</span>
                 </div>
                 <div class="col-6">
                   <strong>Condition:</strong>
@@ -295,8 +295,8 @@ import  { User } from "../../../core/models/user.model"
   ],
 })
 export class ProductDetailComponent implements OnInit {
-  product: Product | null = null
-  relatedProducts: Product[] = []
+  product: IProduct | null = null
+  relatedProducts: IProduct[] = []
   selectedImage = ""
   currentUser: User | null = null
   isLoading = true
@@ -361,7 +361,7 @@ export class ProductDetailComponent implements OnInit {
     this.selectedImage = imageUrl
   }
 
-  getMainImage(product: Product): string {
+  getMainImage(product: IProduct): string {
     const mainImage = product.images?.find((img) => img.isMain)
     return mainImage?.imageUrl || "/placeholder.svg?height=400&width=400"
   }
