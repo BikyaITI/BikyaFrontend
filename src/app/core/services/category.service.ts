@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/api-response.model';
 import { ICategory, PaginatedCategoryResponse } from '../models/icategory';
 import { IProduct } from '../models/product.model';
+import { environment } from '../../../environments/environment';
 
 
 @Injectable({
@@ -11,7 +12,7 @@ import { IProduct } from '../models/product.model';
 })
 export class CategoryService {
 
-  private baseUrl = 'https://localhost:65162/api/Category'; // ✅ غيّرها حسب API بتاعتك
+  private baseUrl = `${environment.apiUrl}/api/Category`; // ✅ غيّرها حسب API بتاعتك
 
   constructor(private http: HttpClient) {}
 

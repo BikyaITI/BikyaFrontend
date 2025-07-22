@@ -1,14 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { IReview, ICreateReview, IUpdateReview } from '../../models/ireview';
-import { ApiResponse } from '../../shared/api-response';
+import { environment } from '../../../environments/environment';
+import { ApiResponse } from '../models/api-response.model';
+import { IReview, ICreateReview, IUpdateReview } from '../models/ireview';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReviewService {
- private baseUrl = 'https://localhost:65162/api/Reviews'; 
+ private baseUrl = `${environment.apiUrl}/api/Reviews`; 
 
   constructor(private http: HttpClient) {}
 // Get all reviews for a seller

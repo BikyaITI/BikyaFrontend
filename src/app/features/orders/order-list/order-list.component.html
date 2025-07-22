@@ -95,16 +95,16 @@
                     [src]="getProductImage(order.product)"
                     class="rounded me-3"
                     style="width: 80px; height: 80px; object-fit: cover"
-                    [alt]="order.product?.title"
+                    [alt]="order.product.title"
                   />
                   <div class="flex-grow-1">
-                    <h6 class="mb-1">{{ order.product?.title }}</h6>
+                    <h6 class="mb-1">{{ order.product.title }}</h6>
                     <p class="text-muted mb-1">
-                      Sold by: {{ order.seller?.fullName }}
+                      Sold by: {{ order.seller.fullName }}
                     </p>
                     <div class="d-flex align-items-center">
                       <span class="text-primary fw-bold me-3">
-                        \${{ order.product?.price | number : "1.2-2" }}
+                        \${{ order.product.price | number : "1.2-2" }}
                       </span>
                       <span class="text-muted">
                         Qty: {{ order.quantity }}
@@ -267,9 +267,9 @@
                 <i class="bi bi-person-fill text-white"></i>
               </div>
               <div>
-                <h6 class="mb-0">{{ selectedOrder.seller?.fullName }}</h6>
+                <h6 class="mb-0">{{ selectedOrder.seller.fullName }}</h6>
                 <small class="text-muted">{{
-                  selectedOrder.seller?.email
+                  selectedOrder.seller.email
                 }}</small>
               </div>
             </div>
