@@ -1,0 +1,286 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2><i class="bi bi-receipt"></i> My Orders</h2>
+      <p class="text-muted">Track and manage your orders</p>
+    </div>
+    <a routerLink="/products" class="btn btn-primary">
+      <i class="bi bi-plus-circle"></i> Continue Shopping
+    </a>
+  </div>
+
+  <!-- Order Tabs -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'all'"
+        (click)="setActiveTab('all')"
+      >
+        All Orders ({{ allOrders.length }})
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'pending'"
+        (click)="setActiveTab('pending')"
+      >
+        <i class="bi bi-clock text-warning"></i>
+        Pending ({{ getPendingOrders().length }})
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'shipped'"
+        (click)="setActiveTab('shipped')"
+      >
+        <i class="bi bi-truck text-info"></i>
+        Shipped ({{ getShippedOrders().length }})
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'delivered'"
+        (click)="setActiveTab('delivered')"
+      >
+        <i class="bi bi-check-circle text-success"></i>
+        Delivered ({{ getDeliveredOrders().length }})
+      </button>
+    </li>
+  </ul>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-spinner">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Orders List -->
+  <div *ngIf="!isLoading">
+    <div class="row">
+      <div class="col-12" *ngFor="let order of getFilteredOrders()">
+        <div class="card mb-4 shadow-sm order-card">
+          <div class="card-header bg-light">
+            <div class="row align-items-center">
+              <div class="col-md-6">
+                <h6 class="mb-0">
+                  <i class="bi bi-receipt"></i>
+                  Order #{{ order.id }}
+                </h6>
+                <small class="text-muted">
+                  Placed on {{ order.createdAt | date : "medium" }}
+                </small>
+              </div>
+              <div class="col-md-6 text-md-end">
+                <span
+                  class="badge fs-6"
+                  [class]="getOrderStatusClass(order.status)"
+                >
+                  {{ order.status }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="row">
+              <!-- Product Info -->
+              <div class="col-md-8">
+                <div class="d-flex align-items-center">
+                  <img
+                    [src]="getProductImage(order.product)"
+                    class="rounded me-3"
+                    style="width: 80px; height: 80px; object-fit: cover"
+                    [alt]="order.product?.title"
+                  />
+                  <div class="flex-grow-1">
+                    <h6 class="mb-1">{{ order.product?.title }}</h6>
+                    <p class="text-muted mb-1">
+                      Sold by: {{ order.seller?.fullName }}
+                    </p>
+                    <div class="d-flex align-items-center">
+                      <span class="text-primary fw-bold me-3">
+                        \${{ order.product?.price | number : "1.2-2" }}
+                      </span>
+                      <span class="text-muted">
+                        Qty: {{ order.quantity }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Order Total & Actions -->
+              <div class="col-md-4 text-md-end">
+                <div class="mb-3">
+                  <h5 class="text-primary mb-0">
+                    Total: \${{ order.totalAmount | number : "1.2-2" }}
+                  </h5>
+                </div>
+
+                <div class="btn-group-vertical w-100" role="group">
+                  <button
+                    class="btn btn-outline-primary btn-sm"
+                    (click)="viewOrderDetails(order)"
+                  >
+                    <i class="bi bi-eye"></i> View Details
+                  </button>
+
+                  <button
+                    *ngIf="order.status === 'Shipped'"
+                    class="btn btn-outline-info btn-sm"
+                  >
+                    <i class="bi bi-truck"></i> Track Order
+                  </button>
+
+                  <button
+                    *ngIf="order.status === 'Pending'"
+                    class="btn btn-outline-danger btn-sm"
+                    (click)="cancelOrder(order)"
+                  >
+                    <i class="bi bi-x-circle"></i> Cancel Order
+                  </button>
+
+                  <button
+                    *ngIf="order.status === 'Delivered'"
+                    class="btn btn-outline-warning btn-sm"
+                  >
+                    <i class="bi bi-star"></i> Leave Review
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Shipping Info -->
+            <div class="mt-3 pt-3 border-top" *ngIf="order.shippingInfo">
+              <div class="row">
+                <div class="col-md-6">
+                  <h6 class="text-muted mb-2">
+                    <i class="bi bi-geo-alt"></i> Shipping Address
+                  </h6>
+                  <p class="mb-0">{{ order.shippingInfo.address }}</p>
+                  <p class="mb-0">
+                    {{ order.shippingInfo.city }},
+                    {{ order.shippingInfo.postalCode }}
+                  </p>
+                </div>
+                <div class="col-md-6" *ngIf="order.shippingInfo.trackingNumber">
+                  <h6 class="text-muted mb-2">
+                    <i class="bi bi-truck"></i> Tracking Number
+                  </h6>
+                  <p class="mb-0 font-monospace">
+                    {{ order.shippingInfo.trackingNumber }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div
+    *ngIf="!isLoading && getFilteredOrders().length === 0"
+    class="text-center py-5"
+  >
+    <div class="empty-state">
+      <i class="bi bi-receipt display-1 text-muted mb-3"></i>
+      <h3>No orders found</h3>
+      <p class="text-muted mb-4">
+        <span *ngIf="activeTab === 'all'"
+          >You haven't placed any orders yet.</span
+        >
+        <span *ngIf="activeTab === 'pending'"
+          >You don't have any pending orders.</span
+        >
+        <span *ngIf="activeTab === 'shipped'"
+          >You don't have any shipped orders.</span
+        >
+        <span *ngIf="activeTab === 'delivered'"
+          >You don't have any delivered orders.</span
+        >
+      </p>
+      <a routerLink="/products" class="btn btn-primary">
+        <i class="bi bi-shop"></i> Start Shopping
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Order Details Modal -->
+<div class="modal fade" id="orderDetailsModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Order Details #{{ selectedOrder?.id }}</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedOrder">
+        <div class="row">
+          <div class="col-md-6">
+            <h6>Order Information</h6>
+            <table class="table table-sm">
+              <tr>
+                <td><strong>Order ID:</strong></td>
+                <td>#{{ selectedOrder.id }}</td>
+              </tr>
+              <tr>
+                <td><strong>Status:</strong></td>
+                <td>
+                  <span
+                    class="badge"
+                    [class]="getOrderStatusClass(selectedOrder.status)"
+                  >
+                    {{ selectedOrder.status }}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Order Date:</strong></td>
+                <td>{{ selectedOrder.createdAt | date : "medium" }}</td>
+              </tr>
+              <tr>
+                <td><strong>Total Amount:</strong></td>
+                <td class="text-primary fw-bold">
+                  \${{ selectedOrder.totalAmount | number : "1.2-2" }}
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div class="col-md-6">
+            <h6>Seller Information</h6>
+            <div class="d-flex align-items-center">
+              <div
+                class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3"
+                style="width: 50px; height: 50px"
+              >
+                <i class="bi bi-person-fill text-white"></i>
+              </div>
+              <div>
+                <h6 class="mb-0">{{ selectedOrder.seller?.fullName }}</h6>
+                <small class="text-muted">{{
+                  selectedOrder.seller?.email
+                }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
