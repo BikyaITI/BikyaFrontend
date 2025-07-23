@@ -1,0 +1,24 @@
+<form [formGroup]="costForm" (ngSubmit)="calculate()" class="container mt-4" style="max-width: 400px;">
+  <h2>Calculate Shipping Cost</h2>
+  <div class="mb-3">
+    <label class="form-label">Weight (kg)</label>
+    <input formControlName="weight" type="number" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Destination</label>
+    <input formControlName="destination" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Method</label>
+    <select formControlName="method" class="form-select" required>
+      <option value="Standard">Standard</option>
+      <option value="Express">Express</option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary" [disabled]="costForm.invalid">Calculate</button>
+  <div *ngIf="result" class="alert alert-info mt-3">
+    <p *ngIf="result?.cost != null"><strong>Cost:</strong> {{result.cost | number:'1.2-2'}} EGP</p>
+    <p *ngIf="result?.estimatedDeliveryDate"><strong>Estimated Delivery:</strong> {{result.estimatedDeliveryDate | date}}</p>
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{errorMessage}}</div>
+</form> 

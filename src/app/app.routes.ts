@@ -73,6 +73,22 @@ export const routes: Routes = [
     // canActivate: [AuthGuard],
   },
   {
+    path: "shipping/create",
+    loadComponent: () => import("./features/shipping/create-shipping/create-shipping.component").then(m => m.CreateShippingComponent)
+  },
+  {
+    path: "shipping/track",
+    loadComponent: () => import("./features/shipping/track-shipping/track-shipping.component").then(m => m.TrackShippingComponent)
+  },
+  {
+    path: "admin/shippings",
+    loadComponent: () => import("./features/shipping/admin-shipping-list/admin-shipping-list.component").then(m => m.AdminShippingListComponent)
+  },
+  {
+    path: "shipping/calculate",
+    loadComponent: () => import("./features/shipping/calculate-shipping-cost/calculate-shipping-cost.component").then(m => m.CalculateShippingCostComponent)
+  },
+  {
     path: "**",
     redirectTo: "",
   },
