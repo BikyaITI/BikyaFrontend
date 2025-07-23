@@ -4,7 +4,7 @@ import { RouterModule } from "@angular/router"
 import { FormsModule } from "@angular/forms"
 import  { ProductService } from "../../../core/services/product.service"
 import  { CategoryService } from "../../../core/services/category.service"
-import  { IProduct, Category } from "../../../core/models/product.model"
+import  { IProduct} from "../../../core/models/product.model"
 import { ICategory } from "../../../core/models/icategory"
 
 @Component({

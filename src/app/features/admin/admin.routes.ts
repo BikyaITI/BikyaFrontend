@@ -19,4 +19,9 @@ export const adminRoutes: Routes = [
     loadComponent: () =>
       import("./order-management/order-management.component").then((m) => m.OrderManagementComponent),
   },
+    {
+    path: "categories",
+    loadComponent: () => import("./category-form/category-form.component").then((m) => m.CategoryFormComponent),
+    
+  },
 ]

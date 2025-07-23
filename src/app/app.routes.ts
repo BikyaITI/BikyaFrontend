@@ -68,11 +68,6 @@ export const routes: Routes = [
     // canActivate: [AdminGuard],
   },
   {
-    path: "categories",
-    loadComponent: () => import("./features/category-form/category-form.component").then((m) => m.CategoryFormComponent),
-    // canActivate: [AuthGuard],
-  },
-  {
     path: "allcategories",
     loadComponent: () => import("./features/allcategories/allcategories.component").then((m) => m.AllCategoriesComponent),
     // canActivate: [AuthGuard],

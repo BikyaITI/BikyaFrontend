@@ -1,3 +1,4 @@
+import { ICategory } from "./icategory" 
 import  { User } from "./user.model" // Assuming User model is in user.model.ts
 
 export interface IProduct {
@@ -8,7 +9,7 @@ export interface IProduct {
   isForExchange: boolean
   condition: string
   categoryId: number
-  category: Category
+  category: ICategory
   userId: number
   user: User
   isApproved: boolean
@@ -24,12 +25,6 @@ export interface IProductImage {
   productId: number
   imageUrl: string
   isMain: boolean
-}
-
-export interface ICategory {
-  id: number
-  name: string
-  description: string
 }
 
 export interface CreateProductRequest {
