@@ -6,7 +6,8 @@ import { RouterModule } from "@angular/router"
   selector: "app-admin-dashboard",
   standalone: true,
   imports: [CommonModule, RouterModule],
-  template: 'admin-dashboard.component.html',
+  templateUrl: './admin-dashboard.component.html',
+  
 })
 export class AdminDashboardComponent implements OnInit {
   stats = {
