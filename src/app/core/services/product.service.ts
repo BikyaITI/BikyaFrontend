@@ -14,11 +14,11 @@ export class ProductService {
   constructor(private http: HttpClient) {}
 
   getApprovedProducts(): Observable<ApiResponse<IProduct[]>> {
-    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/ApprovedProducts`)
+    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/approved`)
   }
 
   getProductById(id: number): Observable<ApiResponse<IProduct>> {
-    return this.http.get<ApiResponse<IProduct>>(`${this.API_URL}/ApprovedProducts/${id}`)
+    return this.http.get<ApiResponse<IProduct>>(`${this.API_URL}/Product/${id}`)
   }
 
   getProductsByUser(userId: number): Observable<ApiResponse<IProduct[]>> {

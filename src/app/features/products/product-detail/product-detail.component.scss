@@ -1,0 +1,37 @@
+.thumbnail {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.thumbnail:hover {
+  border-color: var(--bs-primary);
+  transform: scale(1.05);
+}
+
+.thumbnail.active {
+  border-color: var(--bs-primary);
+}
+
+.product-gallery .main-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.badges .badge {
+  font-size: 0.75rem;
+}
+
+.avatar {
+  flex-shrink: 0;
+}
+
+.action-buttons .btn {
+  font-weight: 500;
+}
+
+.order-summary {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
