@@ -55,7 +55,12 @@ export const routes: Routes = [
   {
     path: "wallet",
     loadComponent: () => import("./features/wallet/wallet.component").then((m) => m.WalletComponent),
-    // canActivate: [AuthGuard],
+   // canActivate: [AuthGuard],
+  },
+    {
+    path: "wallet/payment",
+    loadComponent: () => import("./features/payment/payment.component").then((m) => m.PaymentComponent),
+   // canActivate: [AuthGuard],
   },
   {
     path: "admin",
