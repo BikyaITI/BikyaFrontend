@@ -1,0 +1,31 @@
+<div class="container mt-4">
+  <h2>All Shippings</h2>
+  <table class="table table-bordered" *ngIf="shippings.length > 0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Recipient</th>
+        <th>Address</th>
+        <th>City</th>
+        <th>Status</th>
+        <th>Order ID</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let shipping of shippings">
+        <td>{{shipping.shippingId}}</td>
+        <td>{{shipping.recipientName}}</td>
+        <td>{{shipping.address}}</td>
+        <td>{{shipping.city}}</td>
+        <td>{{shipping.status}}</td>
+        <td>{{shipping.orderId}}</td>
+        <td>
+          <button class="btn btn-danger btn-sm" (click)="deleteShipping(shipping.shippingId)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div *ngIf="shippings.length === 0" class="alert alert-info">No shippings found.</div>
+  <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{errorMessage}}</div>
+</div> 

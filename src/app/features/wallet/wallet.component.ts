@@ -1,424 +1,67 @@
-import { Component,  OnInit } from "@angular/core"
+import { Component,  OnInit, OnDestroy } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { ReactiveFormsModule, FormsModule,  FormBuilder,  FormGroup, Validators } from "@angular/forms"
-import  { AuthService } from "../../core/services/auth.service"
-import  { User } from "../../core/models/user.model"
-import  { WalletTransaction, TransactionType, TransactionStatus } from "../../core/models/wallet.model"
+import { RouterModule } from '@angular/router';
+import { Subject, takeUntil, combineLatest } from "rxjs"
+import { AuthService } from "../../core/services/auth.service"
+import { WalletService } from "../../core/services/wallet.service"
+import { WalletTransaction, WalletStats } from "../../core/models/wallet.model"
+import { User } from "../../core/models/user.model"
+import { OrderService } from '../../core/services/order.service';
+import { Order, OrderStatus } from '../../core/models/order.model';
 
 @Component({
   selector: "app-wallet",
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
-  template: `
-    <!-- Page Header -->
-    <section class="page-header py-5 bg-light">
-      <div class="container">
-        <div class="row align-items-center">
-          <div class="col-md-6">
-            <h1 class="page-title">My Wallet</h1>
-            <p class="page-subtitle">Manage your balance and transactions</p>
-          </div>
-          <div class="col-md-6">
-            <nav aria-label="breadcrumb">
-              <ol class="breadcrumb justify-content-md-end">
-                <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
-                <li class="breadcrumb-item active">Wallet</li>
-              </ol>
-            </nav>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Wallet Dashboard -->
-    <section class="wallet-section py-5">
-      <div class="container">
-        <div class="row">
-          <!-- Wallet Balance Cards -->
-          <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card shadow-sm h-100" style="border-left: 4px solid var(--success-color);">
-              <div class="card-header bg-light">
-                <div class="d-flex align-items-center">
-                  <div class="feature-icon me-3" style="width: 50px; height: 50px; background: var(--gradient-primary);">
-                    <i class="fas fa-wallet"></i>
-                  </div>
-                  <div>
-                    <h6 class="card-title mb-0">Available Balance</h6>
-                    <small class="text-muted">Ready to spend</small>
-                  </div>
-                </div>
-              </div>
-              <div class="card-body">
-                <h2 class="text-success mb-3">\${{walletBalance | number:'1.2-2'}}</h2>
-                <div class="d-grid gap-2">
-                  <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addMoneyModal">
-                    <i class="fas fa-plus me-1"></i>Add Money
-                  </button>
-                  <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#withdrawModal">
-                    <i class="fas fa-arrow-up me-1"></i>Withdraw
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card shadow-sm h-100" style="border-left: 4px solid var(--warning-color);">
-              <div class="card-header bg-light">
-                <div class="d-flex align-items-center">
-                  <div class="feature-icon me-3" style="width: 50px; height: 50px; background: var(--gradient-accent);">
-                    <i class="fas fa-clock"></i>
-                  </div>
-                  <div>
-                    <h6 class="card-title mb-0">Pending Balance</h6>
-                    <small class="text-muted">Processing transactions</small>
-                  </div>
-                </div>
-              </div>
-              <div class="card-body">
-                <h2 class="text-warning mb-3">\${{monthlyStats.pendingAmount | number:'1.2-2'}}</h2>
-                <p class="text-muted mb-0">Expected in 2-3 business days</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card shadow-sm h-100" style="border-left: 4px solid var(--info-color);">
-              <div class="card-header bg-light">
-                <div class="d-flex align-items-center">
-                  <div class="feature-icon me-3" style="width: 50px; height: 50px; background: var(--gradient-secondary);">
-                    <i class="fas fa-gift"></i>
-                  </div>
-                  <div>
-                    <h6 class="card-title mb-0">Reward Points</h6>
-                    <small class="text-muted">Earn with every purchase</small>
-                  </div>
-                </div>
-              </div>
-              <div class="card-body">
-                <h2 class="text-info mb-3">{{monthlyStats.rewardPoints}}</h2>
-                <p class="text-muted mb-0">= \${{(monthlyStats.rewardPoints * 0.01) | number:'1.2-2'}} value</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="row mb-5">
-          <div class="col-12">
-            <div class="card shadow-sm">
-              <div class="card-header">
-                <h5 class="mb-0">Quick Actions</h5>
-              </div>
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-lg-3 col-md-6 mb-3">
-                    <button class="btn btn-outline-primary w-100 h-100 py-3" data-bs-toggle="modal" data-bs-target="#addMoneyModal">
-                      <i class="fas fa-credit-card mb-2 d-block" style="font-size: 2rem;"></i>
-                      Add Money
-                    </button>
-                  </div>
-                  <div class="col-lg-3 col-md-6 mb-3">
-                    <button class="btn btn-outline-primary w-100 h-100 py-3" data-bs-toggle="modal" data-bs-target="#transferModal">
-                      <i class="fas fa-exchange-alt mb-2 d-block" style="font-size: 2rem;"></i>
-                      Transfer Money
-                    </button>
-                  </div>
-                  <div class="col-lg-3 col-md-6 mb-3">
-                    <button class="btn btn-outline-primary w-100 h-100 py-3">
-                      <i class="fas fa-file-invoice mb-2 d-block" style="font-size: 2rem;"></i>
-                      Pay Bills
-                    </button>
-                  </div>
-                  <div class="col-lg-3 col-md-6 mb-3">
-                    <button class="btn btn-outline-primary w-100 h-100 py-3">
-                      <i class="fas fa-mobile-alt mb-2 d-block" style="font-size: 2rem;"></i>
-                      Mobile Recharge
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Transaction History -->
-        <div class="row">
-          <div class="col-12">
-            <div class="card shadow-sm">
-              <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Recent Transactions</h5>
-                <div class="d-flex align-items-center">
-                  <select class="form-select form-select-sm me-2" [(ngModel)]="activeFilter" (change)="setFilter(activeFilter)">
-                    <option value="all">All Transactions</option>
-                    <option value="deposit">Deposits</option>
-                    <option value="withdrawal">Withdrawals</option>
-                    <option value="payment">Payments</option>
-                    <option value="refund">Refunds</option>
-                  </select>
-                </div>
-              </div>
-              <div class="card-body">
-                <div *ngIf="isLoadingTransactions" class="text-center py-4">
-                  <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                  </div>
-                </div>
-
-                <div *ngIf="!isLoadingTransactions && getFilteredTransactions().length === 0" class="text-center py-5">
-                  <i class="fas fa-receipt display-4 text-muted"></i>
-                  <h5 class="mt-3">No transactions found</h5>
-                  <p class="text-muted">Your transaction history will appear here</p>
-                </div>
-
-                <div class="transaction-list" *ngIf="!isLoadingTransactions && getFilteredTransactions().length > 0">
-                  <div
-                    class="d-flex align-items-center justify-content-between py-3 border-bottom"
-                    *ngFor="let transaction of getFilteredTransactions()">
-                    <div class="d-flex align-items-center">
-                      <div class="me-3">
-                        <div [class]="getTransactionIconClass(transaction.type)" style="width: 50px; height: 50px;">
-                          <i [class]="getTransactionIcon(transaction.type)" class="text-white"></i>
-                        </div>
-                      </div>
-                      <div>
-                        <h6 class="mb-0">{{getTransactionTitle(transaction.type)}}</h6>
-                        <small class="text-muted">{{transaction.description}}</small>
-                        <br>
-                        <small class="text-muted">{{transaction.createdAt | date:'medium'}}</small>
-                      </div>
-                    </div>
-                    <div class="text-end">
-                      <div [class]="getAmountClass(transaction.type)" class="fw-bold">
-                        {{getAmountPrefix(transaction.type)}}\${{transaction.amount | number:'1.2-2'}}
-                      </div>
-                      <span class="badge" [class]="getStatusBadgeClass(transaction.status)">
-                        {{transaction.status}}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Load More Button -->
-                <div class="text-center mt-3" *ngIf="hasMoreTransactions">
-                  <button class="btn btn-outline-primary" (click)="loadMoreTransactions()">
-                    Load More Transactions
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Add Money Modal -->
-    <div class="modal fade" id="addMoneyModal" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">
-              <i class="fas fa-plus-circle text-success me-2"></i>Add Money to Wallet
-            </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <form [formGroup]="depositForm" (ngSubmit)="deposit()">
-            <div class="modal-body">
-              <div class="mb-3">
-                <label for="depositAmount" class="form-label">Amount (\$) *</label>
-                <div class="input-group">
-                  <span class="input-group-text">\$</span>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="depositAmount"
-                    formControlName="amount"
-                    placeholder="0.00"
-                    step="0.01"
-                    min="1"
-                    [class.is-invalid]="depositForm.get('amount')?.invalid && depositForm.get('amount')?.touched">
-                </div>
-                <div class="invalid-feedback" *ngIf="depositForm.get('amount')?.invalid && depositForm.get('amount')?.touched">
-                  Please enter a valid amount (minimum \$1.00)
-                </div>
-                <div class="form-text">Minimum \$1.00, Maximum \$1000.00</div>
-              </div>
-
-              <div class="mb-3">
-                <label for="depositDescription" class="form-label">Description (Optional)</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="depositDescription"
-                  formControlName="description"
-                  placeholder="Add a note for this deposit">
-              </div>
-
-              <div class="payment-methods">
-                <h6>Payment Method</h6>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" checked>
-                  <label class="form-check-label" for="creditCard">
-                    <i class="fas fa-credit-card me-2"></i>Credit/Debit Card
-                  </label>
-                </div>
-                <div class="form-check mb-2">
-                  <input class="form-check-input" type="radio" name="paymentMethod" id="paypal">
-                  <label class="form-check-label" for="paypal">
-                    <i class="fab fa-paypal me-2"></i>PayPal
-                  </label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="paymentMethod" id="bankTransfer">
-                  <label class="form-check-label" for="bankTransfer">
-                    <i class="fas fa-university me-2"></i>Bank Transfer
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button
-                type="submit"
-                class="btn btn-success"
-                [disabled]="depositForm.invalid || isProcessingDeposit">
-                <span *ngIf="isProcessingDeposit" class="spinner-border spinner-border-sm me-2"></span>
-                {{isProcessingDeposit ? 'Processing...' : 'Add Money'}}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <!-- Withdraw Modal -->
-    <div class="modal fade" id="withdrawModal" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">
-              <i class="fas fa-arrow-up-circle text-primary me-2"></i>Withdraw Money
-            </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <form [formGroup]="withdrawForm" (ngSubmit)="withdraw()">
-            <div class="modal-body">
-              <div class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
-                Available balance: <strong>\${{walletBalance | number:'1.2-2'}}</strong>
-              </div>
-
-              <div class="mb-3">
-                <label for="withdrawAmount" class="form-label">Amount (\$) *</label>
-                <div class="input-group">
-                  <span class="input-group-text">\$</span>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="withdrawAmount"
-                    formControlName="amount"
-                    placeholder="0.00"
-                    step="0.01"
-                    min="1"
-                    [max]="walletBalance"
-                    [class.is-invalid]="withdrawForm.get('amount')?.invalid && withdrawForm.get('amount')?.touched">
-                </div>
-                <div class="invalid-feedback" *ngIf="withdrawForm.get('amount')?.invalid && withdrawForm.get('amount')?.touched">
-                  Please enter a valid amount (minimum \$1.00, maximum \${{walletBalance}})
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <label for="withdrawDescription" class="form-label">Description (Optional)</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="withdrawDescription"
-                  formControlName="description"
-                  placeholder="Add a note for this withdrawal">
-              </div>
-
-              <div class="withdrawal-info">
-                <h6>Withdrawal Information</h6>
-                <ul class="list-unstyled">
-                  <li><i class="fas fa-clock text-muted me-2"></i>Processing time: 1-3 business days</li>
-                  <li><i class="fas fa-dollar-sign text-muted me-2"></i>Withdrawal fee: \$2.50</li>
-                  <li><i class="fas fa-shield-check text-muted me-2"></i>Secure and encrypted</li>
-                </ul>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button
-                type="submit"
-                class="btn btn-primary"
-                [disabled]="withdrawForm.invalid || isProcessingWithdraw">
-                <span *ngIf="isProcessingWithdraw" class="spinner-border spinner-border-sm me-2"></span>
-                {{isProcessingWithdraw ? 'Processing...' : 'Withdraw Money'}}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  `,
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
+  templateUrl: "./wallet.component.html",
+  styleUrls: ["./wallet.component.scss"]
 })
-export class WalletComponent implements OnInit {
+export class WalletComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   currentUser: User | null = null
-  walletBalance = 1250.75
+  walletBalance = 0
   activeFilter = "all"
   isLoadingTransactions = false
   isProcessingDeposit = false
   isProcessingWithdraw = false
   hasMoreTransactions = true
+  errorMessage = ""
+  successMessage = ""
+  walletLocked = false;
 
   depositForm: FormGroup
   withdrawForm: FormGroup
+  payOrderForm: FormGroup;
+  isLoadingOrders = false;
+  selectedOrder: Order | null = null;
+  linkPaymentForm: FormGroup;
+  isLinkingPayment = false;
+  linkPaymentSuccess: string | null = null;
+  linkPaymentError: string | null = null;
 
-  monthlyStats = {
-    deposits: 500.0,
-    withdrawals: 200.0,
-    payments: 350.0,
-    refunds: 50.0,
-    pendingAmount: 32.5,
-    rewardPoints: 1245,
+  monthlyStats: WalletStats = {
+    deposits: 0,
+    withdrawals: 0,
+    payments: 0,
+    refunds: 0,
+    pendingAmount: 0,
+    rewardPoints: 0,
   }
 
-  transactions: WalletTransaction[] = [
-    {
-      id: 1,
-      walletId: 1,
-      type: "Deposit" as TransactionType,
-      amount: 100.0,
-      description: "Added money to wallet",
-      status: "Completed" as TransactionStatus,
-      createdAt: new Date(Date.now() - 86400000),
-    },
-    {
-      id: 2,
-      walletId: 1,
-      type: "Payment" as TransactionType,
-      amount: 25.5,
-      description: "Payment for iPhone Case",
-      orderId: 123,
-      status: "Completed" as TransactionStatus,
-      createdAt: new Date(Date.now() - 172800000),
-    },
-    {
-      id: 3,
-      walletId: 1,
-      type: "Refund" as TransactionType,
-      amount: 15.0,
-      description: "Refund for cancelled order",
-      orderId: 122,
-      status: "Completed" as TransactionStatus,
-      createdAt: new Date(Date.now() - 259200000),
-    },
-  ]
+  transactions: WalletTransaction[] = []
+  orders: Order[] = [];
+  // احذف متغيرات showPayOrderModal, showWithdrawModal, showTransactionModal
+  // احذف جميع الدوال التالية:
+  // openPayOrderModal, closePayOrderModal, openWithdrawModal, closeWithdrawModal, closeAddMoneyModal, openTransactionModal, closeTransactionModal
+  // في دوال مثل deposit/withdraw/payOrder، احذف أي كود يغلق المودال من TypeScript (مثل this.closeAddMoneyModal() ... إلخ)
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private walletService: WalletService,
+    private orderService: OrderService,
   ) {
     this.depositForm = this.fb.group({
       amount: ["", [Validators.required, Validators.min(1), Validators.max(1000)]],
@@ -429,23 +72,145 @@ export class WalletComponent implements OnInit {
       amount: ["", [Validators.required, Validators.min(1)]],
       description: [""],
     })
+    this.payOrderForm = this.fb.group({
+      orderId: [null, Validators.required],
+      amount: [{ value: '', disabled: true }, Validators.required],
+      description: [''],
+    });
+    this.linkPaymentForm = this.fb.group({
+      methodName: ['', Validators.required]
+    });
   }
 
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe((user) => {
+    this.authService.currentUser$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((user) => {
       this.currentUser = user
       if (user) {
         this.loadWalletData()
+        this.loadPayableOrders()
       }
     })
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
+  }
+
   loadWalletData(): void {
-    // Mock API calls - replace with actual service calls
+    if (!this.currentUser?.id) return;
+
     this.isLoadingTransactions = true
-    setTimeout(() => {
-      this.isLoadingTransactions = false
-    }, 1000)
+    this.errorMessage = ""
+
+    // Load balance and transactions in parallel
+    combineLatest([
+      this.walletService.getBalance(this.currentUser.id),
+      this.walletService.getTransactions(this.currentUser.id),
+      this.walletService.getWalletStats(this.currentUser.id)
+    ]).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: ([balanceResponse, transactionResponse, stats]) => {
+        this.isLoadingTransactions = false
+
+        if (balanceResponse.success) {
+          this.walletBalance = balanceResponse.data.balance
+          // تحقق من وجود currentUser قبل استدعاء getWalletByUserId
+          if (this.currentUser && this.currentUser.id) {
+            this.walletService.getWalletByUserId(this.currentUser.id).subscribe(res => {
+              if (res.success && res.data) {
+                this.walletLocked = res.data.isLocked;
+              }
+            });
+          }
+        }
+
+        if (transactionResponse.success) {
+          this.transactions = transactionResponse.data
+        }
+
+        this.monthlyStats = stats
+      },
+      error: (error) => {
+        this.isLoadingTransactions = false
+        this.errorMessage = error.message || 'Failed to load wallet data'
+        console.error('Error loading wallet data:', error)
+      }
+    })
+
+    // Subscribe to real-time updates
+    this.walletService.walletBalance$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(balance => {
+      this.walletBalance = balance
+    })
+
+    this.walletService.pendingAmount$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(pendingAmount => {
+      this.monthlyStats.pendingAmount = pendingAmount
+    })
+
+    this.walletService.rewardPoints$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(rewardPoints => {
+      this.monthlyStats.rewardPoints = rewardPoints
+    })
+
+    this.walletService.transactions$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(transactions => {
+      this.transactions = transactions
+    })
+  }
+
+  loadPayableOrders(): void {
+    if (!this.currentUser?.id) return;
+    this.isLoadingOrders = true;
+    this.orderService.getOrdersByBuyer(this.currentUser.id).subscribe({
+      next: (res) => {
+        this.isLoadingOrders = false;
+        if (res.success && res.data) {
+          this.orders = res.data.filter(o => o.status === OrderStatus.Pending);
+        } else {
+          this.orders = [];
+        }
+      },
+      error: () => {
+        this.isLoadingOrders = false;
+        this.orders = [];
+      }
+    });
+  }
+
+  // دالة دفع الطلب - تحتاج تسجيل دخول
+  payOrder(): void {
+    if (/* !this.currentUser?.id || */ this.payOrderForm.invalid) return;
+    const orderId = this.payOrderForm.get('orderId')?.value;
+    const amount = this.payOrderForm.get('amount')?.value;
+    const description = this.payOrderForm.get('description')?.value;
+    this.isLoadingOrders = true;
+    this.walletService.pay(/* this.currentUser.id, */ 1, amount, orderId, description).subscribe({
+      next: (res) => {
+        this.isLoadingOrders = false;
+        if (res.success) {
+          this.successMessage = 'تم الدفع بنجاح!';
+          this.loadWalletData();
+          this.loadPayableOrders();
+          this.payOrderForm.reset();
+          setTimeout(() => { this.successMessage = ''; }, 3000);
+        } else {
+          this.errorMessage = res.message;
+        }
+      },
+      error: (err) => {
+        this.isLoadingOrders = false;
+        this.errorMessage = err.message || 'فشل الدفع';
+      }
+    });
   }
 
   setFilter(filter: string): void {
@@ -456,161 +221,262 @@ export class WalletComponent implements OnInit {
     if (this.activeFilter === "all") {
       return this.transactions
     }
-    return this.transactions.filter((t) => t.type.toLowerCase() === this.activeFilter)
+    switch (this.activeFilter) {
+      case "deposit":
+        return this.transactions.filter((t) => t.type === 1)
+              case "withdrawal":
+          return this.transactions.filter((t) => t.type === 2)
+        case "payment":
+          return this.transactions.filter((t) => t.type === 3)
+        case "refund":
+        return this.transactions.filter((t) => t.type === 4)
+      default:
+        return this.transactions
+    }
   }
 
-  getTransactionIcon(type: TransactionType): string {
+  getTransactionIcon(type: WalletTransaction['type']): string {
     switch (type) {
-      case "Deposit":
+      case 1:
         return "fas fa-plus-circle"
-      case "Withdrawal":
+      case 2:
         return "fas fa-arrow-up-circle"
-      case "Payment":
+      case 3:
         return "fas fa-credit-card"
-      case "Refund":
+      case 4:
         return "fas fa-undo"
       default:
         return "fas fa-circle"
     }
   }
 
-  getTransactionIconClass(type: TransactionType): string {
+  getTransactionIconClass(type: WalletTransaction['type']): string {
     switch (type) {
-      case "Deposit":
+      case 1:
         return "bg-success rounded-circle d-flex align-items-center justify-content-center"
-      case "Withdrawal":
+      case 2:
         return "bg-primary rounded-circle d-flex align-items-center justify-content-center"
-      case "Payment":
+      case 3:
         return "bg-danger rounded-circle d-flex align-items-center justify-content-center"
-      case "Refund":
+      case 4:
         return "bg-warning rounded-circle d-flex align-items-center justify-content-center"
       default:
         return "bg-secondary rounded-circle d-flex align-items-center justify-content-center"
     }
   }
 
-  getTransactionTitle(type: TransactionType): string {
+  getTransactionTitle(type: WalletTransaction['type']): string {
     switch (type) {
-      case "Deposit":
+      case 1:
         return "Money Added"
-      case "Withdrawal":
+      case 2:
         return "Money Withdrawn"
-      case "Payment":
+      case 3:
         return "Payment Made"
-      case "Refund":
+      case 4:
         return "Refund Received"
       default:
         return "Transaction"
     }
   }
 
-  getAmountClass(type: TransactionType): string {
+  getAmountClass(type: WalletTransaction['type']): string {
     switch (type) {
-      case "Deposit":
-      case "Refund":
+      case 1:
+      case 4:
         return "text-success"
-      case "Withdrawal":
-      case "Payment":
+      case 2:
+      case 3:
         return "text-danger"
       default:
         return "text-muted"
     }
   }
 
-  getAmountPrefix(type: TransactionType): string {
+  getAmountPrefix(type: WalletTransaction['type']): string {
     switch (type) {
-      case "Deposit":
-      case "Refund":
+      case 1:
+      case 4:
         return "+"
-      case "Withdrawal":
-      case "Payment":
+      case 2:
+      case 3:
         return "-"
       default:
         return ""
     }
   }
 
-  getStatusBadgeClass(status: TransactionStatus): string {
+  getStatusBadgeClass(status: WalletTransaction['status']): string {
     switch (status) {
-      case "Completed":
+      case 1: // Completed
         return "bg-success"
-      case "Pending":
+      case 0: // Pending
         return "bg-warning text-dark"
-      case "Failed":
+      case 2: // Failed
         return "bg-danger"
       default:
         return "bg-secondary"
     }
   }
 
+  // دالة إضافة المال - تحتاج تسجيل دخول
   deposit(): void {
-    if (this.depositForm.valid) {
+    if (this.depositForm.valid /* && this.currentUser?.id */) {
       this.isProcessingDeposit = true
+      this.errorMessage = ""
+      this.successMessage = ""
 
-      // Mock API call
-      setTimeout(() => {
-        this.isProcessingDeposit = false
-        const amount = this.depositForm.get("amount")?.value
-        this.walletBalance += amount
+      const amount = this.depositForm.get("amount")?.value
+      const description = this.depositForm.get("description")?.value
 
-        // Add transaction to history
-        this.transactions.unshift({
-          id: Date.now(),
-          walletId: 1,
-          type: "Deposit" as TransactionType,
-          amount: amount,
-          description: this.depositForm.get("description")?.value || "Added money to wallet",
-          status: "Completed" as TransactionStatus,
-          createdAt: new Date(),
-        })
+      this.walletService.deposit(/* this.currentUser.id, */ 1, amount, description).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
+        next: (response) => {
+          this.isProcessingDeposit = false
+          this.successMessage = "Money added successfully!"
 
-        // Close modal
-        const modal = document.getElementById("addMoneyModal")
-        if (modal) {
-          const bsModal = (window as any).bootstrap.Modal.getInstance(modal)
-          bsModal?.hide()
+          this.depositForm.reset()
+
+          setTimeout(() => {
+            this.successMessage = ""
+          }, 3000)
+        },
+        error: (error) => {
+          this.isProcessingDeposit = false
+          this.errorMessage = error.message || 'Failed to add money'
+          console.error('Error depositing money:', error)
         }
-
-        this.depositForm.reset()
-      }, 2000)
+      })
     }
   }
 
+  // دالة سحب المال - تحتاج تسجيل دخول
   withdraw(): void {
-    if (this.withdrawForm.valid) {
+    if (this.withdrawForm.valid /* && this.currentUser?.id */) {
       this.isProcessingWithdraw = true
+      this.errorMessage = ""
+      this.successMessage = ""
 
-      // Mock API call
-      setTimeout(() => {
-        this.isProcessingWithdraw = false
-        const amount = this.withdrawForm.get("amount")?.value
-        this.walletBalance -= amount
+      const amount = this.withdrawForm.get("amount")?.value
+      const description = this.withdrawForm.get("description")?.value
 
-        // Add transaction to history
-        this.transactions.unshift({
-          id: Date.now(),
-          walletId: 1,
-          type: "Withdrawal" as TransactionType,
-          amount: amount,
-          description: this.withdrawForm.get("description")?.value || "Money withdrawn from wallet",
-          status: "Pending" as TransactionStatus,
-          createdAt: new Date(),
-        })
+      this.walletService.withdraw(/* this.currentUser.id, */ 1, amount, description).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
+        next: (response) => {
+          this.isProcessingWithdraw = false
+          this.successMessage = "Withdrawal request submitted successfully!"
 
-        // Close modal
-        const modal = document.getElementById("withdrawModal")
-        if (modal) {
-          const bsModal = (window as any).bootstrap.Modal.getInstance(modal)
-          bsModal?.hide()
+          this.withdrawForm.reset()
+
+          setTimeout(() => {
+            this.successMessage = ""
+          }, 3000)
+        },
+        error: (error) => {
+          this.isProcessingWithdraw = false
+          this.errorMessage = error.message || 'Failed to withdraw money'
+          console.error('Error withdrawing money:', error)
         }
-
-        this.withdrawForm.reset()
-      }, 2000)
+      })
     }
   }
 
   loadMoreTransactions(): void {
-    // Mock loading more transactions
+    // This could be implemented with pagination if the API supports it
     this.hasMoreTransactions = false
+  }
+
+  // Create wallet if it doesn't exist
+  createWalletIfNeeded(): void {
+    if (!this.currentUser?.id) return;
+
+    this.walletService.createWallet(this.currentUser.id).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (response) => {
+        console.log('Wallet created successfully')
+        this.loadWalletData() // Reload data after creating wallet
+      },
+      error: (error) => {
+        // If wallet already exists, this is not an error
+        if (error.status !== 400) {
+          console.error('Error creating wallet:', error)
+        }
+      }
+    })
+  }
+
+  // Clear error message
+  clearError(): void {
+    this.errorMessage = ""
+  }
+
+  // Clear success message
+  clearSuccess(): void {
+    this.successMessage = ""
+  }
+
+  openPaymentComponent(): void {
+    window.open('/wallet/payment', '_blank');
+  }
+
+  toggleWalletLock(): void {
+    if (!this.currentUser?.id) return;
+    if (this.walletLocked) {
+      // فتح المحفظة
+      this.walletService.unlockWallet(this.currentUser.id).subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.walletLocked = false;
+            this.successMessage = 'تم فتح المحفظة بنجاح';
+          } else {
+            this.errorMessage = res.message;
+          }
+        },
+        error: (err) => {
+          this.errorMessage = err.message || 'فشل في فتح المحفظة';
+        }
+      });
+    } else {
+      // قفل المحفظة
+      this.walletService.lockWallet(this.currentUser.id).subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.walletLocked = true;
+            this.successMessage = 'تم قفل المحفظة بنجاح';
+          } else {
+            this.errorMessage = res.message;
+          }
+        },
+        error: (err) => {
+          this.errorMessage = err.message || 'فشل في قفل المحفظة';
+        }
+      });
+    }
+  }
+
+  linkPaymentMethod(): void {
+    if (!this.currentUser?.id || this.linkPaymentForm.invalid) return;
+    this.isLinkingPayment = true;
+    this.linkPaymentSuccess = null;
+    this.linkPaymentError = null;
+    const methodName = this.linkPaymentForm.get('methodName')?.value;
+    this.walletService.linkPaymentMethod(this.currentUser.id, methodName).subscribe({
+      next: (res) => {
+        this.isLinkingPayment = false;
+        if (res.success) {
+          this.linkPaymentSuccess = 'تم ربط وسيلة الدفع بنجاح!';
+          this.linkPaymentForm.reset();
+        } else {
+          this.linkPaymentError = res.message;
+        }
+      },
+      error: (err) => {
+        this.isLinkingPayment = false;
+        this.linkPaymentError = err.message || 'فشل في ربط وسيلة الدفع';
+      }
+    });
   }
 }

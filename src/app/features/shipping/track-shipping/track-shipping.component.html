@@ -1,0 +1,14 @@
+<div class="container mt-4" style="max-width: 500px;">
+  <h2>Track Shipping</h2>
+  <div class="mb-3">
+    <label class="form-label">Tracking Number</label>
+    <input [(ngModel)]="trackingNumber" class="form-control" placeholder="Enter Tracking Number">
+  </div>
+  <button class="btn btn-primary" (click)="track()">Track</button>
+  <div *ngIf="trackingInfo" class="alert alert-info mt-3">
+    <p *ngIf="trackingInfo?.status"><strong>Status:</strong> {{trackingInfo.status}}</p>
+    <p *ngIf="trackingInfo?.lastLocation"><strong>Last Location:</strong> {{trackingInfo.lastLocation}}</p>
+    <p *ngIf="trackingInfo?.estimatedArrival"><strong>Estimated Arrival:</strong> {{trackingInfo.estimatedArrival | date}}</p>
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{errorMessage}}</div>
+</div> 

@@ -1,3 +1,4 @@
+import { ICategory } from "./icategory" 
 import  { User } from "./user.model" // Assuming User model is in user.model.ts
 
 export interface IProduct {
@@ -24,7 +25,11 @@ export interface IProductImage {
   isMain: boolean
 }
 
-
+export interface Category {
+  id: number
+  name: string
+  description: string
+}
 
 export interface CreateProductRequest {
   title: string

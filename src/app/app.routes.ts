@@ -55,7 +55,12 @@ export const routes: Routes = [
   {
     path: "wallet",
     loadComponent: () => import("./features/wallet/wallet.component").then((m) => m.WalletComponent),
-    // canActivate: [AuthGuard],
+   // canActivate: [AuthGuard],
+  },
+    {
+    path: "wallet/payment",
+    loadComponent: () => import("./features/payment/payment.component").then((m) => m.PaymentComponent),
+   // canActivate: [AuthGuard],
   },
   {
     path: "admin",
@@ -63,14 +68,25 @@ export const routes: Routes = [
     // canActivate: [AdminGuard],
   },
   {
-    path: "categories",
-    loadComponent: () => import("./features/category-form/category-form.component").then((m) => m.CategoryFormComponent),
-    // canActivate: [AuthGuard],
-  },
-  {
     path: "allcategories",
     loadComponent: () => import("./features/allcategories/allcategories.component").then((m) => m.AllCategoriesComponent),
     // canActivate: [AuthGuard],
+  },
+  {
+    path: "shipping/create",
+    loadComponent: () => import("./features/shipping/create-shipping/create-shipping.component").then(m => m.CreateShippingComponent)
+  },
+  {
+    path: "shipping/track",
+    loadComponent: () => import("./features/shipping/track-shipping/track-shipping.component").then(m => m.TrackShippingComponent)
+  },
+  {
+    path: "admin/shippings",
+    loadComponent: () => import("./features/shipping/admin-shipping-list/admin-shipping-list.component").then(m => m.AdminShippingListComponent)
+  },
+  {
+    path: "shipping/calculate",
+    loadComponent: () => import("./features/shipping/calculate-shipping-cost/calculate-shipping-cost.component").then(m => m.CalculateShippingCostComponent)
   },
   {
     path: "**",

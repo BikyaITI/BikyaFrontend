@@ -1,9 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray, ReactiveFormsModule, FormsModule, AbstractControl } from '@angular/forms';
-import { CategoryService } from '../../core/services/category.service';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLinkActive } from '@angular/router';
-import { ICategory } from '../../core/models/icategory';
+import { CategoryService } from '../../../core/services/category.service';
+import { ICategory } from '../../../core/models/icategory';
+
 
 @Component({
   selector: 'app-category-form',
@@ -27,6 +28,9 @@ export class CategoryFormComponent implements OnInit {
   isEditing = false;
   showConfirm = false;
   categoryIdToDelete: number | null = null;
+   currentPage = 1;
+  pageSize = 9;
+  totalPages = 0;
 
   //  Lifecycle hook
   ngOnInit(): void {

@@ -1,0 +1,425 @@
+<!-- Page Header -->
+<section class="page-header">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <h1 class="page-title">
+          <i class="fas fa-wallet me-3"></i>My Wallet
+        </h1>
+        <p class="page-subtitle">Manage your balance, transactions, and payments</p>
+      </div>
+      <div class="col-md-6">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-md-end">
+            <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
+            <li class="breadcrumb-item active">Wallet</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Error and Success Messages -->
+<div class="container mt-3" *ngIf="errorMessage || successMessage">
+  <!-- Error Message -->
+  <div class="alert alert-danger alert-dismissible fade show" *ngIf="errorMessage" role="alert">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    {{ errorMessage }}
+    <button type="button" class="btn-close" (click)="clearError()" aria-label="Close"></button>
+  </div>
+
+  <!-- Success Message -->
+  <div class="alert alert-success alert-dismissible fade show" *ngIf="successMessage" role="alert">
+    <i class="fas fa-check-circle me-2"></i>
+    {{ successMessage }}
+    <button type="button" class="btn-close" (click)="clearSuccess()" aria-label="Close"></button>
+  </div>
+</div>
+
+<!-- Wallet Dashboard -->
+<section class="wallet-section">
+  <div class="container">
+    <!-- Balance Cards Row -->
+    <div class="row g-4 mb-5">
+      <!-- Available Balance Card -->
+      <div class="col-lg-4 col-md-6">
+        <div class="balance-card balance-card--success">
+          <div class="balance-card__header">
+            <div class="balance-card__icon">
+              <i class="fas fa-wallet"></i>
+            </div>
+            <div class="balance-card__info">
+              <h6 class="balance-card__title">Available Balance</h6>
+              <p class="balance-card__subtitle">Ready to spend</p>
+            </div>
+          </div>
+          <div class="balance-card__body">
+            <h2 class="balance-card__amount">${{walletBalance | number:'1.2-2'}}</h2>
+            <div class="balance-card__actions">
+              <!-- زر Add Money يوجه مباشرة لصفحة الدفع -->
+              <a class="btn btn-success btn-sm" [routerLink]="['/wallet/payment']">
+                <i class="fas fa-plus me-2"></i>Add Money
+              </a>
+              <!-- زر السحب - يحتاج تسجيل دخول -->
+              <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#withdrawModal">
+                <i class="fas fa-arrow-up me-2"></i>Withdraw
+              </button>
+              <!-- زر دفع الطلب - يحتاج تسجيل دخول -->
+              <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#payOrderModal">
+                <i class="fas fa-credit-card me-2"></i>ادفع طلب
+              </button>
+              <button *ngIf="currentUser" class="btn btn-danger btn-sm ms-2" (click)="toggleWalletLock()" [ngClass]="walletLocked ? 'btn-success' : 'btn-secondary'">
+                <i class="fas" [ngClass]="walletLocked ? 'fa-lock-open' : 'fa-lock'" class="me-1"></i>
+                {{ walletLocked ? 'فتح المحفظة' : 'قفل المحفظة' }}
+              </button>
+            </div>
+            
+            <!-- رسالة للمستخدمين غير المسجلين -->
+            <!--
+            <div *ngIf="!currentUser" class="mt-3 p-3 bg-warning bg-opacity-10 border border-warning rounded">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                <div>
+                  <strong>تحتاج تسجيل دخول</strong>
+                  <p class="mb-0 text-muted">يجب تسجيل الدخول لاستخدام ميزات المحفظة</p>
+                </div>
+              </div>
+            </div>
+            -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Pending Balance Card -->
+      <div class="col-lg-4 col-md-6">
+        <div class="balance-card balance-card--warning">
+          <div class="balance-card__header">
+            <div class="balance-card__icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="balance-card__info">
+              <h6 class="balance-card__title">Pending Balance</h6>
+              <p class="balance-card__subtitle">Processing transactions</p>
+            </div>
+          </div>
+          <div class="balance-card__body">
+            <h2 class="balance-card__amount">${{monthlyStats.pendingAmount | number:'1.2-2'}}</h2>
+            <p class="balance-card__note">Expected in 2-3 business days</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reward Points Card -->
+      <div class="col-lg-4 col-md-6">
+        <div class="balance-card balance-card--info">
+          <div class="balance-card__header">
+            <div class="balance-card__icon">
+              <i class="fas fa-gift"></i>
+            </div>
+            <div class="balance-card__info">
+              <h6 class="balance-card__title">Reward Points</h6>
+              <p class="balance-card__subtitle">Earn with every purchase</p>
+            </div>
+          </div>
+          <div class="balance-card__body">
+            <h2 class="balance-card__amount">{{monthlyStats.rewardPoints}}</h2>
+            <p class="balance-card__note">= ${{(monthlyStats.rewardPoints * 0.01) | number:'1.2-2'}} value</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- أضف مسافة بسيطة بين كروت الرصيد وسجل العمليات -->
+    <div class="mb-4"></div>
+
+    <!-- Transaction History Section -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">
+              <i class="fas fa-history me-2"></i>Recent Transactions
+            </h5>
+            <div class="transaction-filters">
+              <select class="form-select form-select-sm" [(ngModel)]="activeFilter" (change)="setFilter(activeFilter)">
+                <option value="all">All Transactions</option>
+                <option value="deposit">Deposits</option>
+                <option value="withdrawal">Withdrawals</option>
+                <option value="payment">Payments</option>
+                <option value="refund">Refunds</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- Loading State -->
+            <div *ngIf="isLoadingTransactions" class="loading-state">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-3 text-muted">Loading transactions...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div *ngIf="!isLoadingTransactions && getFilteredTransactions().length === 0" class="empty-state">
+              <div class="empty-state__icon">
+                <i class="fas fa-receipt"></i>
+              </div>
+              <h5 class="empty-state__title">No transactions found</h5>
+              <p class="empty-state__text">Your transaction history will appear here</p>
+              <button class="btn btn-primary mt-3" (click)="createWalletIfNeeded()" *ngIf="currentUser">
+                <i class="fas fa-plus me-2"></i>Create Wallet
+              </button>
+            </div>
+
+            <!-- Transaction List -->
+            <div class="transaction-list" *ngIf="!isLoadingTransactions && getFilteredTransactions().length > 0">
+              <div class="transaction-item" *ngFor="let transaction of getFilteredTransactions()" style="cursor:pointer;">
+                <div class="transaction-item__left">
+                  <div class="transaction-item__icon" [class]="getTransactionIconClass(transaction.type)">
+                    <i [class]="getTransactionIcon(transaction.type)"></i>
+                  </div>
+                  <div class="transaction-item__details">
+                    <h6 class="transaction-item__title">{{getTransactionTitle(transaction.type)}}</h6>
+                    <p class="transaction-item__description">{{transaction.description}}</p>
+                    <small class="transaction-item__date">{{transaction.createdAt | date:'medium'}}</small>
+                  </div>
+                </div>
+                <div class="transaction-item__right">
+                  <div class="transaction-item__amount" [class]="getAmountClass(transaction.type)">
+                    {{getAmountPrefix(transaction.type)}}${{transaction.amount | number:'1.2-2'}}
+                  </div>
+                  <span class="transaction-item__status" [class]="getStatusBadgeClass(transaction.status)">
+                    {{transaction.status}}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Load More Button -->
+            <div class="text-center mt-4" *ngIf="hasMoreTransactions">
+              <button class="btn btn-outline-primary" (click)="loadMoreTransactions()">
+                <i class="fas fa-plus me-2"></i>Load More Transactions
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- مودال إضافة المال -->
+<!--
+<div class="modal fade" id="addMoneyModal" tabindex="-1" aria-labelledby="addMoneyModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-plus-circle text-success me-2"></i>Add Money to Wallet
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form [formGroup]="depositForm" (ngSubmit)="deposit()">
+        <div class="modal-body">
+          <div class="form-group mb-4">
+            <label for="depositAmount" class="form-label">Amount ($) *</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input
+                type="number"
+                class="form-control"
+                id="depositAmount"
+                formControlName="amount"
+                placeholder="0.00"
+                step="0.01"
+                min="1"
+                [class.is-invalid]="depositForm.get('amount')?.invalid && depositForm.get('amount')?.touched">
+            </div>
+            <div class="invalid-feedback" *ngIf="depositForm.get('amount')?.invalid && depositForm.get('amount')?.touched">
+              Please enter a valid amount (minimum $1.00)
+            </div>
+            <div class="form-text">Minimum $1.00, Maximum $1000.00</div>
+          </div>
+
+          <div class="form-group mb-4">
+            <label for="depositDescription" class="form-label">Description (Optional)</label>
+            <input
+              type="text"
+              class="form-control"
+              id="depositDescription"
+              formControlName="description"
+              placeholder="Add a note for this deposit">
+          </div>
+
+          <div class="payment-methods">
+            <h6 class="payment-methods__title">Payment Method</h6>
+            <div class="payment-methods__list">
+              <div class="form-check payment-method">
+                <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" checked>
+                <label class="form-check-label" for="creditCard">
+                  <i class="fas fa-credit-card me-2"></i>Credit/Debit Card
+                </label>
+              </div>
+              <div class="form-check payment-method">
+                <input class="form-check-input" type="radio" name="paymentMethod" id="paypal">
+                <label class="form-check-label" for="paypal">
+                  <i class="fab fa-paypal me-2"></i>PayPal
+                </label>
+              </div>
+              <div class="form-check payment-method">
+                <input class="form-check-input" type="radio" name="paymentMethod" id="bankTransfer">
+                <label class="form-check-label" for="bankTransfer">
+                  <i class="fas fa-university me-2"></i>Bank Transfer
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button
+            type="submit"
+            class="btn btn-success"
+            [disabled]="depositForm.invalid || isProcessingDeposit">
+            <span *ngIf="isProcessingDeposit" class="spinner-border spinner-border-sm me-2"></span>
+            {{isProcessingDeposit ? 'Processing...' : 'Add Money'}}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+-->
+
+<!-- مودال دفع طلب - يحتاج تسجيل دخول -->
+<div class="modal fade" id="payOrderModal" tabindex="-1" aria-labelledby="payOrderModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-credit-card text-primary me-2"></i>دفع طلب من المحفظة
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form [formGroup]="payOrderForm" (ngSubmit)="payOrder()">
+        <div class="modal-body">
+          <div *ngIf="isLoadingOrders" class="text-center my-3">
+            <span class="spinner-border spinner-border-sm"></span> جاري تحميل الطلبات...
+          </div>
+          <div *ngIf="!isLoadingOrders && orders.length === 0" class="alert alert-info">
+            لا يوجد طلبات قيد الانتظار للدفع.
+          </div>
+          <div *ngIf="!isLoadingOrders && orders.length > 0">
+            <div class="form-group mb-3">
+              <label for="orderId" class="form-label">اختر الطلب</label>
+              <select id="orderId" class="form-select" formControlName="orderId">
+                <option [ngValue]="null">-- اختر طلبًا --</option>
+                <option *ngFor="let order of orders" [ngValue]="order.id">
+                  #{{order.id}} - {{order.product.title}} - {{order.totalAmount | number:'1.2-2'}} جنيه
+                </option>
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label for="amount" class="form-label">المبلغ</label>
+              <input id="amount" class="form-control" formControlName="amount" type="number" readonly>
+            </div>
+            <div class="form-group mb-3">
+              <label for="description" class="form-label">وصف (اختياري)</label>
+              <input id="description" class="form-control" formControlName="description" type="text">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+          <button type="submit" class="btn btn-primary" [disabled]="payOrderForm.invalid || isLoadingOrders || orders.length === 0">
+            <span *ngIf="isLoadingOrders" class="spinner-border spinner-border-sm me-2"></span>
+            تأكيد الدفع
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- مودال السحب - يحتاج تسجيل دخول -->
+<div class="modal fade" id="withdrawModal" tabindex="-1" aria-labelledby="withdrawModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-arrow-up-circle text-primary me-2"></i>Withdraw Money
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form [formGroup]="withdrawForm" (ngSubmit)="withdraw()">
+        <div class="modal-body">
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            Available balance: <strong>${{walletBalance | number:'1.2-2'}}</strong>
+          </div>
+          <div class="form-group mb-4">
+            <label for="withdrawAmount" class="form-label">Amount ($) *</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input type="number" class="form-control" id="withdrawAmount" formControlName="amount" placeholder="0.00" step="0.01" min="1" [max]="walletBalance" [class.is-invalid]="withdrawForm.get('amount')?.invalid && withdrawForm.get('amount')?.touched">
+            </div>
+            <div class="invalid-feedback" *ngIf="withdrawForm.get('amount')?.invalid && withdrawForm.get('amount')?.touched">
+              Please enter a valid amount (minimum $1.00, maximum ${{walletBalance}})
+            </div>
+          </div>
+          <div class="form-group mb-4">
+            <label for="withdrawDescription" class="form-label">Description (Optional)</label>
+            <input type="text" class="form-control" id="withdrawDescription" formControlName="description" placeholder="Add a note for this withdrawal">
+          </div>
+          <div class="withdrawal-info">
+            <h6 class="withdrawal-info__title">Withdrawal Information</h6>
+            <ul class="withdrawal-info__list">
+              <li><i class="fas fa-clock text-muted me-2"></i>Processing time: 1-3 business days</li>
+              <li><i class="fas fa-dollar-sign text-muted me-2"></i>Withdrawal fee: $2.50</li>
+              <li><i class="fas fa-shield-check text-muted me-2"></i>Secure and encrypted</li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="withdrawForm.invalid || isProcessingWithdraw">
+            <span *ngIf="isProcessingWithdraw" class="spinner-border spinner-border-sm me-2"></span>
+            {{isProcessingWithdraw ? 'Processing...' : 'Withdraw Money'}}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- مودال تفاصيل العملية -->
+<!-- تم تعطيل مودال التفاصيل مؤقتًا لعدم وجود دوال تحكم -->
+<!--
+<div class="modal fade show" tabindex="-1" [ngStyle]="{'display': showTransactionModal ? 'block' : 'none'}" *ngIf="showTransactionModal && selectedTransaction">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i [class]="getTransactionIcon(selectedTransaction.type)" class="me-2"></i>
+          تفاصيل العملية
+        </h5>
+        <button type="button" class="btn-close" (click)="closeTransactionModal()"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><strong>رقم العملية:</strong> {{selectedTransaction.id}}</li>
+          <li class="list-group-item"><strong>النوع:</strong> {{getTransactionTitle(selectedTransaction.type)}}</li>
+          <li class="list-group-item"><strong>المبلغ:</strong> {{selectedTransaction.amount | number:'1.2-2'}} جنيه</li>
+          <li class="list-group-item"><strong>الحالة:</strong> {{selectedTransaction.status}}</li>
+          <li class="list-group-item"><strong>الوصف:</strong> {{selectedTransaction.description || '---'}} </li>
+          <li class="list-group-item"><strong>تاريخ العملية:</strong> {{selectedTransaction.createdAt | date:'full'}} </li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeTransactionModal()">إغلاق</button>
+      </div>
+    </div>
+  </div>
+</div>
+--> 

@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { ICategory } from '../../../core/models/icategory';
-import { CategoryService } from '../../../core/services/category.service';
-import { ProductService } from '../../../core/services/product.service';
-import { CommonModule } from '@angular/common';
+import { Component,  OnInit } from "@angular/core"
+import { CommonModule } from "@angular/common"
+import { ReactiveFormsModule,  FormBuilder,  FormGroup, Validators } from "@angular/forms"
+import  { Router } from "@angular/router"
+import  { ProductService } from "../../../core/services/product.service"
+import  { CategoryService } from "../../../core/services/category.service"
+import  { Category } from "../../../core/models/product.model"
+import { ICategory } from "../../../core/models/icategory"
 
 @Component({
   selector: 'app-add-product',
