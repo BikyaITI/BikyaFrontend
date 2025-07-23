@@ -1,6 +1,8 @@
-import { Component,  OnInit } from "@angular/core"
+import { Component,  inject,  OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { RouterModule } from "@angular/router"
+import { ICategory } from "../../../core/models/icategory";
+import { CategoryService } from "../../../core/services/category.service";
 
 @Component({
   selector: "app-admin-dashboard",
@@ -13,16 +15,20 @@ export class AdminDashboardComponent implements OnInit {
   stats = {
     totalUsers: 1250,
     totalProducts: 3420,
+    totalCategories: 3420,
     totalOrders: 890,
     totalRevenue: 45680,
   }
-
+  categories: ICategory[] = [];
   recentProducts: any[] = []
   recentOrders: any[] = []
-
+  categoryService= inject(CategoryService)
   ngOnInit(): void {
     this.loadRecentData()
+    this.loadAllCategories()
   }
+ 
+
 
   loadRecentData(): void {
     // Mock data - replace with actual API calls
@@ -38,4 +44,21 @@ export class AdminDashboardComponent implements OnInit {
       { id: 1003, totalAmount: 120.0, status: "Shipped" },
     ]
   }
+  loadAllCategories(){
+  this.categoryService.getAll().subscribe({
+    next: (res) => {
+      if (res.success) {
+        this.categories = res.data;
+        console.log("عدد الأقسام:", this.categories.length);
+      } else {
+        this.categories = [];
+      }
+    },
+    error: () => {
+      this.categories = [];
+    }
+  });
 }
+
+  }
+
