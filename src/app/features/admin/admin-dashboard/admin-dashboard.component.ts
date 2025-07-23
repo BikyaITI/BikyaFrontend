@@ -1,15 +1,17 @@
-import { Component,  inject,  OnInit } from "@angular/core"
+import { Component, inject, OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { RouterModule } from "@angular/router"
 import { ICategory } from "../../../core/models/icategory";
 import { CategoryService } from "../../../core/services/category.service";
+import { ProductService } from "../../../core/services/product.service";
+import { IProduct } from "../../../core/models/product.model";
 
 @Component({
   selector: "app-admin-dashboard",
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './admin-dashboard.component.html',
-  
+
 })
 export class AdminDashboardComponent implements OnInit {
   stats = {
@@ -22,12 +24,15 @@ export class AdminDashboardComponent implements OnInit {
   categories: ICategory[] = [];
   recentProducts: any[] = []
   recentOrders: any[] = []
-  categoryService= inject(CategoryService)
+  categoryService = inject(CategoryService)
+  productService = inject(ProductService)
+  products: IProduct[] = [];
+
   ngOnInit(): void {
     this.loadRecentData()
     this.loadAllCategories()
   }
- 
+
 
 
   loadRecentData(): void {
@@ -44,21 +49,36 @@ export class AdminDashboardComponent implements OnInit {
       { id: 1003, totalAmount: 120.0, status: "Shipped" },
     ]
   }
-  loadAllCategories(){
-  this.categoryService.getAll().subscribe({
-    next: (res) => {
-      if (res.success) {
-        this.categories = res.data;
-        console.log("عدد الأقسام:", this.categories.length);
-      } else {
+  loadAllCategories() {
+    this.categoryService.getAll().subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.categories = res.data;
+          console.log("AllCategories: ", this.categories.length);
+        } else {
+          this.categories = [];
+        }
+      },
+      error: () => {
         this.categories = [];
       }
-    },
-    error: () => {
-      this.categories = [];
-    }
-  });
-}
-
+    });
   }
+  loadAllProducts() {
+    this.productService.getAllProducts().subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.products = res.data;
+          console.log("Allproducts: ", this.products.length);
+        } else {
+          this.products = [];
+        }
+      },
+      error: () => {
+        this.products
+      }
+    });
+  }
+
+}
 

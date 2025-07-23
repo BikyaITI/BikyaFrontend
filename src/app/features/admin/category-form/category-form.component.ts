@@ -28,6 +28,9 @@ export class CategoryFormComponent implements OnInit {
   isEditing = false;
   showConfirm = false;
   categoryIdToDelete: number | null = null;
+   currentPage = 1;
+  pageSize = 9;
+  totalPages = 0;
 
   //  Lifecycle hook
   ngOnInit(): void {
