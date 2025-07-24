@@ -6,7 +6,7 @@ import  { ProductService } from "../../../core/services/product.service"
 import  { AuthService } from "../../../core/services/auth.service"
 import  { OrderService } from "../../../core/services/order.service"
 import  { IProduct } from "../../../core/models/product.model"
-import  { User } from "../../../core/models/user.model"
+import { IUser } from "../../../core/models/user.model"
 
 @Component({
   selector: "app-product-detail",
@@ -298,7 +298,7 @@ export class ProductDetailComponent implements OnInit {
   product: IProduct | null = null
   relatedProducts: IProduct[] = []
   selectedImage = ""
-  currentUser: User | null = null
+  currentUser: IUser | null = null
   isLoading = true
   isPlacingOrder = false
 

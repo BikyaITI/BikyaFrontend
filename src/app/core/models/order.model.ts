@@ -1,5 +1,5 @@
 import  { IProduct } from "./product.model"
-import  { User } from "./user.model"
+import  { IUser} from "./user.model"
 
 export interface Order {
   id: number
@@ -11,8 +11,8 @@ export interface Order {
   status: OrderStatus
   createdAt: Date
   product: IProduct
-  buyer: User
-  seller: User
+  buyer: IUser
+  seller: IUser
   shippingInfo?: ShippingInfo
 }
 

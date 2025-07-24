@@ -2,7 +2,8 @@ import { Component,  OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { RouterModule,  Router } from "@angular/router"
 import  { AuthService } from "../../../core/services/auth.service"
-import  { User } from "../../../core/models/user.model"
+import { IUser } from "../../../core/models/user.model"
+
 
 @Component({
   selector: "app-navbar",
@@ -79,7 +80,7 @@ import  { User } from "../../../core/models/user.model"
   `,
 })
 export class NavbarComponent implements OnInit {
-  currentUser: User | null = null
+  currentUser: IUser | null = null
 
   constructor(
     private authService: AuthService,

@@ -6,9 +6,9 @@ import { Subject, takeUntil, combineLatest } from "rxjs"
 import { AuthService } from "../../core/services/auth.service"
 import { WalletService } from "../../core/services/wallet.service"
 import { WalletTransaction, WalletStats } from "../../core/models/wallet.model"
-import { User } from "../../core/models/user.model"
 import { OrderService } from '../../core/services/order.service';
 import { Order, OrderStatus } from '../../core/models/order.model';
+import { IUser } from "../../core/models/user.model";
 
 @Component({
   selector: "app-wallet",
@@ -20,7 +20,7 @@ import { Order, OrderStatus } from '../../core/models/order.model';
 export class WalletComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
-  currentUser: User | null = null
+  currentUser: IUser | null = null
   walletBalance = 0
   activeFilter = "all"
   isLoadingTransactions = false

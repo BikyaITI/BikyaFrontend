@@ -1,93 +1,28 @@
-<div class="container py-4">
-<h3 *ngIf="reviews.length > 0" class="mb-4 text-center">
-  Reviews for {{ reviews[0].seller.fullName }}
-</h3>
-
-  <!-- No reviews message -->
-  <div *ngIf="reviews.length === 0" class="alert alert-info text-center">
-  No reviews available.
+<div *ngIf="isLoading" class="text-center py-4">
+  <div class="spinner-border text-primary" role="status"></div>
 </div>
 
-
-  <!-- Review Cards -->
-  <div class="row g-4" *ngIf="reviews.length > 0">
-  <div *ngFor="let review of reviews" class="card mb-3">
-    <div class="card-body d-flex align-items-start">
-
-      <!-- Reviewer Image -->
-      <img 
-        [src]="review.reviewer.profileImageUrl || 'assets/default-user.png'" 
-        alt="Reviewer Image" 
-        class="rounded-circle me-3" 
-        width="50" 
-        height="50"
-        style="object-fit: cover;"
-      />
-
-      <div class="flex-grow-1">
-        <h5 class="card-title mb-1">
-          {{ review.reviewer.fullName }}
-          <span class="badge bg-success ms-2">{{ review.rating }} ★</span>
-        </h5>
-
-        <p class="card-text mb-2">{{ review.comment }}</p>
-        <p class="text-muted mb-1"><small>{{ review.createdAt | date: 'medium' }}</small></p>
-
-        <!-- ✅ Only show edit/delete if user is owner and order is completed -->
-        <div *ngIf="canEditOrDelete(review)" class="mt-2">
-          <button class="btn btn-sm btn-outline-primary me-2" (click)="onEdit(review)">Edit</button>
-          <button class="btn btn-sm btn-outline-danger" (click)="onDelete(review.id)">Delete</button>
+<div *ngIf="!isLoading && reviews.length > 0; else noReviews">
+  <div class="row g-3">
+    <div class="col-md-6" *ngFor="let review of reviews">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <strong>{{ review.reviewer.fullName }}</strong>
+            <span class="text-warning">
+              <ng-container *ngFor="let star of [].constructor(review.rating)">
+                <i class="bi bi-star-fill"></i>
+              </ng-container>
+            </span>
+          </div>
+          <p class="mb-1">{{ review.comment }}</p>
+          <small class="text-muted">{{ review.createdAt | date: 'short' }}</small>
         </div>
       </div>
-
     </div>
   </div>
 </div>
 
-</div>
-<!-- Review Cards -->
-<div *ngFor="let review of reviews" class="card mb-3">
-  <div class="card-body">
-    <h5 class="card-title">
-      {{ review.reviewer.fullName }}
-      <span class="badge bg-success ms-2">{{ review.rating }} ★</span>
-    </h5>
-    <p class="card-text">{{ review.comment }}</p>
-    <p class="text-muted"><small>{{ review.createdAt | date: 'medium' }}</small></p>
-
-    <!-- Show Edit/Delete only for review owner -->
-    <div *ngIf="canEditOrDelete(review)" class="mt-2">
-      <button class="btn btn-sm btn-outline-primary me-2" (click)="openEditModal(review)">Edit</button>
-      <button class="btn btn-sm btn-outline-danger" (click)="onDelete(review.id)">Delete</button>
-    </div>
-  </div>
-</div>
-
-
-<!-- 🔽 Edit Modal -->
-<div class="modal fade" tabindex="-1" id="editModal" #editModal>
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form [formGroup]="editForm" (ngSubmit)="submitEdit()">
-        <div class="modal-header">
-          <h5 class="modal-title">Edit Review</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label>Rating</label>
-            <input type="number" min="1" max="5" class="form-control" formControlName="rating" />
-          </div>
-          <div class="mb-3">
-            <label>Comment</label>
-            <textarea class="form-control" formControlName="comment"></textarea>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid">Save Changes</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
+<ng-template #noReviews>
+  <p class="text-muted">No reviews found.</p>
+</ng-template>

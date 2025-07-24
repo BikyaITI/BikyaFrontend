@@ -4,7 +4,8 @@ import { RouterModule } from "@angular/router"
 import { OrderService } from "../../../core/services/order.service"
 import { AuthService } from "../../../core/services/auth.service"
 import { Order, OrderStatus } from "../../../core/models/order.model"
-import { User } from "../../../core/models/user.model"
+import { IUser } from "../../../core/models/user.model"
+
 
 @Component({
   selector: "app-order-list",
@@ -17,7 +18,7 @@ export class OrderListComponent implements OnInit {
   allOrders: Order[] = []
   activeTab = "all"
   isLoading = true
-  currentUser: User | null = null
+  currentUser: IUser | null = null
   selectedOrder: Order | null = null
 
   constructor(

@@ -1,5 +1,5 @@
 import { ICategory } from "./icategory" 
-import  { User } from "./user.model" // Assuming User model is in user.model.ts
+import  { IUser } from "./user.model" // Assuming User model is in user.model.ts
 
 export interface IProduct {
   id: number
@@ -11,7 +11,7 @@ export interface IProduct {
   categoryId: number
   category: ICategory
   userId: number
-  user: User
+  user: IUser
   isApproved: boolean
   createdAt: Date
   images: IProductImage[]

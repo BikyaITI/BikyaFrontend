@@ -1,4 +1,4 @@
-export interface User {
+export interface IUser {
   id: number
   userName: string
   email: string
@@ -22,16 +22,22 @@ export interface RegisterRequest {
 export interface AuthResponse {
   token: string
   refreshToken: string
-  user: User
+  user: IUser
 }
 
-export interface UpdateProfileRequest {
+export interface IUpdateProfileRequest {
   fullName: string
   email: string
 }
 
-export interface ChangePasswordRequest {
+export interface IChangePasswordRequest {
   currentPassword: string
   newPassword: string
   confirmPassword: string
+}
+
+export interface IUserStats {
+  totalProducts: number;
+  totalOrders: number;
+  totalSales: number;
 }

@@ -159,27 +159,33 @@ export class LoginComponent {
     this.showPassword = !this.showPassword
   }
 
-  onSubmit(): void {
-    if (this.loginForm.valid) {
-      this.isLoading = true
-      this.errorMessage = ""
+ onSubmit(): void {
+  if (this.loginForm.valid) {
+    this.isLoading = true;
+    this.errorMessage = "";
 
-      const loginRequest: LoginRequest = this.loginForm.value
+    const loginRequest: LoginRequest = this.loginForm.value;
 
-      this.authService.login(loginRequest).subscribe({
-        next: (response) => {
-          this.isLoading = false
-          if (response.success) {
-            this.router.navigate(["/dashboard"])
+    this.authService.login(loginRequest).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response.success) {
+          const userId = response.data?.user.id; // تأكد إن ده المسار الصحيح للـ ID
+          if (userId) {
+            this.router.navigate(['/profile', userId]);
           } else {
-            this.errorMessage = response.message
+            this.errorMessage = "User ID not found in response.";
           }
-        },
-        error: (error) => {
-          this.isLoading = false
-          this.errorMessage = "Login failed. Please try again."
-        },
-      })
-    }
+        } else {
+          this.errorMessage = response.message;
+        }
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.errorMessage = "Login failed. Please try again.";
+      },
+    });
   }
+}
+
 }
