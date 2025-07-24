@@ -125,7 +125,7 @@ import { IUser } from "../../../core/models/user.model"
               </div>
 
               <!-- Product Stats -->
-              <div class="product-stats mt-3 pt-3 border-top">
+              <!-- <div class="product-stats mt-3 pt-3 border-top">
                 <div class="row text-center">
                   <div class="col-4">
                     <small class="text-muted d-block">Views</small>
@@ -140,7 +140,7 @@ import { IUser } from "../../../core/models/user.model"
                     <strong>{{product.inquiryCount || 0}}</strong>
                   </div>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>

@@ -9,22 +9,26 @@ export interface IProduct {
   isForExchange: boolean
   condition: string
   categoryId: number
-  category: ICategory
+  categoryName: string
   userId: number
   user: IUser
   isApproved: boolean
   createdAt: Date
   images: IProductImage[]
-  viewCount?: number
-  likeCount?: number
-  inquiryCount?: number
+
 }
 
 export interface IProductImage {
-  id: number
-  productId: number
+  // id: number
+  // productId: number
   imageUrl: string
   isMain: boolean
+}
+
+export interface Category {
+  id: number
+  name: string
+  description: string
 }
 
 export interface CreateProductRequest {
