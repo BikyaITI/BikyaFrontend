@@ -43,10 +43,21 @@ export const routes: Routes = [
     // canActivate: [AuthGuard],
   },
   {
+    path: "checkout",
+    loadComponent: () => import("./features/orders/checkout/checkout.component").then((m) => m.CheckoutComponent),
+    // canActivate: [AuthGuard],
+  },
+  {
     path: "orders",
     loadComponent: () => import("./features/orders/order-list/order-list.component").then((m) => m.OrderListComponent),
     // canActivate: [AuthGuard],
   },
+  {
+    path: 'admin/orders',
+    loadComponent: () => import("./features/orders/admin-orders/admin-orders.component").then((m) => m.AdminOrdersComponent),
+    // canActivate: [AdminGuard]
+  },
+
   {
     path: "profile",
     loadComponent: () => import("./features/profile/profile.component").then((m) => m.ProfileComponent),
@@ -55,12 +66,12 @@ export const routes: Routes = [
   {
     path: "wallet",
     loadComponent: () => import("./features/wallet/wallet.component").then((m) => m.WalletComponent),
-   // canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
   },
-    {
+  {
     path: "wallet/payment",
     loadComponent: () => import("./features/payment/payment.component").then((m) => m.PaymentComponent),
-   // canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
   },
   {
     path: "admin",

@@ -1,10 +1,10 @@
-import { Component,  OnInit } from "@angular/core"
+import { Component, OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { RouterModule } from "@angular/router"
 import { FormsModule } from "@angular/forms"
-import  { ProductService } from "../../../core/services/product.service"
-import  { CategoryService } from "../../../core/services/category.service"
-import  { IProduct} from "../../../core/models/product.model"
+import { ProductService } from "../../../core/services/product.service"
+import { CategoryService } from "../../../core/services/category.service"
+import { IProduct } from "../../../core/models/product.model"
 import { ICategory } from "../../../core/models/icategory"
 
 @Component({
@@ -255,7 +255,7 @@ export class ProductListComponent implements OnInit {
   constructor(
     private productService: ProductService,
     private categoryService: CategoryService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadProducts()
@@ -457,4 +457,5 @@ export class ProductListComponent implements OnInit {
       this.currentPage = page
     }
   }
+
 }

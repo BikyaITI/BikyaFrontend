@@ -5,6 +5,7 @@ export interface IUser {
   fullName: string
   isActive: boolean
   createdAt: Date
+  role: string[]
 }
 
 export interface LoginRequest {
