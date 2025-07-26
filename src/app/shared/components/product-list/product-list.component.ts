@@ -15,8 +15,12 @@ export class ProductListComponent {
   products = input<IProduct[]>();
   constructor() {
   console.log("ProductListComponent initialized with products:", this.products());
-  
+
 }
+//  get productsArray(): IProduct[] {
+//     const value = this.products();
+//     return Array.isArray(value) ? value : [];
+//   }
 getMainImage(product: IProduct): string {
     const mainImage = product.images?.find((img) => img.isMain)
    return mainImage && mainImage.imageUrl
@@ -36,7 +40,7 @@ getMainImage(product: IProduct): string {
   }
 
 
- 
+
 
 
   addToCart(product: IProduct): void {

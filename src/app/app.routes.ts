@@ -99,6 +99,43 @@ export const routes: Routes = [
     path: "shipping/calculate",
     loadComponent: () => import("./features/shipping/calculate-shipping-cost/calculate-shipping-cost.component").then(m => m.CalculateShippingCostComponent)
   },
+
+ {
+    path: "verify-email",
+    loadComponent: () => import("./features/auth/verify-email/verify-email.component").then((m) => m.VerifyEmailComponent),
+  },
+  {
+    path: "forgot-password",
+    loadComponent: () => import("./features/auth/forgot-password/forgot-password.component").then(m => m.ForgotPasswordComponent),
+
+  },
+  {
+    path: "reset-password",
+    loadComponent: () => import("./features/auth/reset-password/reset-password.component").then(m => m.ResetPasswordComponent),
+  },
+  {
+    path: "logout",
+    loadComponent: () => import("./features/auth/logout/logout.component").then(m => m.LogoutComponent),
+  },
+ {
+    path: "profile/edit",
+    loadComponent: () => import("./features/profile/profile-edit/profile-edit.component").then(m => m.ProfileEditComponent),
+  },
+  {
+    path: "profile/change-password",
+    loadComponent: () => import("./features/profile/change-password/change-password.component").then(m => m.ChangePasswordComponent),
+  },
+   {
+    path: "home",
+    loadComponent: () => import("./features/home/home.component").then((m) => m.HomeComponent),
+    // لا يوجد canActivate هنا، الصفحة متاحة للجميع
+  },
+
+
+
+
+
+
   {
     path: "**",
     redirectTo: "",

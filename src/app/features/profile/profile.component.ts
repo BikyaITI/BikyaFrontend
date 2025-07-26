@@ -112,7 +112,7 @@ export class ProfileComponent implements OnInit {
       email: this.profileForm.get("email")?.value,
     };
 
-    this.userService.updateProfile(this.currentUser.id, updateRequest).subscribe({
+    this.userService.updateProfile(updateRequest).subscribe({
       next: () => {
         this.isUpdatingProfile = false;
         this.profileSuccessMessage = "Profile updated successfully!";
@@ -143,7 +143,7 @@ changePassword(): void {
 
     console.log('Sending to API:', changePasswordRequest);
 
-    this.userService.changePassword(this.currentUser.id, changePasswordRequest).subscribe({
+    this.userService.changePassword(changePasswordRequest).subscribe({
       next: () => {
         this.isChangingPassword = false;
         this.passwordSuccessMessage = "Password changed successfully!";
@@ -163,7 +163,7 @@ changePassword(): void {
 
   deactivateAccount(): void {
   if (this.currentUser && confirm("Are you sure you want to deactivate your account?")) {
-    this.userService.deactivateAccount(this.currentUser.id).subscribe({
+    this.userService.deactivateAccount().subscribe({
       next: () => {
         alert("Your account has been deactivated.");
         this.authService.logout(); // أو أي طريقة عندك للخروج

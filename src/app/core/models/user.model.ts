@@ -5,7 +5,7 @@ export interface IUser {
   fullName: string
   isActive: boolean
   createdAt: Date
-  role: string[]
+  roles?: string[]
 }
 
 export interface LoginRequest {
@@ -20,12 +20,20 @@ export interface RegisterRequest {
   fullName: string
 }
 
+// export interface AuthResponse {
+//   token: string
+//   refreshToken: string
+//   user: IUser
+// }
 export interface AuthResponse {
-  token: string
-  refreshToken: string
-  user: IUser
+  token: string;
+  refreshToken: string;
+  userId?: number;
+  email?: string;
+  fullName?: string;
+  userName?: string;
+  user?: IUser;
 }
-
 export interface IUpdateProfileRequest {
   fullName: string
   email: string
