@@ -1,8 +1,9 @@
-import { Component,  OnInit } from "@angular/core"
+import { AfterViewInit, Component,  ElementRef,  OnInit, ViewChild } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { RouterModule,  Router } from "@angular/router"
 import  { AuthService } from "../../../core/services/auth.service"
 import { IUser } from "../../../core/models/user.model"
+import { Dropdown } from "bootstrap"
 
 
 @Component({
@@ -54,19 +55,76 @@ import { IUser } from "../../../core/models/user.model"
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
               </a>
 
-              <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                  <i class="fas fa-user me-1"></i>{{currentUser.fullName}}
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" routerLink="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
-                  <li><a class="dropdown-item" routerLink="/my-products"><i class="fas fa-box me-2"></i>My Products</a></li>
-                  <li><a class="dropdown-item" routerLink="/orders"><i class="fas fa-receipt me-2"></i>Orders</a></li>
-                  <li><a class="dropdown-item" routerLink="/wallet"><i class="fas fa-wallet me-2"></i>Wallet</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#" (click)="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                </ul>
-              </div>
+            <!-- <div class="dropdown">
+  <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+          data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="fas fa-user me-1"></i>{{ currentUser.fullName }}
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <li>
+      <a class="dropdown-item" [routerLink]="['/profile', currentUser.id]">
+        <i class="fas fa-user me-2"></i>Profile
+      </a>
+    </li>
+    <li><a class="dropdown-item" routerLink="/my-products"><i class="fas fa-box me-2"></i>My Products</a></li>
+    <li><a class="dropdown-item" routerLink="/orders"><i class="fas fa-receipt me-2"></i>Orders</a></li>
+    <li><a class="dropdown-item" routerLink="/wallet"><i class="fas fa-wallet me-2"></i>Wallet</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li>
+      <a class="dropdown-item text-danger" href="#" (click)="logout()">
+        <i class="fas fa-sign-out-alt me-2"></i>Logout
+      </a>
+    </li>
+  </ul>
+          </div>
+           -->
+            <div class="dropdown">
+  <button class="btn btn-light rounded-pill px-4 py-2 shadow-sm d-flex align-items-center gap-2"
+          type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="fas fa-user-circle fa-lg text-primary"></i>
+    <span class="fw-semibold">{{ currentUser.fullName }}</span>
+    <i class="fas fa-chevron-down ms-2"></i>
+  </button>
+
+  <ul class="dropdown-menu dropdown-menu-end shadow-sm mt-2 rounded-4" aria-labelledby="dropdownMenuButton">
+    <li><h6 class="dropdown-header text-muted small">My Account</h6></li>
+
+    <li>
+      <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/profile', currentUser.id]">
+        <i class="fas fa-user text-primary"></i> <span class="fw-medium">Profile</span>
+      </a>
+    </li>
+
+    <li>
+      <a class="dropdown-item d-flex align-items-center gap-2 py-2" routerLink="/my-products">
+        <i class="fas fa-baby-carriage text-success"></i> <span class="fw-medium">My Products</span>
+      </a>
+    </li>
+
+    <li>
+      <a class="dropdown-item d-flex align-items-center gap-2 py-2" routerLink="/orders">
+        <i class="fas fa-receipt text-info"></i> <span class="fw-medium">Orders</span>
+      </a>
+    </li>
+
+    <li>
+      <a class="dropdown-item d-flex align-items-center gap-2 py-2" routerLink="/wallet">
+        <i class="fas fa-wallet text-warning"></i> <span class="fw-medium">Wallet</span>
+      </a>
+    </li>
+
+    <li><hr class="dropdown-divider my-1"></li>
+
+    <li>
+      <a class="dropdown-item d-flex align-items-center gap-2 py-2 text-danger fw-medium cursor-pointer" href="/logout" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+
             </ng-container>
 
             <ng-template #loginLinks>
@@ -79,22 +137,31 @@ import { IUser } from "../../../core/models/user.model"
     </nav>
   `,
 })
-export class NavbarComponent implements OnInit {
-  currentUser: IUser | null = null
+export class NavbarComponent implements OnInit , AfterViewInit{
+   @ViewChild('dropdownBtn', { static: false }) dropdownBtn?: ElementRef;
 
+  currentUser: IUser | null = null
+   
   constructor(
     private authService: AuthService,
     private router: Router,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user
     })
   }
+ ngAfterViewInit(): void {
+  if (this.dropdownBtn) {
+    new Dropdown(this.dropdownBtn.nativeElement);
+  }
+}
+
 
   logout(): void {
     this.authService.logout()
     this.router.navigate(["/"])
   }
 }
+

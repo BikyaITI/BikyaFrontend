@@ -17,17 +17,27 @@ export interface ICategory {
   subCategories: SubCategory[];
 }
 export interface CreateCategoryDTO {
+  id:number;
   name: string;
   description?: string;
   iconUrl?: string;
   parentCategoryId?: number;
   parentName?: string;
 }
+export interface CategoryDTO {
+  id: number;
+  name: string;
+  description?: string;
+  iconUrl?: string;
+  parentCategoryId?: number;
+  parentCategoryName?: string;     // optional display field
+  subCategories?: CategoryDTO[];   // for nested display
+}
 
 export interface PaginatedCategoryResponse {
-  currentPage: number;
-  pageSize: number;
+  items: CreateCategoryDTO[];
   totalCount: number;
   totalPages: number;
-  data: ICategory[];
+  currentPage: number;
+  pageSize: number;
 }

@@ -30,11 +30,11 @@ export class ProductService {
   }
 
   createProduct(product: CreateProductRequest): Observable<ApiResponse<boolean>> {
-    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/Add`, product)
+    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/add`, product)
   }
 
   createProductWithImages(formData: FormData): Observable<ApiResponse<boolean>> {
-    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/AddWithImages`, formData)
+    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/With-images`, formData)
   }
 
   updateProduct(id: number, product: CreateProductRequest): Observable<ApiResponse<boolean>> {

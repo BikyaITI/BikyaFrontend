@@ -12,7 +12,7 @@ import { environment } from '../../../environments/environment';
 })
 export class CategoryService {
 
-  private baseUrl = `${environment.apiUrl}/api/Category`; // ✅ غيّرها حسب API بتاعتك
+  private baseUrl = `${environment.apiUrl}/api/Category/Category`; // ✅ غيّرها حسب API بتاعتك
 
   constructor(private http: HttpClient) {}
 
@@ -33,7 +33,7 @@ getByIdWithProducts(id: number): Observable<ApiResponse<{ category: ICategory, p
 }
 
 create(category: ICategory): Observable<ApiResponse<ICategory>> {
-  return this.http.post<ApiResponse<ICategory>>(this.baseUrl, category);
+  return this.http.post<ApiResponse<ICategory>>(`${this.baseUrl}`, category);
 }
 
 update(id: number, category: ICategory): Observable<ApiResponse<ICategory>> {
