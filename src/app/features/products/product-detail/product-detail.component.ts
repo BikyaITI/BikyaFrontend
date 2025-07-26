@@ -8,10 +8,11 @@ import { AuthService } from '../../../core/services/auth.service';
 import { OrderService } from '../../../core/services/order.service';
 import { ProductService } from '../../../core/services/product.service';
 import { environment } from '../../../../environments/environment';
+import { ProductListComponent } from '../../../shared/components/product-list/product-list.component';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule ,ProductListComponent],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss'
 })
@@ -39,9 +40,9 @@ export class ProductDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe((user) => {
-      this.currentUser = user
-    })
+    // this.authService.currentUser$.subscribe((user) => {
+    //   this.currentUser = user
+    // })
 
     this.route.params.subscribe((params) => {
       const id = +params["id"]
@@ -72,11 +73,15 @@ export class ProductDetailComponent implements OnInit {
 
   loadRelatedProducts(): void {
     if (this.product) {
+      console.log("Loading related products for category:", this.product.categoryId)
       this.productService.getProductsByCategory(this.product.categoryId).subscribe({
         next: (response) => {
           if (response.success) {
-            this.relatedProducts = response.data.filter((p) => p.id !== this.product!.id).slice(0, 4)
+            this.relatedProducts = response.data.filter((p) => p.id !== this.product!.id).slice(0, 5)
           }
+        },
+        error: (err) => {
+          console.error("Failed to load related products:", err)
         },
       })
     }
@@ -101,36 +106,36 @@ export class ProductDetailComponent implements OnInit {
     return this.product.price * quantity
   }
 
-  placeOrder(): void {
-    if (this.orderForm.valid && this.product) {
-      this.isPlacingOrder = true
+  // placeOrder(): void {
+  //   if (this.orderForm.valid && this.product) {
+  //     this.isPlacingOrder = true
 
-      const orderRequest = {
-        productId: this.product.id,
-        quantity: this.orderForm.get("quantity")?.value,
-        shippingAddress: this.orderForm.get("shippingAddress")?.value,
-      }
+  //     const orderRequest = {
+  //       productId: this.product.id,
+  //       quantity: this.orderForm.get("quantity")?.value,
+  //       shippingAddress: this.orderForm.get("shippingAddress")?.value,
+  //     }
 
-      this.orderService.createOrder(orderRequest).subscribe({
-        next: (response) => {
-          this.isPlacingOrder = false
-          if (response.success) {
-            // Close modal and show success message
-            const modal = document.getElementById("orderModal")
-            if (modal) {
-              const bsModal = (window as any).bootstrap.Modal.getInstance(modal)
-              bsModal?.hide()
-            }
-            alert("Order placed successfully!")
-          }
-        },
-        error: () => {
-          this.isPlacingOrder = false
-          alert("Failed to place order. Please try again.")
-        },
-      })
-    }
-  }
+  //     this.orderService.createOrder(orderRequest).subscribe({
+  //       next: (response) => {
+  //         this.isPlacingOrder = false
+  //         if (response.success) {
+  //           // Close modal and show success message
+  //           const modal = document.getElementById("orderModal")
+  //           if (modal) {
+  //             const bsModal = (window as any).bootstrap.Modal.getInstance(modal)
+  //             bsModal?.hide()
+  //           }
+  //           alert("Order placed successfully!")
+  //         }
+  //       },
+  //       error: () => {
+  //         this.isPlacingOrder = false
+  //         alert("Failed to place order. Please try again.")
+  //       },
+  //     })
+  //   }
+  // }
 
   deleteProduct(): void {
     if (this.product && confirm("Are you sure you want to delete this product?")) {
@@ -141,8 +146,8 @@ export class ProductDetailComponent implements OnInit {
             // Navigate back to products list
           }
         },
-        error: () => {
-          alert("Failed to delete product.")
+        error: (err) => {
+          alert("Failed to delete product."+err.message)
         },
       })
     }
@@ -170,5 +175,8 @@ export class ProductDetailComponent implements OnInit {
       default:
         return "bg-secondary"
     }
+  }
+  showRelatedProducts(): boolean|null {
+    return this.relatedProducts.length > 0 && this.currentUser && this.currentUser.role !== 'admin';
   }
 }

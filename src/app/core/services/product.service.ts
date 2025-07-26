@@ -26,7 +26,7 @@ export class ProductService {
   }
 
   getProductsByCategory(categoryId: number): Observable<ApiResponse<IProduct[]>> {
-    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/CategoryProducts/${categoryId}`)
+    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/category/${categoryId}`)
   }
 
   createProduct(product: CreateProductRequest): Observable<ApiResponse<boolean>> {
@@ -47,7 +47,7 @@ export class ProductService {
 
   // Admin methods
   getAllProducts(): Observable<ApiResponse<IProduct[]>> {
-    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/AllProduct`)
+    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/all`)
   }
 
   getNotApprovedProducts(): Observable<ApiResponse<IProduct[]>> {

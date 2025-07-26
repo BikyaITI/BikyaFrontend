@@ -12,6 +12,7 @@ export interface IProduct {
   categoryName: string
   userId: number
   userName: string
+  status: string
   isApproved: boolean
   createdAt: Date
   images: IProductImage[]

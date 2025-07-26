@@ -1,0 +1,78 @@
+  <div class="container mt-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2><i class="bi bi-box"></i>All Products</h2>
+          <p class="text-muted">Manage All product listings for admin</p>
+        </div>
+     
+      </div>
+
+      <!-- Filter Tabs -->
+      <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+          <button
+            class="nav-link"
+            [class.active]="activeTab === 'all'"
+            (click)="setActiveTab('all')">
+            All Products ({{allProducts.length}})
+          </button>
+        </li>
+        <li class="nav-item">
+          <button
+            class="nav-link"
+            [class.active]="activeTab === 'approved'"
+            (click)="setActiveTab('approved')">
+            <i class="bi bi-check-circle text-success"></i>
+            Approved ({{approvedProducts.length}})
+          </button>
+        </li>
+        <li class="nav-item">
+          <button
+            class="nav-link"
+            [class.active]="activeTab === 'pending'"
+            (click)="setActiveTab('pending')">
+            <i class="bi bi-clock text-warning"></i>
+            Pending ({{pendingProducts.length}})
+          </button>
+        </li>
+            <li class="nav-item">
+          <button
+            class="nav-link"
+            [class.active]="activeTab === 'inProcess'"
+            (click)="setActiveTab('inProcess')">
+            <i class="bi bi-clock text-primary"></i>
+            In Process ({{inProcessProducts.length}})
+          </button>
+        </li>
+      </ul>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-spinner">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="row" *ngIf="!isLoading">
+
+  <div class="col-lg-3 col-md-6 mb-4"  *ngFor="let product of getFilteredProducts()">
+       <app-product-list  [product]="product" [role]="'admin'"></app-product-list>
+       </div>
+       </div>
+        <div *ngIf="!isLoading && getFilteredProducts().length === 0" class="text-center py-5">
+        <div class="empty-state">
+          <i class="bi bi-box-seam display-1 text-muted mb-3"></i>
+          <h3>No products found</h3>
+          <p class="text-muted mb-4">
+            <span *ngIf="activeTab === 'all'">You haven't listed any products yet.</span>
+            <span *ngIf="activeTab === 'approved'">You don't have any approved products.</span>
+            <span *ngIf="activeTab === 'pending'">You don't have any pending products.</span>
+          </p>
+          <a routerLink="/add-product" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> List Your First Product
+          </a>
+        </div>
+      </div>
+          </div>
+  

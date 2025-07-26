@@ -4,13 +4,14 @@ import { ReactiveFormsModule,  FormBuilder,  FormGroup, Validators } from "@angu
 import  { Router } from "@angular/router"
 import  { ProductService } from "../../../core/services/product.service"
 import  { CategoryService } from "../../../core/services/category.service"
-import  { Category } from "../../../core/models/product.model"
+import  { IProduct } from "../../../core/models/product.model"
 import { ICategory } from "../../../core/models/icategory"
-
+import { map } from 'rxjs/operators';
+import { environment } from "../../../../environments/environment"
 @Component({
   selector: 'app-add-product',
    imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './add-product.component.html',
+templateUrl: './add-product.component.html',
   styleUrl: './add-product.component.scss'
 })
 export class AddProductComponent implements OnInit {
@@ -24,7 +25,7 @@ export class AddProductComponent implements OnInit {
   submitted = false
   errorMessage = ""
   successMessage = ""
-
+  product:IProduct | null = null
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
@@ -43,18 +44,61 @@ export class AddProductComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadCategories()
+    this.loadProduct()
   }
-
-  loadCategories(): void {
-    this.categoryService.getAll().subscribe({
+  loadProduct(): void {
+    this.productService.getProductById(1).subscribe({
       next: (response) => {
         if (response.success) {
-          this.categories = response.data
+          const product = response.data
+          this.productForm.patchValue({
+            title: product.title,
+            description: product.description,
+            price: product.price,
+            categoryId: product.categoryId,
+            condition: product.condition,
+            isForExchange: product.isForExchange,
+          })
+          // Load main image and additional images if available
+          if (product.images) {
+            this.mainImagePreview = this.getMainImage(product)
+          }
+          if (product.images && product.images.length > 1) {
+            this.additionalImagePreviews = this.getAdditionalImages(product)
+          }
+        } else {
+          console.error("Failed to load product:", response.message)
         }
-      },
+      }
     })
   }
 
+  loadCategories(): void {
+  this.categoryService.getAll().subscribe({
+    next: (response) => {
+      if (response.success) {
+        console.log("Loaded categories:", response.data); // 👈 See the categories
+        this.categories = response.data;
+      } else {
+        console.warn("Failed to load categories:", response.message);
+      }
+    },
+    error: (err) => {
+      console.error("Error loading categories:", err); // 👈 Handle error if request fails
+    }
+  });
+}
+
+  getMainImage(product: IProduct): string  {
+        const mainImage = product.images?.find((img) => img.isMain)
+       return mainImage && mainImage.imageUrl
+        ? `${environment.apiUrl}${mainImage.imageUrl}`
+        : 'product.png';
+  }
+  getAdditionalImages(product: IProduct): string[] {
+    const image = product.images.filter(image => !image.isMain)
+    return image.length > 0 ? image.map(i => `${environment.apiUrl}${i.imageUrl}`):[];
+  } 
   onMainImageSelected(event: any): void {
     const file = event.target.files[0]
     if (file) {

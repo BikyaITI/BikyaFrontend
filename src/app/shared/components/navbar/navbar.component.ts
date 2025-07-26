@@ -89,6 +89,11 @@ export class NavbarComponent implements OnInit {
   ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user
+      if (user) {
+        console.log("Current User:", user);
+      } else {
+        console.log("No user is currently logged in.");
+      }
     })
   }
 

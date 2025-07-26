@@ -12,9 +12,10 @@ import{environment} from '../../../../environments/environment';
 })
 export class ProductListComponent {
 
-  products = input<IProduct[]>();
+  product = input<IProduct>();
+  role = input<string>();
   constructor() {
-  console.log("ProductListComponent initialized with products:", this.products());
+  console.log("ProductListComponent initialized with products:", this.product());
   
 }
 getMainImage(product: IProduct): string {
@@ -39,13 +40,27 @@ getMainImage(product: IProduct): string {
  
 
 
-  addToCart(product: IProduct): void {
+  buy(product: IProduct): void {
     // Implement add to cart logic
-    console.log("Added to cart:", product)
+    console.log("Added to buy:", product)
   }
 
   addToWishlist(product: IProduct): void {
     // Implement add to wishlist logic
     console.log("Added to wishlist:", product)
   }
+
+  editProduct(product: IProduct): void {
+    // Navigate to edit product page
+    // For now, just show an alert
+    alert("Edit functionality will be implemented")
+  }
+
+  deleteProduct(product: IProduct): void {
+    // this.productToDelete = product
+    // const modal = new (window as any).bootstrap.Modal(document.getElementById("deleteModal"))
+    // modal.show()
+    alert("Delete functionality will be implemented")
+  }
+
 }
