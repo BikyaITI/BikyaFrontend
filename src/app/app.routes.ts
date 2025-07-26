@@ -43,10 +43,21 @@ export const routes: Routes = [
     // canActivate: [AuthGuard],
   },
   {
+    path: "checkout",
+    loadComponent: () => import("./features/orders/checkout/checkout.component").then((m) => m.CheckoutComponent),
+    // canActivate: [AuthGuard],
+  },
+  {
     path: "orders",
     loadComponent: () => import("./features/orders/order-list/order-list.component").then((m) => m.OrderListComponent),
     // canActivate: [AuthGuard],
   },
+  {
+    path: 'admin/orders',
+    loadComponent: () => import("./features/orders/admin-orders/admin-orders.component").then((m) => m.AdminOrdersComponent),
+    // canActivate: [AdminGuard]
+  },
+
   {
     path: "profile",
     loadComponent: () => import("./features/profile/profile.component").then((m) => m.ProfileComponent),
@@ -55,12 +66,12 @@ export const routes: Routes = [
   {
     path: "wallet",
     loadComponent: () => import("./features/wallet/wallet.component").then((m) => m.WalletComponent),
-   // canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
   },
-    {
+  {
     path: "wallet/payment",
     loadComponent: () => import("./features/payment/payment.component").then((m) => m.PaymentComponent),
-   // canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
   },
   {
     path: "admin",
@@ -88,6 +99,43 @@ export const routes: Routes = [
     path: "shipping/calculate",
     loadComponent: () => import("./features/shipping/calculate-shipping-cost/calculate-shipping-cost.component").then(m => m.CalculateShippingCostComponent)
   },
+
+ {
+    path: "verify-email",
+    loadComponent: () => import("./features/auth/verify-email/verify-email.component").then((m) => m.VerifyEmailComponent),
+  },
+  {
+    path: "forgot-password",
+    loadComponent: () => import("./features/auth/forgot-password/forgot-password.component").then(m => m.ForgotPasswordComponent),
+
+  },
+  {
+    path: "reset-password",
+    loadComponent: () => import("./features/auth/reset-password/reset-password.component").then(m => m.ResetPasswordComponent),
+  },
+  {
+    path: "logout",
+    loadComponent: () => import("./features/auth/logout/logout.component").then(m => m.LogoutComponent),
+  },
+ {
+    path: "profile/edit",
+    loadComponent: () => import("./features/profile/profile-edit/profile-edit.component").then(m => m.ProfileEditComponent),
+  },
+  {
+    path: "profile/change-password",
+    loadComponent: () => import("./features/profile/change-password/change-password.component").then(m => m.ChangePasswordComponent),
+  },
+   {
+    path: "home",
+    loadComponent: () => import("./features/home/home.component").then((m) => m.HomeComponent),
+    // لا يوجد canActivate هنا، الصفحة متاحة للجميع
+  },
+
+
+
+
+
+
   {
     path: "**",
     redirectTo: "",

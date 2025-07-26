@@ -4,10 +4,10 @@ import { RouterModule } from "@angular/router"
 import  { AuthService } from "../../core/services/auth.service"
 import  { ProductService } from "../../core/services/product.service"
 import  { OrderService } from "../../core/services/order.service"
-import  { User } from "../../core/models/user.model"
 import  { IProduct} from "../../core/models/product.model"
 import  { Order } from "../../core/models/order.model"
 import { CategoryService } from "../../core/services/category.service"
+import { IUser } from "../../core/models/user.model"
 
 @Component({
   selector: "app-dashboard",
@@ -248,7 +248,7 @@ import { CategoryService } from "../../core/services/category.service"
   ],
 })
 export class DashboardComponent implements OnInit {
-  currentUser: User | null = null
+  currentUser: IUser | null = null
   recentProducts: IProduct[] = []
   recentOrders: Order[] = []
   recentActivity: any[] = []

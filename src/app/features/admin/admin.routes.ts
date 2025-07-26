@@ -22,6 +22,7 @@ export const adminRoutes: Routes = [
     {
     path: "categories",
     loadComponent: () => import("./category-form/category-form.component").then((m) => m.CategoryFormComponent),
-    
+
   },
+  
 ]

@@ -1,5 +1,5 @@
-import  { Product } from "./product.model"
-import  { User } from "./user.model"
+import { IProduct } from "./product.model"
+import { IUser } from "./user.model"
 
 export interface ExchangeRequest {
   id: number
@@ -10,10 +10,10 @@ export interface ExchangeRequest {
   status: ExchangeStatus
   message: string
   createdAt: Date
-  requestedProduct: Product
-  offeredProduct: Product
-  requester: User
-  owner: User
+  requestedProduct: IProduct
+  offeredProduct: IProduct
+  requester: IUser
+  owner: IUser
 }
 
 export enum ExchangeStatus {

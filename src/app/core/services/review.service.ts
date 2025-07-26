@@ -18,6 +18,11 @@ getReviewsBySellerId(sellerId: number): Observable<ApiResponse<IReview[]>> {
   return this.http.get<ApiResponse<IReview[]>>(`${this.baseUrl}/Seller/${sellerId}`);
 }
 
+getReviewsByUser(userId: number): Observable<ApiResponse<IReview[]>> {
+  return this.http.get<ApiResponse<IReview[]>>(`${this.baseUrl}/User/${userId}`);
+}
+
+
 // Create a review
 createReview(review: ICreateReview): Observable<ApiResponse<IReview>> {
   return this.http.post<ApiResponse<IReview>>(this.baseUrl, review);
@@ -36,6 +41,10 @@ deleteReview(reviewId: number): Observable<ApiResponse<null>> {
 // Get single review
 getReviewById(id: number): Observable<ApiResponse<IReview>> {
   return this.http.get<ApiResponse<IReview>>(`${this.baseUrl}/${id}`);
+}
+// get Average of Rating
+getAverageRating(sellerId: number): Observable<ApiResponse<number>> {
+  return this.http.get<ApiResponse<number>>(`${this.baseUrl}/AverageRating/${sellerId}`);
 }
 
 }

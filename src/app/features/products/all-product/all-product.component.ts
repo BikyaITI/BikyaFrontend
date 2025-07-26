@@ -11,7 +11,7 @@ import { ProductListComponent } from '../../../shared/components/product-list/pr
 
 @Component({
   selector: 'app-all-product',
-  imports: [CommonModule, RouterModule, FormsModule,ProductListComponent],
+  imports: [CommonModule, RouterModule, FormsModule, ProductListComponent],
   templateUrl: './all-product.component.html',
   styleUrl: './all-product.component.scss'
 })
@@ -36,7 +36,7 @@ export class AllProductComponent implements OnInit {
   constructor(
     private productService: ProductService,
     private categoryService: CategoryService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadProducts()
@@ -90,7 +90,7 @@ export class AllProductComponent implements OnInit {
     // this.applyFilters()
   }
 
- onMinPriceChange(event: any): void {
+  onMinPriceChange(event: any): void {
     this.minPrice = Number.parseInt(event.target.value)
     // this.applyFilters()
   }
@@ -130,7 +130,7 @@ export class AllProductComponent implements OnInit {
 
     // Category filter
     if (this.selectedCategoryIds.length > 0) {
-      filtered = filtered.filter((product) => this.selectedCategoryIds.includes(product.categoryId))
+      filtered = filtered.filter((product) => this.selectedCategoryIds.includes(product.category.id))
     }
 
     // Condition filter
@@ -192,7 +192,7 @@ export class AllProductComponent implements OnInit {
     this.applyFilters()
   }
 
-  
+
 
   getPageNumbers(): number[] {
     const pages = []

@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { IProduct } from '../../../core/models/product.model';
-import { User } from '../../../core/models/user.model';
+import { IUser } from '../../../core/models/user.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { OrderService } from '../../../core/services/order.service';
 import { ProductService } from '../../../core/services/product.service';
@@ -20,7 +20,7 @@ export class ProductDetailComponent implements OnInit {
   product: IProduct | null = null
   relatedProducts: IProduct[] = []
   selectedImage = ""
-  currentUser: User | null = null
+  currentUser: IUser | null = null
   isLoading = true
   isPlacingOrder = false
 
@@ -46,10 +46,10 @@ export class ProductDetailComponent implements OnInit {
 
     this.route.params.subscribe((params) => {
       const id = +params["id"]
-        if (!id || isNaN(id)) {
-    alert("Invalid product ID.")
-    return
-  }
+      if (!id || isNaN(id)) {
+        alert("Invalid product ID.")
+        return
+      }
       this.loadProduct(id)
     })
   }
@@ -93,9 +93,9 @@ export class ProductDetailComponent implements OnInit {
 
   getMainImage(product: IProduct): string {
     const mainImage = product.images?.find((img) => img.isMain)
-     return mainImage && mainImage.imageUrl
-    ? `${environment.apiUrl}${mainImage.imageUrl}`
-    : 'product.png';
+    return mainImage && mainImage.imageUrl
+      ? `${environment.apiUrl}${mainImage.imageUrl}`
+      : 'product.png';
   }
   GetImage(imageUrl: string): string {
     return imageUrl ? `${environment.apiUrl}${imageUrl}` : 'product.png';
@@ -116,6 +116,26 @@ export class ProductDetailComponent implements OnInit {
   //       shippingAddress: this.orderForm.get("shippingAddress")?.value,
   //     }
 
+      // this.orderService.createOrder(orderRequest).subscribe({
+      //   next: (response) => {
+      //     this.isPlacingOrder = false
+      //     if (response.success) {
+      //       // Close modal and show success message
+      //       const modal = document.getElementById("orderModal")
+      //       if (modal) {
+      //         const bsModal = (window as any).bootstrap.Modal.getInstance(modal)
+      //         bsModal?.hide()
+      //       }
+      //       alert("Order placed successfully!")
+      //     }
+      //   },
+      //   error: () => {
+      //     this.isPlacingOrder = false
+      //     alert("Failed to place order. Please try again.")
+      //   },
+      // })
+    
+  
   //     this.orderService.createOrder(orderRequest).subscribe({
   //       next: (response) => {
   //         this.isPlacingOrder = false
@@ -160,13 +180,13 @@ export class ProductDetailComponent implements OnInit {
   }
   EditProduct(): void {
     if (this.product) {
-    
+
       // this.router.navigate(['/edit-product', this.product.id]);
       alert("Navigate to edit product page")
     }
   }
 
-    getConditionBadgeClass(condition: string): string {
+  getConditionBadgeClass(condition: string): string {
     switch (condition.toLowerCase()) {
       case "new":
         return "bg-primary"

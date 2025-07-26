@@ -1,0 +1,34 @@
+.order-card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.order-card:hover {
+    transform: translateY(-2px);
+}
+
+.nav-tabs .nav-link {
+    color: #6c757d;
+    border: none;
+    border-bottom: 2px solid transparent;
+}
+
+.nav-tabs .nav-link.active {
+    color: #007bff;
+    border-bottom-color: #007bff;
+    background-color: transparent;
+}
+
+.empty-state {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.btn-group-vertical .btn,
+.form-select {
+    margin-bottom: 0.25rem;
+}
+
+.btn-group-vertical .btn:last-child,
+.form-select:last-child {
+    margin-bottom: 0;
+}

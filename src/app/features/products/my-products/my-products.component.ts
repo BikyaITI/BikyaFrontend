@@ -4,10 +4,10 @@ import { RouterModule } from "@angular/router"
 import  { ProductService } from "../../../core/services/product.service"
 import  { AuthService } from "../../../core/services/auth.service"
 
-import  { User } from "../../../core/models/user.model"
 import { IProduct } from "../../../core/models/product.model"
 import { environment } from "../../../../environments/environment"
 import { ProductListComponent } from "../../../shared/components/product-list/product-list.component"
+import { IUser } from "../../../core/models/user.model"
 
 @Component({
   selector: 'app-my-products',
@@ -25,7 +25,7 @@ export class MyProductsComponent implements OnInit  {
   activeTab = "all"
   isLoading = true
   isDeleting = false
-  currentUser: User | null = null
+  currentUser: IUser | null = null
   productToDelete: IProduct | null = null
 
   constructor(

@@ -1,19 +1,19 @@
-import  { IProduct } from "./product.model"
-import  { User } from "./user.model"
+import { IProduct } from "./product.model";
+import { IUser } from "./user.model";
 
 export interface Order {
-  id: number
-  buyerId: number
-  sellerId: number
-  productId: number
-  quantity: number
-  totalAmount: number
-  status: OrderStatus
-  createdAt: Date
-  product: IProduct
-  buyer: User
-  seller: User
-  shippingInfo?: ShippingInfo
+  id: number;
+  buyerId: number;
+  sellerId: number;
+  productId: number;
+  quantity: number;
+  totalAmount: number;
+  status: OrderStatus;
+  createdAt: Date;
+  product: IProduct;
+  buyer: IUser;
+  seller: IUser;
+  shippingInfo?: ShippingInfo;
 }
 
 export enum OrderStatus {
@@ -24,20 +24,23 @@ export enum OrderStatus {
   Cancelled = "Cancelled",
 }
 
+export interface ShippingInfo {
+  recipientName: string;
+  address: string;
+  city: string;
+  postalCode: string;
+  phoneNumber: string;
+  trackingNumber?: string;
+}
+
 export interface CreateOrderRequest {
-  productId: number
-  quantity: number
-  shippingAddress: string
+  productId: number;
+  buyerId: number;
+  quantity: number;
+  shippingInfo: ShippingInfo;
 }
 
 export interface UpdateOrderStatusRequest {
-  orderId: number
-  status: OrderStatus
-}
-
-export interface ShippingInfo {
-  address: string
-  city: string
-  postalCode: string
-  trackingNumber?: string
+  orderId: number;
+  status: OrderStatus;
 }
