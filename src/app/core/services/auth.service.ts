@@ -35,6 +35,7 @@ export class AuthService {
             userName: decoded?.unique_name || decoded?.username || '',
             email: decoded?.email || '',
             fullName: decoded?.fullName || decoded?.name || '',
+            phone : decoded?.phone || '',
             isActive: true,
             createdAt: new Date(decoded?.iat * 1000),
             roles: decoded?.role ? [decoded.role] : decoded?.roles || []
@@ -74,6 +75,7 @@ export class AuthService {
   verifyEmail(token: string, email: string): Observable<ApiResponse<AuthResponse>> {
     return this.http.post<ApiResponse<AuthResponse>>(`${this.API_URL}/verify-email?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`, {});
   }
+
 
   forgotPassword(email: string): Observable<ApiResponse<any>> {
     return this.http.post<ApiResponse<any>>(`${this.API_URL}/forgot-password`, { email });
@@ -141,7 +143,11 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  private setCurrentUser(authResponse: AuthResponse): void {
+ setCurrentUserToLacal(user: IUser): void {
+  localStorage.setItem('user', JSON.stringify(user));
+  this.currentUserSubject.next(user);
+}
+   setCurrentUser(authResponse: AuthResponse): void {
     if (!authResponse || !authResponse.token) {
       return;
     }
@@ -162,6 +168,7 @@ export class AuthService {
           userName: decoded?.unique_name || decoded?.username || '',
           email: decoded?.email || authResponse.email || '',
           fullName: decoded?.fullName || decoded?.name || authResponse.fullName || '',
+          phone : decoded?.phone || authResponse.phone || '',
           isActive: true,
           createdAt: new Date(decoded?.iat * 1000),
           roles: decoded?.role ? [decoded.role] : decoded?.roles || []

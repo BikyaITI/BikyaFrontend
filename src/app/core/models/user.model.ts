@@ -3,6 +3,7 @@ export interface IUser {
   userName: string
   email: string
   fullName: string
+  phone : string
   isActive: boolean
   createdAt: Date
   roles?: string[]
@@ -31,6 +32,7 @@ export interface AuthResponse {
   userId?: number;
   email?: string;
   fullName?: string;
+  phone? : string;
   userName?: string;
   user?: IUser;
 }
