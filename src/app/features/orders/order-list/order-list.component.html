@@ -131,6 +131,14 @@
                   </button>
 
                   <button
+                    *ngIf="order.status === 'Pending'"
+                    class="btn btn-success btn-sm"
+                    (click)="payForOrder(order)"
+                  >
+                    <i class="fab fa-stripe"></i> Pay Now
+                  </button>
+
+                  <button
                     *ngIf="order.status === 'Shipped'"
                     class="btn btn-outline-info btn-sm"
                   >

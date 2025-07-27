@@ -34,10 +34,10 @@ export class ProductDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private productService: ProductService,
     private authService: AuthService,
     private orderService: OrderService,
-    private router: Router,
     private fb: FormBuilder,
   ) { }
 
@@ -104,8 +104,8 @@ export class ProductDetailComponent implements OnInit {
         this.isLoading = false
       },
       error: (error) => {
-        console.error('Error loading all products:', error)
-        this.errorMessage = `Failed to load products: ${error.status} ${error.statusText}`
+        console.error('Error loading from all products:', error)
+        this.errorMessage = 'Failed to load product'
         this.isLoading = false
       }
     })
@@ -126,24 +126,28 @@ export class ProductDetailComponent implements OnInit {
       })
     }
   }
+    selectImage(imageUrl: string): void {
+      this.selectedImage = this.GetImage(imageUrl)
+    }
 
-  selectImage(imageUrl: string): void {
-    this.selectedImage = this.GetImage(imageUrl)
-  }
-
-  getMainImage(product: IProduct): string {
-    const mainImage = product.images?.find((img) => img.isMain)
-    return mainImage && mainImage.imageUrl
-      ? `${environment.apiUrl}${mainImage.imageUrl}`
-      : 'product.png';
-  }
-  GetImage(imageUrl: string): string {
-    return imageUrl ? `${environment.apiUrl}${imageUrl}` : 'product.png';
-  }
-
+    getMainImage(product: IProduct): string {
+      const mainImage = product.images?.find((img) => img.isMain)
+      if (mainImage && mainImage.imageUrl) {
+        return mainImage.imageUrl.startsWith('http')
+          ? mainImage.imageUrl
+          : `${environment.apiUrl}${mainImage.imageUrl}`;
+      }
+      return 'product.png';
+    }
+    GetImage(imageUrl: string): string {
+      if (!imageUrl) return 'product.png';
+      return imageUrl.startsWith('http')
+        ? imageUrl
+        : `${environment.apiUrl}${imageUrl}`;
+    }
 
   
-  
+
   deleteProduct(): void {
     this.confirmTitle = 'Confirm Delete';
     this.confirmMessage = 'Are you sure you want to delete ';
@@ -221,6 +225,13 @@ export class ProductDetailComponent implements OnInit {
         return "bg-warning"
       default:
         return "bg-secondary"
+    }
+  }
+
+  onImageError(event: Event): void {
+    const target = event.target as HTMLImageElement;
+    if (target) {
+      target.src = 'product.png';
     }
   }
   showRelatedProducts(): boolean|null {

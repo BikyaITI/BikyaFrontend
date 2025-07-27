@@ -15,38 +15,35 @@
     </ol>
   </nav>
 
-  <div class="row">
-    <!-- Product Images -->
-    <div class="col-lg-6">
-      <div class="product-gallery">
-        <div class="main-image mb-3">
-          <img
-            [src]="selectedImage"
-            [alt]="product.title"
-            class="img-fluid rounded shadow-sm w-100"
-            style="height: 400px; object-fit: cover"
-          />
-        </div>
-
-        <div
-          class="thumbnail-images"
-          *ngIf="product.images && product.images.length > 1"
-        >
-          <div class="row g-2">
-            <div class="col-3" *ngFor="let image of product.images">
+      <div class="row">
+        <!-- Product Images -->
+        <div class="col-lg-6">
+          <div class="product-gallery">
+            <div class="main-image mb-3">
               <img
-                [src]="GetImage(image.imageUrl)"
+                [src]="selectedImage"
                 [alt]="product.title"
-                class="img-fluid rounded cursor-pointer thumbnail"
-                [class.active]="selectedImage === image.imageUrl"
-                (click)="selectImage(image.imageUrl)"
-                style="height: 80px; object-fit: cover"
-              />
+                class="img-fluid rounded shadow-sm w-100"
+                style="height: 400px; object-fit: cover;"
+                (error)="onImageError($event)">
+            </div>
+
+            <div class="thumbnail-images" *ngIf="product.images && product.images.length > 1">
+              <div class="row g-2">
+                <div class="col-3" *ngFor="let image of product.images">
+                  <img
+                    [src]="GetImage(image.imageUrl)"
+                    [alt]="product.title"
+                    class="img-fluid rounded cursor-pointer thumbnail"
+                    [class.active]="selectedImage === image.imageUrl"
+                    (click)="selectImage(image.imageUrl)"
+                    (error)="onImageError($event)"
+                    style="height: 80px; object-fit: cover;">
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
     <!-- Product Info -->
     <div class="col-lg-6">

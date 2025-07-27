@@ -118,11 +118,7 @@ import { FormsModule } from "@angular/forms"
                     </a>
                   </li>
 
-                  <li>
-                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" routerLink="/wallet">
-                      <i class="fas fa-wallet text-warning"></i> <span class="fw-medium">Wallet</span>
-                    </a>
-                  </li>
+
 
                   <li><hr class="dropdown-divider my-1"></li>
 
