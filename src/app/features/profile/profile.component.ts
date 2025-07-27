@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from "@angular/core"
+import { ChangeDetectorRef, Component, inject, OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from "@angular/forms"
 import { AuthService } from "../../core/services/auth.service"
@@ -27,6 +27,7 @@ export class ProfileComponent implements OnInit {
   passwordForm: FormGroup
   userService = inject(UserService)
   reviewService= inject (ReviewService)
+  cdr = inject(ChangeDetectorRef)
   router = inject(Router)
   isUpdatingProfile = false
   isChangingPassword = false
@@ -35,6 +36,8 @@ export class ProfileComponent implements OnInit {
   profileErrorMessage = ""
   passwordSuccessMessage = ""
   passwordErrorMessage = ""
+  deactiveSuccessMessage =""
+  deactiveErrorMessage =""
   
   userStats: IUserStats = {
   totalProducts: 0,
@@ -57,10 +60,10 @@ export class ProfileComponent implements OnInit {
     this.passwordForm = this.fb.group(
       {
         currentPassword: ["", Validators.required],
-        newPassword: ["", [Validators.required, Validators.minLength(6)]],
-        confirmPassword: ["", Validators.required],
+         newPassword: ['',[Validators.required,Validators.minLength(6)]],
+        ConfirmNewPassword: ['', Validators.required]
       },
-      { validators: this.passwordMatchValidator },
+      { validators: this.passwordMatchValidator }
     )
   }
 
@@ -78,22 +81,59 @@ export class ProfileComponent implements OnInit {
         phone:user.phone
       });
       console.log(`User ID: ${user.id}`);
+      this.cdr.detectChanges();
       this.loadUserStats();
     });
-}
+  }
 
+ // ✅ التحقق من تطابق كلمة السر
+  passwordMatchValidator(form: AbstractControl): ValidationErrors | null {
+    const newPassword = form.get('newPassword');
+    const confirmNewPassword = form.get('ConfirmNewPassword');
 
-  passwordMatchValidator(form: FormGroup) {
-    const newPassword = form.get("newPassword")
-    const confirmPassword = form.get("confirmPassword")
-
-    if (newPassword && confirmPassword && newPassword.value !== confirmPassword.value) {
-      confirmPassword.setErrors({ passwordMismatch: true })
+    if (
+      newPassword &&
+      confirmNewPassword &&
+      newPassword.value !== confirmNewPassword.value
+    ) {
+      confirmNewPassword.setErrors({ passwordMismatch: true });
     } else {
-      confirmPassword?.setErrors(null)
+      confirmNewPassword?.setErrors(null);
     }
 
-    return null
+    return null;
+  }
+
+
+  changePassword(): void {
+    if (this.passwordForm.valid && this.currentUser) {
+      this.isChangingPassword = true;
+      this.clearMessages();
+
+      const formValue = this.passwordForm.value as IChangePasswordRequest;
+
+      const changePasswordRequest: IChangePasswordRequest = {
+        currentPassword: formValue.currentPassword,
+        newPassword: formValue.newPassword,
+        ConfirmNewPassword: formValue.ConfirmNewPassword
+      };
+
+      console.log('Sending to API:', changePasswordRequest);
+
+      this.userService.changePassword(changePasswordRequest).subscribe({
+        next: () => {
+          this.isChangingPassword = false;
+          this.passwordSuccessMessage = 'Password changed successfully!';
+          this.passwordForm.reset();
+          setTimeout(() => (this.passwordSuccessMessage = ''), 3000);
+        },
+        error: (err) => {
+          this.isChangingPassword = false;
+          this.passwordErrorMessage = 'Failed to change password.';
+          console.error(err);
+        }
+      });
+    }
   }
 
  setActiveTab(tab: 'overview' | 'editProfile' | 'password' | 'account'): void {
@@ -139,55 +179,26 @@ updateProfile(): void {
 }
 
 
+confirmDeactivate(): void {
+  if (!this.currentUser) return;
 
-changePassword(): void {
-  if (this.passwordForm.valid && this.currentUser) {
-    this.isChangingPassword = true;
-    this.clearMessages();
-
-    const formValue = this.passwordForm.value as IChangePasswordRequest;
-
-    const changePasswordRequest: IChangePasswordRequest = {
-      currentPassword: formValue.currentPassword,
-      newPassword: formValue.newPassword,
-      confirmPassword: formValue.confirmPassword
-    };
-
-    console.log('Sending to API:', changePasswordRequest);
-
-    this.userService.changePassword(changePasswordRequest).subscribe({
-      next: () => {
-        this.isChangingPassword = false;
-        this.passwordSuccessMessage = "Password changed successfully!";
-        this.passwordForm.reset();
-        setTimeout(() => (this.passwordSuccessMessage = ""), 3000);
-      },
-      error: (err) => {
-        this.isChangingPassword = false;
-        this.passwordErrorMessage = "Failed to change password.";
-        console.error(err);
-      }
-    });
-  }
-}
-
-
-
-  deactivateAccount(): void {
-  if (this.currentUser && confirm("Are you sure you want to deactivate your account?")) {
-    this.userService.deactivateAccount().subscribe({
-      next: () => {
-        alert("Your account has been deactivated.");
-        this.authService.logout(); // أو أي طريقة عندك للخروج
+  this.userService.deactivateAccount().subscribe({
+    next: () => {
+      this.deactiveSuccessMessage = "Your account has been deactivated.";
+       console.log(` usrerID ${this.currentUser?.id}`)
+      setTimeout(() => {
+        this.authService.logoutLocal(); // ← مسح التوكن محليًا بدون API
         this.router.navigate(['/login']);
-      },
-      error: (err) => {
-        alert("Failed to deactivate account.");
-        console.error(err);
-      }
-    });
-  }
+      }, 1000);
+    },
+    error: (err) => {
+      this.deactiveErrorMessage = "Failed to deactivate account.";
+      console.log(` usrerID ${this.currentUser?.id}`)
+      console.error(err);
+    }
+  });
 }
+
 
 
 
@@ -246,6 +257,8 @@ navigateToMyProducts(): void {
     this.profileErrorMessage = ""
     this.passwordSuccessMessage = ""
     this.passwordErrorMessage = ""
+    this.deactiveSuccessMessage = ""
+    this.deactiveErrorMessage = ""
   }
 }
 //   userProfile!: IUser;

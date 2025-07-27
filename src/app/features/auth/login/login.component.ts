@@ -1,9 +1,9 @@
 import { Component } from "@angular/core"
 import { CommonModule } from "@angular/common"
-import { ReactiveFormsModule,  FormBuilder,  FormGroup, Validators } from "@angular/forms"
-import {  Router, RouterModule } from "@angular/router"
-import  { AuthService } from "../../../core/services/auth.service"
-import  { LoginRequest } from "../../../core/models/user.model"
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from "@angular/forms"
+import { Router, RouterModule } from "@angular/router"
+import { AuthService } from "../../../core/services/auth.service"
+import { LoginRequest } from "../../../core/models/user.model"
 
 @Component({
   selector: "app-login",
@@ -16,7 +16,9 @@ export class LoginComponent {
   loginForm: FormGroup
   isLoading = false
   errorMessage = ""
+  successMessage = ''
   showPassword = false
+  isDeactivated: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -70,19 +72,46 @@ export class LoginComponent {
         },
         error: (error) => {
           this.isLoading = false;
-          // Try to extract backend error message
-          const backendMsg = error?.error?.message;
-          if (
-            backendMsg?.toLowerCase().includes('verify your email') ||
-            backendMsg?.toLowerCase().includes('email not verified')
-          ) {
-            this.errorMessage =
-              'Please verify your email address before logging in. Check your inbox for the verification email.';
+          this.successMessage = ''; // ✅ امسحي أي رسالة نجاح فورا
+
+          const backendMsg = error?.error?.message?.toLowerCase();
+
+          if (error.status === 403) {
+            this.errorMessage = 'Your account is deactivated.';
+            this.isDeactivated = true;
+          } else if (backendMsg?.includes('verify your email')) {
+            this.errorMessage = 'Please verify your email.';
           } else {
             this.errorMessage = backendMsg || 'Login failed. Please try again.';
           }
+        }
+
+
+
+
+      });
+    }
+
+  }
+
+
+  reactivateAccount(): void {
+    const email = this.loginForm.get('email')?.value;
+
+    if (email) {
+      this.authService.reactivateAccount(email).subscribe({
+        next: (res) => {
+          this.errorMessage = '';
+          this.successMessage = 'Your account has been reactivated. Please login.';
+          this.isDeactivated = false;
         },
+        error: (err) => {
+          this.successMessage = '';  // ✅ امسحي رسالة النجاح
+          this.errorMessage = 'Failed to reactivate account.';
+        }
       });
     }
   }
+
+
 }

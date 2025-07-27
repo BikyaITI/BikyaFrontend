@@ -96,6 +96,10 @@ export class AuthService {
   changePassword(data: { currentPassword: string, newPassword: string, confirmNewPassword: string }): Observable<ApiResponse<any>> {
     return this.http.put<ApiResponse<any>>(`${this.API_URL}/change-password`, data);
   }
+ reactivateAccount(email: string): Observable<ApiResponse<boolean>> {
+return this.http.post<ApiResponse<boolean>>(`${environment.apiUrl}/api/Identity/Users/reactivate`, { email });
+}
+
 
   getProfile(): Observable<ApiResponse<IUser>> {
     return this.http.get<ApiResponse<IUser>>(`${this.API_URL}/profile`);

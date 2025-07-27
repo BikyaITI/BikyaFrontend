@@ -2,7 +2,7 @@
   <div class="row h-100">
     <!-- Left Side - Image/Branding -->
     <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center"
-         style="background: var(--gradient-primary);">
+      style="background: var(--gradient-primary);">
       <div class="text-center text-white">
         <div class="logo-container-large mb-4" style="width: 120px; height: 120px; margin: 0 auto;">
           <i class="fas fa-baby-carriage" style="font-size: 3rem;"></i>
@@ -41,17 +41,14 @@
             <h3 class="text-center mb-4">Welcome Back!</h3>
 
             <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+              <!-- Email -->
               <div class="mb-3">
                 <label for="email" class="form-label">Email Address</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0">
                     <i class="fas fa-envelope text-muted"></i>
                   </span>
-                  <input
-                    type="email"
-                    class="form-control border-start-0"
-                    id="email"
-                    formControlName="email"
+                  <input type="email" class="form-control border-start-0" id="email" formControlName="email"
                     [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
                   <div class="invalid-feedback">
                     Please enter a valid email address.
@@ -59,22 +56,17 @@
                 </div>
               </div>
 
+              <!-- Password -->
               <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light border-end-0">
                     <i class="fas fa-lock text-muted"></i>
                   </span>
-                  <input
-                    [type]="showPassword ? 'text' : 'password'"
-                    class="form-control border-start-0"
-                    id="password"
+                  <input [type]="showPassword ? 'text' : 'password'" class="form-control border-start-0" id="password"
                     formControlName="password"
                     [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-                  <button
-                    class="btn btn-outline-secondary border-start-0"
-                    type="button"
-                    (click)="togglePassword()">
+                  <button class="btn btn-outline-secondary border-start-0" type="button" (click)="togglePassword()">
                     <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
                   </button>
                   <div class="invalid-feedback">
@@ -83,6 +75,7 @@
                 </div>
               </div>
 
+              <!-- Remember Me -->
               <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="rememberMe">
                 <label class="form-check-label" for="rememberMe">
@@ -90,21 +83,40 @@
                 </label>
               </div>
 
-              <div class="error-message mb-3" *ngIf="errorMessage">
-                {{errorMessage}}
-              </div>
+              <!-- Alert Section -->
+              <ng-container *ngIf="successMessage; else errorBlock">
+                <div class="alert alert-success d-flex align-items-center gap-2 mb-3" role="alert">
+                  <i class="bi bi-check-circle-fill fs-5"></i>
+                  <div>{{ successMessage }}</div>
+                </div>
+              </ng-container>
 
-              <div class="d-grid mb-3">
-                <button
-                  type="submit"
-                  class="btn btn-primary btn-lg rounded-pill"
-                  [disabled]="loginForm.invalid || isLoading">
-                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
-                  <i class="fas fa-sign-in-alt me-2" *ngIf="!isLoading"></i>
-                  {{isLoading ? 'Signing In...' : 'Sign In'}}
+              <ng-template #errorBlock>
+                <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center gap-2 mb-3" role="alert">
+                  <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                  <div>{{ errorMessage }}</div>
+                </div>
+              </ng-template>
+
+
+              <!-- Reactivate Button -->
+              <div *ngIf=" isDeactivated" class="d-grid mb-3">
+                <button type="button" class="btn btn-outline-primary rounded-pill" (click)="reactivateAccount()">
+                  <i class="bi bi-arrow-clockwise me-2"></i> Reactivate Account
                 </button>
               </div>
 
+              <!-- Submit Button -->
+              <div class="d-grid mb-3">
+                <button type="submit" class="btn btn-primary btn-lg rounded-pill"
+                  [disabled]="loginForm.invalid || isLoading">
+                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                  <i class="fas fa-sign-in-alt me-2" *ngIf="!isLoading"></i>
+                  {{ isLoading ? 'Signing In...' : 'Sign In' }}
+                </button>
+              </div>
+
+              <!-- Forgot Password -->
               <div class="text-center">
                 <a routerLink="/forgot-password" class="text-decoration-none">Forgot your password?</a>
               </div>
@@ -112,6 +124,7 @@
 
             <hr class="my-4">
 
+            <!-- Register -->
             <div class="text-center">
               <p class="mb-2">Don't have an account?</p>
               <a routerLink="/register" class="btn btn-outline-primary rounded-pill">
@@ -122,5 +135,6 @@
         </div>
       </div>
     </div>
+
   </div>
-</div> 
+</div>

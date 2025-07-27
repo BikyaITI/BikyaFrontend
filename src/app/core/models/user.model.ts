@@ -44,7 +44,7 @@ export interface IUpdateProfileRequest {
 export interface IChangePasswordRequest {
   currentPassword: string
   newPassword: string
-  confirmPassword: string
+  ConfirmNewPassword: string
 }
 
 export interface IUserStats {
