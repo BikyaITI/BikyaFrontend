@@ -90,7 +90,7 @@ import { Dropdown } from "bootstrap"
     <li><h6 class="dropdown-header text-muted small">My Account</h6></li>
 
     <li>
-      <a class="dropdown-item d-flex align-items-center gap-2 py-2" [routerLink]="['/profile', currentUser.id]">
+      <a class="dropdown-item d-flex align-items-center gap-2 py-2" (click)="goToProfile()">
         <i class="fas fa-user text-primary"></i> <span class="fw-medium">Profile</span>
       </a>
     </li>
@@ -137,31 +137,42 @@ import { Dropdown } from "bootstrap"
     </nav>
   `,
 })
-export class NavbarComponent implements OnInit , AfterViewInit{
-   @ViewChild('dropdownBtn', { static: false }) dropdownBtn?: ElementRef;
+export class NavbarComponent implements OnInit, AfterViewInit {
+  @ViewChild('dropdownBtn', { static: false }) dropdownBtn?: ElementRef;
 
-  currentUser: IUser | null = null
-   
+  currentUser: IUser | null = null;
+
   constructor(
     private authService: AuthService,
-    private router: Router,
-  ) { }
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
-      this.currentUser = user
-    })
+      this.currentUser = user;
+    });
   }
- ngAfterViewInit(): void {
-  if (this.dropdownBtn) {
-    new Dropdown(this.dropdownBtn.nativeElement);
-  }
-}
 
+  ngAfterViewInit(): void {
+    if (this.dropdownBtn) {
+      new Dropdown(this.dropdownBtn.nativeElement);
+    }
+  }
+
+  goToProfile(): void {
+    const user = this.authService.getCurrentUser();
+    const roles = user?.roles; // نوعها: string[] | undefined
+
+    if (roles?.includes('Admin')) {
+      this.router.navigate(['/admin']);
+    } else {
+      this.router.navigate(['/profile']);
+    }
+  }
 
   logout(): void {
-    this.authService.logout()
-    this.router.navigate(["/"])
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
 }
 
