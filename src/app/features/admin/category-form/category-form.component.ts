@@ -8,6 +8,7 @@ import { ICategory } from '../../../core/models/icategory';
 
 @Component({
   selector: 'app-category-form',
+  standalone: true,
   imports: [ReactiveFormsModule, CommonModule, FormsModule],
   templateUrl: './category-form.component.html',
   styleUrl: './category-form.component.scss'

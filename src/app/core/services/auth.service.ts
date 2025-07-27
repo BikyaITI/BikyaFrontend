@@ -1,20 +1,21 @@
-import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { BehaviorSubject, Observable, tap } from "rxjs";
-import { ApiResponse } from "../models/api-response.model";
-import { LoginRequest, RegisterRequest, AuthResponse, IUser } from "../models/user.model";
-import { environment } from "../../../environments/environment";
-import { jwtDecode } from 'jwt-decode';
+import { inject, Injectable } from "@angular/core"
+import  { HttpClient } from "@angular/common/http"
+import { BehaviorSubject,  Observable, tap } from "rxjs"
+import  { ApiResponse } from "../models/api-response.model"
+import  {  LoginRequest, RegisterRequest, AuthResponse, IUser } from "../models/user.model"
+import { environment } from "../../../environments/environment"
+import { jwtDecode } from 'jwt-decode'; 
 
 @Injectable({
   providedIn: "root",
 })
 export class AuthService {
-  private readonly API_URL = `${environment.apiUrl}/api/Identity/Auth`;
-  private currentUserSubject = new BehaviorSubject<IUser | null>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
+  private readonly API_URL = `${environment.apiUrl}/api/Identity/Auth`
+  private currentUserSubject = new BehaviorSubject<IUser | null>(null)
+  public currentUser$ = this.currentUserSubject.asObservable()
+  public http =inject(HttpClient)
 
-  constructor(private http: HttpClient) {
+ constructor() {
     this.loadUserFromStorage();
   }
 
@@ -34,6 +35,7 @@ export class AuthService {
             id: Number(decoded?.nameid || decoded?.sub || decoded?.id),
             userName: decoded?.unique_name || decoded?.username || '',
             email: decoded?.email || '',
+            FullName: decoded?.fullName || decoded?.name || '',
             fullName: decoded?.fullName || decoded?.name || '',
             isActive: true,
             createdAt: new Date(decoded?.iat * 1000),
@@ -49,22 +51,22 @@ export class AuthService {
 
   login(request: LoginRequest): Observable<ApiResponse<AuthResponse>> {
     return this.http.post<ApiResponse<AuthResponse>>(`${this.API_URL}/login`, request).pipe(
-      tap((response: ApiResponse<AuthResponse>) => {
+      tap((response) => {
         if (response.success) {
-          this.setCurrentUser(response.data);
+          this.setCurrentUser(response.data)
         }
-      })
-    );
+      }),
+    )
   }
 
   register(request: RegisterRequest): Observable<ApiResponse<AuthResponse>> {
     return this.http.post<ApiResponse<AuthResponse>>(`${this.API_URL}/register`, request).pipe(
-      tap((response: ApiResponse<AuthResponse>) => {
+      tap((response) => {
         if (response.success) {
-          this.setCurrentUser(response.data);
+          this.setCurrentUser(response.data)
         }
-      })
-    );
+      }),
+    )
   }
 
   registerAdmin(request: any): Observable<ApiResponse<AuthResponse>> {
@@ -99,46 +101,42 @@ export class AuthService {
     return this.http.get<ApiResponse<IUser>>(`${this.API_URL}/profile`);
   }
 
-  // إضافة logout method يرسل طلب للباكند
-  logout(): Observable<ApiResponse<any>> {
-    return this.http.post<ApiResponse<any>>(`${this.API_URL}/logout`, {}).pipe(
-      tap(() => {
-        this.clearAuthData();
-      })
-    );
-  }
-
-  // طريقة محسنة للـ logout بدون انتظار الباكند
-  logoutLocal(): void {
-    this.clearAuthData();
+  logout(): void {
+    console.log('AuthService logout called')
+    // Call logout API endpoint
+    this.http.post<ApiResponse<any>>(`${this.API_URL}/logout`, {}).subscribe({
+      next: () => {
+        console.log('Backend logout successful')
+        // Clear local storage and state regardless of API response
+        this.clearAuthData()
+      },
+      error: (error) => {
+        console.log('Backend logout failed, but clearing local data:', error)
+        // Clear local storage and state even if API call fails
+        this.clearAuthData()
+      }
+    })
   }
 
   private clearAuthData(): void {
-    localStorage.removeItem("token");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("user");
-    this.currentUserSubject.next(null);
+    console.log('Clearing auth data')
+    localStorage.removeItem("token")
+    localStorage.removeItem("refreshToken")
+    localStorage.removeItem("user")
+    this.currentUserSubject.next(null)
+    console.log('Auth data cleared')
   }
 
   isAuthenticated(): boolean {
-    const token = localStorage.getItem("token");
-    if (!token) return false;
-
-    try {
-      const decoded: any = jwtDecode(token);
-      const currentTime = Date.now() / 1000;
-      return decoded.exp > currentTime;
-    } catch {
-      return false;
-    }
+    return !!localStorage.getItem("token")
   }
 
   getToken(): string | null {
-    return localStorage.getItem("token");
+    return localStorage.getItem("token")
   }
 
   getCurrentUser(): IUser | null {
-    return this.currentUserSubject.value;
+    return this.currentUserSubject.value
   }
 
   private setCurrentUser(authResponse: AuthResponse): void {
@@ -161,6 +159,7 @@ export class AuthService {
           id: Number(decoded?.nameid || decoded?.sub || decoded?.id),
           userName: decoded?.unique_name || decoded?.username || '',
           email: decoded?.email || authResponse.email || '',
+          FullName: decoded?.fullName || decoded?.name || authResponse.fullName || '',
           fullName: decoded?.fullName || decoded?.name || authResponse.fullName || '',
           isActive: true,
           createdAt: new Date(decoded?.iat * 1000),
@@ -186,7 +185,6 @@ export class AuthService {
     }
   }
 
-  // طريقة جديدة للحصول على userId من المستخدم الحالي
   getCurrentUserId(): number | null {
     const currentUser = this.getCurrentUser();
     if (currentUser?.id) {

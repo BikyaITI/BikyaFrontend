@@ -1,55 +1,78 @@
-import { Injectable } from "@angular/core";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Observable } from "rxjs";
-import { ApiResponse } from "../models/api-response.model";
-import { Order, CreateOrderRequest, UpdateOrderStatusRequest } from "../models/order.model";
-import { environment } from "../../../environments/environment";
+import { Injectable } from "@angular/core"
+import  { HttpClient } from "@angular/common/http"
+import  { Observable } from "rxjs"
+import  { ApiResponse } from "../models/api-response.model"
+import  { Order, CreateOrderRequest } from "../models/order.model"
+import { environment } from "../../../environments/environment"
+
+export interface ShippingInfoDTO {
+  address: string;
+  city: string;
+  postalCode: string;
+  country: string;
+  trackingNumber?: string;
+}
+
+export interface UpdateOrderStatusRequest {
+  orderId: number;
+  newStatus: string;
+}
 
 @Injectable({
   providedIn: "root",
 })
 export class OrderService {
-  private readonly API_URL = `${environment.apiUrl}/api/Order`;
+  private readonly API_URL = `${environment.apiUrl}/api/Order/Order`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem("token");
-    return new HttpHeaders({
-      "Authorization": token ? `Bearer ${token}` : "",
-      "Content-Type": "application/json",
-    });
-  }
-
+  // Create a new order
   createOrder(order: CreateOrderRequest): Observable<ApiResponse<Order>> {
-    return this.http.post<ApiResponse<Order>>(`${this.API_URL}`, order, { headers: this.getHeaders() });
+    return this.http.post<ApiResponse<Order>>(`${this.API_URL}`, order)
   }
 
-  getOrderById(orderId: number): Observable<ApiResponse<Order>> {
-    return this.http.get<ApiResponse<Order>>(`${this.API_URL}/${orderId}`, { headers: this.getHeaders() });
-  }
-
-  getMyOrders(userId: number): Observable<ApiResponse<Order[]>> {
-    return this.http.get<ApiResponse<Order[]>>(`${this.API_URL}/my-orders/${userId}`, { headers: this.getHeaders() });
-  }
-
-  getOrdersByBuyer(buyerId: number): Observable<ApiResponse<Order[]>> {
-    return this.http.get<ApiResponse<Order[]>>(`${this.API_URL}/buyer/${buyerId}`, { headers: this.getHeaders() });
-  }
-
-  getOrdersBySeller(sellerId: number): Observable<ApiResponse<Order[]>> {
-    return this.http.get<ApiResponse<Order[]>>(`${this.API_URL}/seller/${sellerId}`, { headers: this.getHeaders() });
-  }
-
+  // Update order status
   updateOrderStatus(request: UpdateOrderStatusRequest): Observable<ApiResponse<boolean>> {
-    return this.http.put<ApiResponse<boolean>>(`${this.API_URL}/status`, request, { headers: this.getHeaders() });
+    return this.http.put<ApiResponse<boolean>>(`${this.API_URL}/status`, request)
   }
 
-  cancelOrder(orderId: number): Observable<ApiResponse<boolean>> {
-    return this.http.delete<ApiResponse<boolean>>(`${this.API_URL}/${orderId}/cancel`, { headers: this.getHeaders() });
+  // Get orders by user ID
+  getOrdersByUser(userId: number): Observable<ApiResponse<Order[]>> {
+    return this.http.get<ApiResponse<Order[]>>(`${this.API_URL}/user/${userId}`)
   }
 
+  // Get orders by buyer ID
+  getOrdersByBuyer(buyerId: number): Observable<ApiResponse<Order[]>> {
+    return this.http.get<ApiResponse<Order[]>>(`${this.API_URL}/buyer/${buyerId}`)
+  }
+
+  // Get orders by seller ID
+  getOrdersBySeller(sellerId: number): Observable<ApiResponse<Order[]>> {
+    return this.http.get<ApiResponse<Order[]>>(`${this.API_URL}/seller/${sellerId}`)
+  }
+
+  // Get all orders (Admin only)
   getAllOrders(): Observable<ApiResponse<Order[]>> {
-    return this.http.get<ApiResponse<Order[]>>(`${this.API_URL}/all`, { headers: this.getHeaders() });
+    return this.http.get<ApiResponse<Order[]>>(`${this.API_URL}/all`)
+  }
+
+  // Get order by ID
+  getOrderById(orderId: number): Observable<ApiResponse<Order>> {
+    return this.http.get<ApiResponse<Order>>(`${this.API_URL}/${orderId}`)
+  }
+
+  // Cancel an order
+  cancelOrder(orderId: number): Observable<ApiResponse<boolean>> {
+    return this.http.delete<ApiResponse<boolean>>(`${this.API_URL}/${orderId}/cancel`)
+  }
+
+  // Update shipping information for an order
+  updateShippingInfo(orderId: number, shippingInfo: ShippingInfoDTO): Observable<ApiResponse<boolean>> {
+    return this.http.put<ApiResponse<boolean>>(`${this.API_URL}/${orderId}/shipping`, shippingInfo)
+  }
+
+  // Legacy methods for backward compatibility
+  getMyOrders(userId: number): Observable<ApiResponse<Order[]>> {
+    return this.getOrdersByUser(userId);
   }
 }

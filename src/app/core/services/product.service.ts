@@ -13,52 +13,71 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
+  // Public endpoints - approved products
   getApprovedProducts(): Observable<ApiResponse<IProduct[]>> {
     return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/approved`)
   }
 
   getProductById(id: number): Observable<ApiResponse<IProduct>> {
-    return this.http.get<ApiResponse<IProduct>>(`${this.API_URL}/Product/${id}`)
+    return this.http.get<ApiResponse<IProduct>>(`${this.API_URL}/approved/${id}`)
   }
 
   getProductsByUser(userId: number): Observable<ApiResponse<IProduct[]>> {
-    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/UserProduct/${userId}`)
+    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/user/${userId}`)
+  }
+
+  getNotApprovedProductsByUser(userId: number): Observable<ApiResponse<IProduct[]>> {
+    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/user/${userId}/not-approved`)
   }
 
   getProductsByCategory(categoryId: number): Observable<ApiResponse<IProduct[]>> {
-    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/CategoryProducts/${categoryId}`)
+    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/category/${categoryId}`)
   }
 
+  // CRUD operations (require authentication)
   createProduct(product: CreateProductRequest): Observable<ApiResponse<boolean>> {
-    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/Add`, product)
+    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}`, product)
   }
 
   createProductWithImages(formData: FormData): Observable<ApiResponse<boolean>> {
-    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/AddWithImages`, formData)
+    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/with-images`, formData)
   }
 
   updateProduct(id: number, product: CreateProductRequest): Observable<ApiResponse<boolean>> {
-    return this.http.put<ApiResponse<boolean>>(`${this.API_URL}/Update/${id}`, product)
+    return this.http.put<ApiResponse<boolean>>(`${this.API_URL}/${id}`, product)
   }
 
   deleteProduct(id: number): Observable<ApiResponse<boolean>> {
-    return this.http.delete<ApiResponse<boolean>>(`${this.API_URL}/Delete/${id}`)
+    return this.http.delete<ApiResponse<boolean>>(`${this.API_URL}/${id}`)
+  }
+
+  forceDeleteProduct(id: number): Observable<ApiResponse<boolean>> {
+    return this.http.delete<ApiResponse<boolean>>(`${this.API_URL}/${id}/force`);
+  }
+
+  // Image operations
+  addProductImage(productId: number, formData: FormData): Observable<ApiResponse<boolean>> {
+    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/${productId}/images`, formData)
+  }
+
+  deleteProductImage(imageId: number): Observable<ApiResponse<boolean>> {
+    return this.http.delete<ApiResponse<boolean>>(`${this.API_URL}/images/${imageId}`)
   }
 
   // Admin methods
   getAllProducts(): Observable<ApiResponse<IProduct[]>> {
-    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/AllProduct`)
+    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/all`)
   }
 
   getNotApprovedProducts(): Observable<ApiResponse<IProduct[]>> {
-    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/NotApprovedProducts`)
+    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/not-approved`)
   }
 
   approveProduct(id: number): Observable<ApiResponse<boolean>> {
-    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/ApproveProduct/${id}`, {})
+    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/approve/${id}`, {})
   }
 
   rejectProduct(id: number): Observable<ApiResponse<boolean>> {
-    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/RejectProduct/${id}`, {})
+    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/reject/${id}`, {})
   }
 }

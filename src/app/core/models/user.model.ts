@@ -2,10 +2,14 @@ export interface IUser {
   id: number
   userName: string
   email: string
+  FullName: string
   fullName: string
   isActive: boolean
   createdAt: Date
   roles?: string[]
+  lockoutEnd?: Date
+  isDeleted?: boolean
+  lockoutEnabled?: boolean
 }
 
 export interface LoginRequest {
@@ -18,6 +22,7 @@ export interface RegisterRequest {
   password: string
   confirmPassword: string
   fullName: string
+  FullName: string
 }
 
 // export interface AuthResponse {
@@ -31,11 +36,13 @@ export interface AuthResponse {
   userId?: number;
   email?: string;
   fullName?: string;
+  FullName?: string;
   userName?: string;
   user?: IUser;
 }
 export interface IUpdateProfileRequest {
   fullName: string
+  FullName: string
   email: string
 }
 

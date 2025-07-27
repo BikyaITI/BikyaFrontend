@@ -11,18 +11,17 @@ export const adminRoutes: Routes = [
       import("./product-management/product-management.component").then((m) => m.ProductManagementComponent),
   },
   {
+    path: "categories",
+    loadComponent: () =>
+      import("./category-form/category-form.component").then((m) => m.CategoryFormComponent),
+  },
+  {
     path: "users",
-    loadComponent: () => import("./user-management/user-management.component").then((m) => m.UserManagementComponent),
+    loadComponent: () => import("./user-list/user-list.component").then((m) => m.AdminUserListComponent),
   },
   {
     path: "orders",
     loadComponent: () =>
       import("./order-management/order-management.component").then((m) => m.OrderManagementComponent),
   },
-    {
-    path: "categories",
-    loadComponent: () => import("./category-form/category-form.component").then((m) => m.CategoryFormComponent),
-
-  },
-  
 ]

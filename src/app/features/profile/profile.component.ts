@@ -109,6 +109,7 @@ export class ProfileComponent implements OnInit {
 
     const updateRequest: IUpdateProfileRequest = {
       fullName: this.profileForm.get("fullName")?.value,
+      FullName: this.profileForm.get("fullName")?.value,
       email: this.profileForm.get("email")?.value,
     };
 
