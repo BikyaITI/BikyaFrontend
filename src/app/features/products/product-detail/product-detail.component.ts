@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { ReactiveFormsModule, FormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { IProduct } from '../../../core/models/product.model';
 import { IUser } from '../../../core/models/user.model';
 import { AuthService } from '../../../core/services/auth.service';
@@ -11,7 +11,7 @@ import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, FormsModule],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss'
 })
@@ -28,6 +28,7 @@ export class ProductDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private productService: ProductService,
     private authService: AuthService,
     private orderService: OrderService,
@@ -102,23 +103,23 @@ export class ProductDetailComponent implements OnInit {
         this.isLoading = false
       },
       error: (error) => {
-        console.error('Error loading all products:', error)
-        this.errorMessage = `Failed to load products: ${error.status} ${error.statusText}`
+        console.error('Error loading from all products:', error)
+        this.errorMessage = 'Failed to load product'
         this.isLoading = false
       }
     })
   }
 
   loadRelatedProducts(): void {
-    if (this.product) {
-      this.productService.getProductsByCategory(this.product.categoryId).subscribe({
+    if (!this.product) return
+
+    this.productService.getAllProducts().subscribe({
         next: (response) => {
           if (response.success) {
             this.relatedProducts = response.data.filter((p) => p.id !== this.product!.id).slice(0, 4)
           }
         },
       })
-    }
   }
 
   selectImage(imageUrl: string): void {
@@ -127,12 +128,18 @@ export class ProductDetailComponent implements OnInit {
 
   getMainImage(product: IProduct): string {
     const mainImage = product.images?.find((img) => img.isMain)
-    return mainImage && mainImage.imageUrl
-      ? `${environment.apiUrl}${mainImage.imageUrl}`
-      : 'product.png';
+    if (mainImage && mainImage.imageUrl) {
+      return mainImage.imageUrl.startsWith('http') 
+        ? mainImage.imageUrl 
+        : `${environment.apiUrl}${mainImage.imageUrl}`;
+    }
+    return 'product.png';
   }
   GetImage(imageUrl: string): string {
-    return imageUrl ? `${environment.apiUrl}${imageUrl}` : 'product.png';
+    if (!imageUrl) return 'product.png';
+    return imageUrl.startsWith('http') 
+      ? imageUrl 
+      : `${environment.apiUrl}${imageUrl}`;
   }
   calculateTotal(): number {
     if (!this.product) return 0
@@ -141,33 +148,89 @@ export class ProductDetailComponent implements OnInit {
   }
 
   placeOrder(): void {
+    if (!this.currentUser) {
+      alert("Please log in to place an order.")
+      this.router.navigate(['/login'])
+      return
+    }
+
     if (this.orderForm.valid && this.product) {
       this.isPlacingOrder = true
 
       const orderRequest = {
         productId: this.product.id,
+        buyerId: this.currentUser.id,
         quantity: this.orderForm.get("quantity")?.value,
-        shippingAddress: this.orderForm.get("shippingAddress")?.value,
+        shippingInfo: {
+          recipientName: this.currentUser.fullName || 'Unknown User',
+          address: this.orderForm.get("shippingAddress")?.value,
+          city: 'Cairo', // Default city
+          postalCode: '12345', // Default postal code
+          phoneNumber: '1234567890' // Default phone
+        }
       }
 
-      // this.orderService.createOrder(orderRequest).subscribe({
-      //   next: (response) => {
-      //     this.isPlacingOrder = false
-      //     if (response.success) {
-      //       // Close modal and show success message
-      //       const modal = document.getElementById("orderModal")
-      //       if (modal) {
-      //         const bsModal = (window as any).bootstrap.Modal.getInstance(modal)
-      //         bsModal?.hide()
-      //       }
-      //       alert("Order placed successfully!")
-      //     }
-      //   },
-      //   error: () => {
-      //     this.isPlacingOrder = false
-      //     alert("Failed to place order. Please try again.")
-      //   },
-      // })
+      this.orderService.createOrder(orderRequest).subscribe({
+        next: (response) => {
+          this.isPlacingOrder = false
+          if (response.success) {
+            // Navigate to payment page with order details
+            this.router.navigate(['/payment', response.data.id, this.calculateTotal()])
+          } else {
+            alert("Failed to create order: " + response.message)
+          }
+        },
+        error: (error) => {
+          this.isPlacingOrder = false
+          console.error('Order creation error:', error)
+          alert("Failed to place order. Please try again.")
+        },
+      })
+    } else {
+      alert("Please fill in all required fields.")
+    }
+  }
+
+  buyNow(): void {
+    if (!this.currentUser) {
+      alert("Please log in to buy this product.")
+      this.router.navigate(['/login'])
+      return
+    }
+
+    if (this.product) {
+      // Navigate directly to checkout with product details
+      this.router.navigate(['/checkout'], {
+        queryParams: {
+          productId: this.product.id,
+          quantity: this.orderForm.get("quantity")?.value || 1
+        }
+      })
+    }
+  }
+
+  proceedToCheckout(): void {
+    if (!this.currentUser) {
+      alert("Please log in to proceed to checkout.")
+      this.router.navigate(['/login'])
+      return
+    }
+
+    if (this.product) {
+      // Close modal first
+      const modal = document.getElementById("orderModal")
+      if (modal) {
+        const bsModal = (window as any).bootstrap.Modal.getInstance(modal)
+        bsModal?.hide()
+      }
+
+      // Navigate to checkout with product details
+      this.router.navigate(['/checkout'], {
+        queryParams: {
+          productId: this.product.id,
+          quantity: this.orderForm.get("quantity")?.value || 1
+        }
+      })
     }
   }
 
@@ -208,6 +271,13 @@ export class ProductDetailComponent implements OnInit {
         return "bg-warning"
       default:
         return "bg-secondary"
+    }
+  }
+
+  onImageError(event: Event): void {
+    const target = event.target as HTMLImageElement;
+    if (target) {
+      target.src = 'product.png';
     }
   }
 }

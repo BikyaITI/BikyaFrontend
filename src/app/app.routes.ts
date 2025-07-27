@@ -59,6 +59,26 @@ export const routes: Routes = [
     loadComponent: () => import("./features/profile/profile.component").then((m) => m.ProfileComponent),
     canActivate: [AuthGuard],
   },
+   {
+    path: "payment/:orderId/:amount",
+    loadComponent: () => import("./features/payment/payment.component").then((m) => m.PaymentComponent),
+    canActivate: [AuthGuard],
+  },
+
+  {
+    path: "payment/success",
+    loadComponent: () => import("./features/payment/success/success.component").then((m) => m.PaymentSuccessComponent),
+  },
+  {
+    path: "payment/cancel",
+    loadComponent: () => import("./features/payment/cancel/cancel.component").then((m) => m.PaymentCancelComponent),
+  },
+  {
+    path: "payment/history",
+    loadComponent: () => import("./features/payment/payment-history/payment-history.component").then((m) => m.PaymentHistoryComponent),
+    canActivate: [AuthGuard],
+  },
+
   {
     path: "wallet",
     loadComponent: () => import("./features/wallet/wallet.component").then((m) => m.WalletComponent),

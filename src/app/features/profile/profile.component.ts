@@ -79,6 +79,7 @@ export class ProfileComponent implements OnInit {
       });
       console.log(`User ID: ${user.id}`);
       this.loadUserStats();
+      this.loadAverageRating();
     });
 }
 

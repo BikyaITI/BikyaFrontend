@@ -59,9 +59,6 @@ import { Dropdown } from "bootstrap"
             </div>
 
             <ng-container *ngIf="currentUser; else loginLinks">
-              <a routerLink="/wallet" class="btn btn-outline-primary me-2" routerLinkActive="active">
-                <i class="fas fa-wallet me-1"></i>Wallet
-              </a>
               <a href="#" class="btn btn-outline-primary me-2 position-relative">
                 <i class="fas fa-shopping-cart"></i>
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
@@ -99,11 +96,7 @@ import { Dropdown } from "bootstrap"
                     </a>
                   </li>
 
-                  <li>
-                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" routerLink="/wallet">
-                      <i class="fas fa-wallet text-warning"></i> <span class="fw-medium">Wallet</span>
-                    </a>
-                  </li>
+
 
                   <li><hr class="dropdown-divider my-1"></li>
 
