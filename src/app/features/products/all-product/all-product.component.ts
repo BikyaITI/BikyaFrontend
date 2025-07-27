@@ -4,7 +4,7 @@ import { IProduct } from '../../../core/models/product.model';
 import { CategoryService } from '../../../core/services/category.service';
 import { ProductService } from '../../../core/services/product.service';
 import { CommonModule } from "@angular/common"
-import { RouterModule } from "@angular/router"
+import { ActivatedRoute, Route, RouterModule } from "@angular/router"
 import { FormsModule } from "@angular/forms"
 import { ProductListComponent } from '../../../shared/components/product-list/product-list.component';
 
@@ -36,9 +36,14 @@ export class AllProductComponent implements OnInit {
   constructor(
     private productService: ProductService,
     private categoryService: CategoryService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      this.searchTerm = params['search'] || '';
+      this.searchProducts();
+    });
     this.loadProducts()
     this.loadCategories()
   }

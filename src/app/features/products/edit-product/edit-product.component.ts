@@ -4,14 +4,16 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from "@angula
 import { Router, ActivatedRoute } from "@angular/router"
 import { ProductService } from "../../../core/services/product.service"
 import { CategoryService } from "../../../core/services/category.service"
-import { IProduct } from "../../../core/models/product.model"
+import { CreateProductImageRequest, IProduct, IProductImage } from "../../../core/models/product.model"
 import { ICategory } from "../../../core/models/icategory"
-import { map } from 'rxjs/operators';
+import { map, filter } from 'rxjs/operators';
 import { environment } from "../../../../environments/environment"
+
 @Component({
   selector: 'app-edit-product',
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './edit-product.component.html',
+
+templateUrl: './edit-product.component.html',
   styleUrl: './edit-product.component.scss'
 })
 export class EditProductComponent implements OnInit {
@@ -22,8 +24,8 @@ export class EditProductComponent implements OnInit {
   additionalImages: File[] = []
   mainImagePreview: string | null = null
   additionalImagePreviews: string[] = []
-  initialMainImageUrl: string | null = null;
-  initialAdditionalImages: string[] = [];
+  initialMainImage: IProductImage = { id: 0, imageUrl : "", isMain :false};
+  initialAdditionalImages: IProductImage[] = [];
   isSubmitting = false
   submitted = false
   errorMessage = ""
@@ -69,11 +71,11 @@ export class EditProductComponent implements OnInit {
           // Load main image and additional images if available
           if (product.images) {
             this.mainImagePreview = this.getMainImage(product)
-            this.initialMainImageUrl = this.getMainImage(product)
+            this.initialMainImage = product.images.find(p => p.isMain === true) || { id: 0, imageUrl: "", isMain: false };
           }
           if (product.images && product.images.length > 1) {
             this.additionalImagePreviews = this.getAdditionalImages(product)
-            this.initialAdditionalImages = this.getAdditionalImages(product)
+            this.initialAdditionalImages = product.images.filter(p=>p.isMain===false)
           }
 
         } else {
@@ -181,7 +183,7 @@ export class EditProductComponent implements OnInit {
     this.errorMessage = ""
     this.successMessage = ""
 
-    if (this.productForm.valid && this.mainImage) {
+    if (this.productForm.valid && (this.mainImage || this.mainImagePreview)) {
       this.isSubmitting = true
 
       const formData = new FormData()
@@ -196,10 +198,16 @@ export class EditProductComponent implements OnInit {
       // this.additionalImages.forEach((image, index) => {
       //   formData.append("additionalImages", image)
       // })
-      // if (this.initialMainImageUrl !== this.mainImagePreview) {
-      //   this.productService.deleteImage(initialMainImageUrl).subscribe
-      //  }
-      
+
+      if (this.initialMainImage.imageUrl !== this.mainImagePreview&&this.mainImage!==null) {
+        this.productService.deleteImage(this.initialMainImage.id).subscribe()
+        const image : CreateProductImageRequest ={
+          image: this.mainImage,
+          isMain:true
+        }
+        this.productService.createImage(this.product!.id,image).subscribe()
+       }
+
       this.productService.updateProduct(this.productId,formData).subscribe({
         next: (response) => {
           this.isSubmitting = false

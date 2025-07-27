@@ -4,12 +4,13 @@ import { RouterModule, Router } from "@angular/router"
 import { AuthService } from "../../../core/services/auth.service"
 import { IUser } from "../../../core/models/user.model"
 import { Dropdown } from "bootstrap"
+import { FormsModule } from "@angular/forms"
 
 
 @Component({
   selector: "app-navbar",
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   template: `
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
       <div class="container">
@@ -53,23 +54,40 @@ import { Dropdown } from "bootstrap"
           </ul>
 
           <div class="d-flex align-items-center">
-            <div class="search-container me-3">
+            
+  <div class="search-container me-3" style="width: 250px;">
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search products..."
+      [(ngModel)]="navSearchTerm"
+      (keyup.enter)="onNavSearch()">
+    <i class="fas fa-search search-icon"></i>
+  </div>
+
+            <!-- <div class="search-container me-3">
               <input type="search" class="form-control" placeholder="Search products...">
               <i class="fas fa-search search-icon"></i>
-            </div>
+            </div> -->
 
             <ng-container *ngIf="currentUser; else loginLinks">
               <a routerLink="/wallet" class="btn btn-outline-primary me-2" routerLinkActive="active">
                 <i class="fas fa-wallet me-1"></i>Wallet
               </a>
         
-              <a href="#" class="btn btn-outline-primary me-2 position-relative">
-                <i class="fas fa-shopping-cart"></i>
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
-              </a>
+       <div class="position-relative d-inline-block  me-3">
+  <!-- Badge Positioned Above -->
+  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger z-1">
+    45
+  </span>
 
+  <!-- Button -->
+  <a href="#" class="btn btn-outline-primary">
+    <i class="fas fa-heart"></i>
+  </a>
+</div>
               <div class="dropdown">
-                <button class="btn btn-light rounded-pill px-4 py-2 shadow-sm d-flex align-items-center gap-2"
+                <button class="btn btn-outline-primary rounded-pill px-4 py-2 shadow-sm d-flex align-items-center gap-2"
                         type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="fas fa-user-circle fa-lg text-primary"></i>
                   <span class="fw-semibold">{{ currentUser.fullName }}</span>
@@ -139,6 +157,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   isAdmin: boolean = false;
   showAdminDropdown = false;
   showUserDropdown = false;
+  navSearchTerm = "";
 
   constructor(
     private authService: AuthService,
@@ -166,6 +185,11 @@ export class NavbarComponent implements OnInit, AfterViewInit {
       this.router.navigate(['/admin']);
     } else {
       this.router.navigate(['/profile']);
+    }
+  }
+  onNavSearch() {
+    if (this.navSearchTerm.trim()) {
+      this.router.navigate(['/products'], { queryParams: { search: this.navSearchTerm.trim() } });
     }
   }
 

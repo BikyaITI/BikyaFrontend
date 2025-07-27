@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core"
 import  { HttpClient } from "@angular/common/http"
 import  { Observable } from "rxjs"
 import  { ApiResponse } from "../models/api-response.model"
-import  {  CreateProductRequest, IProduct } from "../models/product.model"
+import  {  CreateProductImageRequest, CreateProductRequest, IProduct } from "../models/product.model"
 import { environment } from "../../../environments/environment"
 
 @Injectable({
@@ -19,7 +19,7 @@ export class ProductService {
   }
 
   getProductById(id: number): Observable<ApiResponse<IProduct>> {
-    return this.http.get<ApiResponse<IProduct>>(`${this.API_URL}/approved/${id}`)
+    return this.http.get<ApiResponse<IProduct>>(`${this.API_URL}/Product/${id}`)
   }
 
   getProductsByUser(userId: number): Observable<ApiResponse<IProduct[]>> {
@@ -37,6 +37,9 @@ export class ProductService {
 
   createProductWithImages(formData: FormData): Observable<ApiResponse<boolean>> {
     return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/with-images`, formData)
+  }
+  createImage(productId:number,image: CreateProductImageRequest): Observable<ApiResponse<boolean>> {
+    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/${productId}/images`,image)
   }
 
   updateProduct(id: number, formData: FormData): Observable<ApiResponse<boolean>> {

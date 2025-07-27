@@ -5,12 +5,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { IProduct } from '../../../core/models/product.model';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-product-management',
   templateUrl: './product-management.component.html',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,RouterLink],
 })
 export class ProductManagementComponent implements OnInit {
   products: IProduct[] = [];
@@ -19,7 +20,7 @@ export class ProductManagementComponent implements OnInit {
   searchTerm = '';
   isDeleting: { [key: number]: boolean } = {};
   isApproving: { [key: number]: boolean } = {};
-  isRejecting: { [key: number]: boolean } = {};
+  // isRejecting: { [key: number]: boolean } = {};
 
   productService = inject(ProductService);
   toastr = inject(ToastrService);
@@ -194,59 +195,59 @@ export class ProductManagementComponent implements OnInit {
     });
   }
 
-  async confirmReject(product: IProduct) {
-    const result = await Swal.fire({
-      title: 'تأكيد الرفض',
-      text: `هل أنت متأكد من رفض المنتج "${product.title}"؟`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#dc3545',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'نعم، ارفض',
-      cancelButtonText: 'إلغاء',
-      reverseButtons: true
-    });
+  // async confirmReject(product: IProduct) {
+  //   const result = await Swal.fire({
+  //     title: 'تأكيد الرفض',
+  //     text: `هل أنت متأكد من رفض المنتج "${product.title}"؟`,
+  //     icon: 'warning',
+  //     showCancelButton: true,
+  //     confirmButtonColor: '#dc3545',
+  //     cancelButtonColor: '#6c757d',
+  //     confirmButtonText: 'نعم، ارفض',
+  //     cancelButtonText: 'إلغاء',
+  //     reverseButtons: true
+  //   });
 
-    if (result.isConfirmed) {
-      this.rejectProduct(product.id);
-    }
-  }
+  //   if (result.isConfirmed) {
+  //     this.rejectProduct(product.id);
+  //   }
+  // }
 
-  rejectProduct(id: number) {
-    this.isRejecting[id] = true;
-    this.productService.rejectProduct(id).subscribe({
-      next: (res: any) => {
-        this.isRejecting[id] = false;
-        if (res.success) {
-          this.toastr.success(res.message || 'Product rejected successfully');
-          this.loadProducts();
-        } else {
-          this.toastr.error(res.message || 'Failed to reject product');
-        }
-      },
-      error: (err: any) => {
-        this.isRejecting[id] = false;
-        let errorMsg = 'Failed to reject product.';
+  // rejectProduct(id: number) {
+  //   this.isRejecting[id] = true;
+  //   this.productService.rejectProduct(id).subscribe({
+  //     next: (res: any) => {
+  //       this.isRejecting[id] = false;
+  //       if (res.success) {
+  //         this.toastr.success(res.message || 'Product rejected successfully');
+  //         this.loadProducts();
+  //       } else {
+  //         this.toastr.error(res.message || 'Failed to reject product');
+  //       }
+  //     },
+  //     error: (err: any) => {
+  //       this.isRejecting[id] = false;
+  //       let errorMsg = 'Failed to reject product.';
         
-        if (err?.error?.message) {
-          errorMsg = err.error.message;
-        } else if (err?.message) {
-          errorMsg = err.message;
-        } else if (err?.status === 401) {
-          errorMsg = 'Unauthorized. Please login again.';
-        } else if (err?.status === 403) {
-          errorMsg = 'Access denied. You do not have permission to reject products.';
-        } else if (err?.status === 404) {
-          errorMsg = 'Product not found.';
-        } else if (err?.status >= 500) {
-          errorMsg = 'Server error. Please try again later.';
-        }
+  //       if (err?.error?.message) {
+  //         errorMsg = err.error.message;
+  //       } else if (err?.message) {
+  //         errorMsg = err.message;
+  //       } else if (err?.status === 401) {
+  //         errorMsg = 'Unauthorized. Please login again.';
+  //       } else if (err?.status === 403) {
+  //         errorMsg = 'Access denied. You do not have permission to reject products.';
+  //       } else if (err?.status === 404) {
+  //         errorMsg = 'Product not found.';
+  //       } else if (err?.status >= 500) {
+  //         errorMsg = 'Server error. Please try again later.';
+  //       }
         
-        this.toastr.error(errorMsg);
-        console.error('Error rejecting product:', err);
-      }
-    });
-  }
+  //       this.toastr.error(errorMsg);
+  //       console.error('Error rejecting product:', err);
+  //     }
+  //   });
+  // }
 
   getStatusBadgeClass(product: IProduct): string {
     if (product.isApproved === true) return 'bg-success';

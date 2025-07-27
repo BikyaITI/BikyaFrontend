@@ -38,3 +38,7 @@ export interface CreateProductWithImagesRequest extends CreateProductRequest {
   mainImage: File
   additionalImages: File[]
 }
+export interface CreateProductImageRequest {
+  image: File
+  isMain: boolean
+}

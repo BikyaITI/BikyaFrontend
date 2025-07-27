@@ -142,7 +142,7 @@
                     id="mainImage"
                     (change)="onMainImageSelected($event)"
                     accept="image/*"
-                    [class.is-invalid]="!mainImage && submitted">
+                    [class.is-invalid]="!mainImagePreview && submitted">
                   <div class="invalid-feedback">
                     Main image is required
                   </div>

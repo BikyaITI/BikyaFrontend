@@ -64,14 +64,12 @@ div class="container">
           <td>{{ product.createdAt | date:'short' }}</td>
           <td>
             <div class="btn-group" role="group" [attr.aria-label]="'Actions for product ' + product.title">
-              <button class="btn btn-danger btn-sm me-1" 
-                      [disabled]="isDeleting[product.id]" 
-                      (click)="confirmDelete(product)"
-                      title="Delete product permanently"
-                      [attr.aria-label]="'Delete product ' + product.title">
-                <span *ngIf="isDeleting[product.id]" class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-                <i class="fas fa-trash" *ngIf="!isDeleting[product.id]" aria-hidden="true"></i> Delete
-              </button>
+              <a class="btn btn-primary btn-sm me-1" 
+                      title="View Product"
+                      [attr.aria-label]="'view product ' + product.title"
+               [routerLink]="['/products', product.id]">
+                 <i class="bi bi-eye"></i>  View
+            </a>
               
               <button class="btn btn-success btn-sm me-1" 
                       [disabled]="isApproving[product.id] || product.isApproved" 
@@ -81,14 +79,22 @@ div class="container">
                 <span *ngIf="isApproving[product.id]" class="spinner-border spinner-border-sm" aria-hidden="true"></span>
                 <i class="fas fa-check" *ngIf="!isApproving[product.id]" aria-hidden="true"></i> Approve
               </button>
-              <button class="btn btn-warning btn-sm" 
+                <button class="btn btn-danger btn-sm me-1" 
+                      [disabled]="isDeleting[product.id]" 
+                      (click)="confirmDelete(product)"
+                      title="Delete product permanently"
+                      [attr.aria-label]="'Delete product ' + product.title">
+                <span *ngIf="isDeleting[product.id]" class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                <i class="fas fa-trash" *ngIf="!isDeleting[product.id]" aria-hidden="true"></i> Reject
+              </button>
+              <!-- <button class="btn btn-danger btn-sm" 
                       [disabled]="isRejecting[product.id] || !product.isApproved" 
                       (click)="confirmReject(product)"
                       title="Reject product"
                       [attr.aria-label]="'Reject product ' + product.title">
                 <span *ngIf="isRejecting[product.id]" class="spinner-border spinner-border-sm" aria-hidden="true"></span>
                 <i class="fas fa-times" *ngIf="!isRejecting[product.id]" aria-hidden="true"></i> Reject
-              </button>
+              </button> -->
             </div>
           </td>
         </tr>
@@ -100,4 +106,3 @@ div class="container">
   <div *ngIf="!isLoading && !products.length" class="alert alert-info" role="status">
     <i class="fas fa-info-circle" aria-hidden="true"></i> No products found.
   </div>
-</div> 
