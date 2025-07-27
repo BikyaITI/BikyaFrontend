@@ -135,9 +135,9 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   @ViewChild('dropdownBtn', { static: false }) dropdownBtn?: ElementRef;
 
   currentUser: IUser | null = null;
-  isAdmin: boolean = false
-  showAdminDropdown = false
-  showUserDropdown = false
+  isAdmin: boolean = false;
+  showAdminDropdown = false;
+  showUserDropdown = false;
 
   constructor(
     private authService: AuthService,
@@ -147,6 +147,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
+      this.isAdmin = this.checkIfAdmin(user);
     });
   }
 
@@ -168,14 +169,14 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   }
 
   private checkIfAdmin(user: IUser | null): boolean {
-    if (!user || !user.roles) return false
-    return user.roles.includes('Admin')
+    if (!user || !user.roles) return false;
+    return user.roles.includes('Admin');
   }
 
   toggleAdminDropdown(event: Event): void {
-    event.preventDefault()
-    this.showAdminDropdown = !this.showAdminDropdown
-    this.showUserDropdown = false
+    event.preventDefault();
+    this.showAdminDropdown = !this.showAdminDropdown;
+    this.showUserDropdown = false;
   }
 
   toggleUserDropdown(event: Event): void {
@@ -185,7 +186,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   }
 
   hideAdminDropdown(): void {
-    this.showAdminDropdown = false
+    this.showAdminDropdown = false;
   }
 
   hideUserDropdown(): void {
