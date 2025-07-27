@@ -41,35 +41,73 @@ export class ProductDetailComponent implements OnInit {
     private fb: FormBuilder,
   ) { }
 
-  ngOnInit(): void {
+    ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user
     })
 
     this.route.params.subscribe((params) => {
       const id = +params["id"]
-      if (!id || isNaN(id)) {
-        alert("Invalid product ID.")
-        return
-      }
+        if (!id || isNaN(id)) {
+    alert("Invalid product ID.")
+    return
+  }
       this.loadProduct(id)
     })
   }
 
-  loadProduct(id: number): void {
+    loadProduct(id: number): void {
+    console.log('Loading product with ID:', id)
     this.isLoading = true
+    
+    // Try to get product by ID first
     this.productService.getProductById(id).subscribe({
       next: (response) => {
+        console.log('Product response:', response)
         if (response.success) {
           this.product = response.data
+          console.log('Product loaded:', this.product)
           this.selectedImage = this.getMainImage(this.product)
           this.loadRelatedProducts()
+        } else {
+          console.error('Failed to load product:', response.message)
+          // Try to get from all products as fallback
+          this.loadProductFromAllProducts(id)
         }
         this.isLoading = false
       },
-      error: () => {
+      error: (error) => {
+        console.error('Error loading product:', error)
+        this.errorMessage = `Failed to load product: ${error.status} ${error.statusText}`
+        // Try to get from all products as fallback
+        this.loadProductFromAllProducts(id)
+      },
+    })
+  }
+
+  private loadProductFromAllProducts(id: number): void {
+    console.log('Trying to load product from all products as fallback')
+    this.productService.getAllProducts().subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          const product = response.data.find(p => p.id === id)
+          if (product) {
+            this.product = product
+            console.log('Product found in all products:', this.product)
+            this.selectedImage = this.getMainImage(this.product)
+            this.loadRelatedProducts()
+          } else {
+            console.error('Product not found in all products')
+            this.errorMessage = 'Product not found'
+          }
+        }
         this.isLoading = false
       },
+      error: (error) => {
+        console.error('Error loading all products:', error)
+        this.errorMessage = `Failed to load products: ${error.status} ${error.statusText}`
+        this.isLoading = false
+      }
     })
   }
 

@@ -1,8 +1,9 @@
-import { Component,  OnInit } from "@angular/core"
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from "@angular/core"
 import { CommonModule } from "@angular/common"
-import { RouterModule,  Router } from "@angular/router"
-import  { AuthService } from "../../../core/services/auth.service"
+import { RouterModule, Router } from "@angular/router"
+import { AuthService } from "../../../core/services/auth.service"
 import { IUser } from "../../../core/models/user.model"
+import { Dropdown } from "bootstrap"
 
 
 @Component({
@@ -37,6 +38,18 @@ import { IUser } from "../../../core/models/user.model"
             <li class="nav-item" *ngIf="currentUser">
               <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
             </li>
+            <!-- Admin Links -->
+            <li class="nav-item dropdown" *ngIf="isAdmin">
+              <a class="nav-link dropdown-toggle" href="#" role="button" (click)="toggleAdminDropdown($event)">
+                Admin
+              </a>
+              <ul class="dropdown-menu" [class.show]="showAdminDropdown">
+                <li><a class="dropdown-item" routerLink="/admin" (click)="hideAdminDropdown()"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                <li><a class="dropdown-item" routerLink="/admin/users" (click)="hideAdminDropdown()"><i class="fas fa-users me-2"></i>Users</a></li>
+                <li><a class="dropdown-item" routerLink="/admin/products" (click)="hideAdminDropdown()"><i class="fas fa-box me-2"></i>Products</a></li>
+                <li><a class="dropdown-item" routerLink="/admin/orders" (click)="hideAdminDropdown()"><i class="fas fa-receipt me-2"></i>Orders</a></li>
+              </ul>
+            </li>
           </ul>
 
           <div class="d-flex align-items-center">
@@ -56,16 +69,50 @@ import { IUser } from "../../../core/models/user.model"
               </a>
 
               <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                  <i class="fas fa-user me-1"></i>{{currentUser.fullName}}
+                <button class="btn btn-light rounded-pill px-4 py-2 shadow-sm d-flex align-items-center gap-2"
+                        type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-user-circle fa-lg text-primary"></i>
+                  <span class="fw-semibold">{{ currentUser.fullName }}</span>
+                  <i class="fas fa-chevron-down ms-2"></i>
                 </button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" routerLink="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
-                  <li><a class="dropdown-item" routerLink="/my-products"><i class="fas fa-box me-2"></i>My Products</a></li>
-                  <li><a class="dropdown-item" routerLink="/orders"><i class="fas fa-receipt me-2"></i>Orders</a></li>
-                  <li><a class="dropdown-item" routerLink="/wallet"><i class="fas fa-wallet me-2"></i>Wallet</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#" (click)="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm mt-2 rounded-4" aria-labelledby="dropdownMenuButton">
+                  <li><h6 class="dropdown-header text-muted small">My Account</h6></li>
+
+                  <a
+                    class="dropdown-item d-flex align-items-center gap-2 py-2"
+                    (click)="goToProfile()"
+                    style="cursor: pointer;"
+                  >
+                    <i class="fas fa-user text-primary"></i> 
+                    <span class="fw-medium">Profile</span>
+                  </a>
+
+                  <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" routerLink="/my-products">
+                      <i class="fas fa-baby-carriage text-success"></i> <span class="fw-medium">My Products</span>
+                    </a>
+                  </li>
+
+                  <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" routerLink="/orders">
+                      <i class="fas fa-receipt text-info"></i> <span class="fw-medium">Orders</span>
+                    </a>
+                  </li>
+
+                  <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" routerLink="/wallet">
+                      <i class="fas fa-wallet text-warning"></i> <span class="fw-medium">Wallet</span>
+                    </a>
+                  </li>
+
+                  <li><hr class="dropdown-divider my-1"></li>
+
+                  <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-2 text-danger fw-medium cursor-pointer" href="/logout" (click)="logout()">
+                      <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                  </li>
                 </ul>
               </div>
             </ng-container>
@@ -79,37 +126,77 @@ import { IUser } from "../../../core/models/user.model"
       </div>
     </nav>
   `,
+  styles: [`
+    .dropdown-menu.show {
+      display: block !important;
+    }
+  `]
 })
-export class NavbarComponent implements OnInit {
-  currentUser: IUser | null = null
+export class NavbarComponent implements OnInit, AfterViewInit {
+  @ViewChild('dropdownBtn', { static: false }) dropdownBtn?: ElementRef;
+
+  currentUser: IUser | null = null;
+  isAdmin: boolean = false;
+  showAdminDropdown = false;
+  showUserDropdown = false;
 
   constructor(
     private authService: AuthService,
-    private router: Router,
-  ) {}
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
-      this.currentUser = user
-      if (user) {
-        console.log("Current User:", user);
-      } else {
-        console.log("No user is currently logged in.");
-      }
-    })
+      this.currentUser = user;
+      this.isAdmin = this.checkIfAdmin(user);
+    });
+  }
+
+  ngAfterViewInit(): void {
+    if (this.dropdownBtn) {
+      new Dropdown(this.dropdownBtn.nativeElement);
+    }
+  }
+
+  goToProfile(): void {
+    const user = this.authService.getCurrentUser();
+    const roles = user?.roles; // نوعها: string[] | undefined
+
+    if (roles?.includes('Admin')) {
+      this.router.navigate(['/admin']);
+    } else {
+      this.router.navigate(['/profile']);
+    }
+  }
+
+  private checkIfAdmin(user: IUser | null): boolean {
+    if (!user || !user.roles) return false;
+    return user.roles.includes('Admin');
+  }
+
+  toggleAdminDropdown(event: Event): void {
+    event.preventDefault();
+    this.showAdminDropdown = !this.showAdminDropdown;
+    this.showUserDropdown = false;
+  }
+
+  toggleUserDropdown(event: Event): void {
+    event.preventDefault()
+    this.showUserDropdown = !this.showUserDropdown
+    this.showAdminDropdown = false
+  }
+
+  hideAdminDropdown(): void {
+    this.showAdminDropdown = false;
+  }
+
+  hideUserDropdown(): void {
+    this.showUserDropdown = false
   }
 
   logout(): void {
-    console.log("Logging out...");
-    this.authService.logout().subscribe({
-      next: () => {
-        console.log("Logout successful");
-        this.router.navigate(["/"]);
-      },
-      error: (err) => {
-        console.error("Logout failed:", err);
-      }
-    });
-    this.router.navigate(["/"])
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
 }
+

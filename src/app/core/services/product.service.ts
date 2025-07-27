@@ -13,12 +13,13 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
+  // Public endpoints - approved products
   getApprovedProducts(): Observable<ApiResponse<IProduct[]>> {
     return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/approved`)
   }
 
   getProductById(id: number): Observable<ApiResponse<IProduct>> {
-    return this.http.get<ApiResponse<IProduct>>(`${this.API_URL}/Product/${id}`)
+    return this.http.get<ApiResponse<IProduct>>(`${this.API_URL}/approved/${id}`)
   }
 
   getProductsByUser(userId: number): Observable<ApiResponse<IProduct[]>> {
@@ -29,8 +30,9 @@ export class ProductService {
     return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/category/${categoryId}`)
   }
 
+  // CRUD operations (require authentication)
   createProduct(product: CreateProductRequest): Observable<ApiResponse<boolean>> {
-    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/Add`, product)
+    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/add`, product)
   }
 
   createProductWithImages(formData: FormData): Observable<ApiResponse<boolean>> {
@@ -52,13 +54,15 @@ export class ProductService {
   // Admin methods
   getAllProducts(): Observable<ApiResponse<IProduct[]>> {
     return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/all`)
+    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/all`)
   }
 
   getNotApprovedProducts(): Observable<ApiResponse<IProduct[]>> {
-    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/NotApprovedProducts`)
+    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/not-approved`)
   }
 
   approveProduct(id: number): Observable<ApiResponse<boolean>> {
+    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/approve/${id}`, {})
     return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/approve/${id}`, {})
   }
 

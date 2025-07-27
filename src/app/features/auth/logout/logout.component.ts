@@ -52,28 +52,9 @@ export class LogoutComponent implements OnInit {
   }
 
   private performLogout(): void {
-    // محاولة إرسال طلب logout للباكند
-    this.authService.logout().subscribe({
-      next: (response) => {
-        this.isLoading = false;
-        if (response.success) {
-          // تم تسجيل الخروج بنجاح من الباكند
-          console.log('Logout successful from backend');
-        } else {
-          // الباكند رجع خطأ، لكن نحن نمسح البيانات محلياً
-          console.warn('Backend logout failed, but clearing local data');
-        }
-        // في كل الحالات، نمسح البيانات المحلية
-        this.authService.logoutLocal();
-      },
-      error: (error) => {
-        this.isLoading = false;
-        console.error('Logout error:', error);
-        this.errorMessage = 'حدث خطأ أثناء تسجيل الخروج من الخادم، لكن تم مسح البيانات المحلية.';
-        
-        // حتى لو فشل الباكند، نمسح البيانات المحلية
-        this.authService.logoutLocal();
-      }
-    });
+    // مباشرة نمسح البيانات المحلية
+    this.authService.logout();
+    this.isLoading = false;
+    console.log('Logout completed');
   }
 } 

@@ -192,7 +192,14 @@ export class HomeComponent implements OnInit {
 
   getMainImage(product: IProduct): string {
     const mainImage = product.images?.find((img) => img.isMain)
-    return mainImage?.imageUrl || "/placeholder.svg?height=250&width=250"
+    if (mainImage?.imageUrl) {
+      // Check if the URL is relative and add the API base URL
+      if (mainImage.imageUrl.startsWith('/')) {
+        return `https://localhost:65162${mainImage.imageUrl}`
+      }
+      return mainImage.imageUrl
+    }
+    return "https://via.placeholder.com/250x250?text=No+Image"
   }
 
   getStarArray(count: number): number[] {
@@ -200,7 +207,8 @@ export class HomeComponent implements OnInit {
   }
 
   getRandomRating(): number {
-    return Math.floor(Math.random() * 50) + 10
+    // Use a fixed value to avoid ExpressionChangedAfterItHasBeenCheckedError
+    return 23
   }
 
   getOriginalPrice(currentPrice: number): number {

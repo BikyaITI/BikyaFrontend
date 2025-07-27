@@ -51,8 +51,7 @@ export class ProfileComponent implements OnInit {
       fullName: ["", Validators.required],
       email: ["", [Validators.required, Validators.email]],
       phone: [""],
-      address: [""],
-      bio: ["", Validators.maxLength(500)],
+   
     })
 
     this.passwordForm = this.fb.group(
@@ -76,6 +75,7 @@ export class ProfileComponent implements OnInit {
       this.profileForm.patchValue({
         fullName: user.fullName,
         email: user.email,
+        phone:user.phone
       });
       console.log(`User ID: ${user.id}`);
       this.loadUserStats();
@@ -102,20 +102,32 @@ export class ProfileComponent implements OnInit {
 }
 
 
- updateProfile(): void {
+updateProfile(): void {
   if (this.profileForm.valid && this.currentUser) {
     this.isUpdatingProfile = true;
     this.clearMessages();
 
     const updateRequest: IUpdateProfileRequest = {
       fullName: this.profileForm.get("fullName")?.value,
+      FullName: this.profileForm.get("fullName")?.value,
       email: this.profileForm.get("email")?.value,
     };
 
     this.userService.updateProfile(updateRequest).subscribe({
-      next: () => {
+      next: (response) => {
         this.isUpdatingProfile = false;
         this.profileSuccessMessage = "Profile updated successfully!";
+
+        // ✅ بناء نسخة جديدة من المستخدم يدويًا
+        const updatedUser = {
+          ...this.currentUser!,
+          fullName: updateRequest.fullName,
+          email: updateRequest.email
+        };
+
+        // ✅ تحديث localStorage والـ observable
+        this.authService.setCurrentUserToLacal(updatedUser);
+
         setTimeout(() => (this.profileSuccessMessage = ""), 3000);
       },
       error: (err) => {
@@ -126,6 +138,7 @@ export class ProfileComponent implements OnInit {
     });
   }
 }
+
 
 
 changePassword(): void {
