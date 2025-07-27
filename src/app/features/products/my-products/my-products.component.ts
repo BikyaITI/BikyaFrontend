@@ -11,13 +11,13 @@ import { IUser } from "../../../core/models/user.model"
 
 @Component({
   selector: 'app-my-products',
-  imports: [CommonModule, RouterModule,ProductListComponent],
+  imports: [CommonModule, RouterModule, ProductListComponent],
   templateUrl: './my-products.component.html',
   styleUrl: './my-products.component.scss'
 })
-export class MyProductsComponent implements OnInit  {
+export class MyProductsComponent implements OnInit {
 
- allProducts: IProduct[] = []
+  allProducts: IProduct[] = []
   approvedProducts: IProduct[] = []
   pendingProducts: IProduct[] = []
   inProcessProducts: IProduct[] = []
@@ -31,7 +31,7 @@ export class MyProductsComponent implements OnInit  {
   constructor(
     private productService: ProductService,
     private authService: AuthService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
@@ -47,34 +47,20 @@ export class MyProductsComponent implements OnInit  {
   }
 
   loadProducts(): void {
-    // if (!this.currentUser) return
-
-    // this.isLoading = true
-
-    // this.productService.getProductsByUser(this.currentUser.id).subscribe({
-    //   next: (response) => {
-    //     if (response.success) {
-    //       this.allProducts = response.data
-    //       this.approvedProducts = this.allProducts.filter((p) => p.isApproved&&p.status!=="InProcess")
-    //       this.pendingProducts = this.allProducts.filter((p) => !p.isApproved)
-    //       this.inProcessProducts = this.allProducts.filter((p) => p.status === "InProcess")
-    //       this.soldProducts = this.allProducts.filter((p) => p.status === "Sold" || p.status === "Traded")
-    //     }
-    //     this.isLoading = false
-    //   },
-    //   error: () => {
-    //     this.isLoading = false
-    //   },
-    // })
+    if (!this.currentUser) return
 
     this.isLoading = true
-    this.productService.getApprovedProducts().subscribe({
+
+    this.productService.getProductsByUser(this.currentUser.id).subscribe({
       next: (response) => {
         if (response.success) {
           this.allProducts = response.data
-          
-          this.isLoading = false
+          this.approvedProducts = this.allProducts.filter((p) => p.isApproved && p.status !== "InProcess")
+          this.pendingProducts = this.allProducts.filter((p) => !p.isApproved)
+          this.inProcessProducts = this.allProducts.filter((p) => p.status === "InProcess")
+          this.soldProducts = this.allProducts.filter((p) => p.status === "Sold" || p.status === "Traded")
         }
+        this.isLoading = false
       },
       error: () => {
         this.isLoading = false
@@ -106,11 +92,6 @@ export class MyProductsComponent implements OnInit  {
 
 
 
-  editProduct(product: IProduct): void {
-    // Navigate to edit product page
-    // For now, just show an alert
-    alert("Edit functionality will be implemented")
-  }
 
   deleteProduct(product: IProduct): void {
     this.productToDelete = product
@@ -145,5 +126,14 @@ export class MyProductsComponent implements OnInit  {
       },
     })
   }
+  openDeleteModal(product: IProduct): void {
+    this.productToDelete = product;
 
+    // Open Bootstrap modal programmatically
+    const modalEl = document.getElementById('deleteModal');
+    if (modalEl) {
+      const modal = new (window as any).bootstrap.Modal(document.getElementById("deleteModal"))
+      modal.show()
+    }
+  }
 }

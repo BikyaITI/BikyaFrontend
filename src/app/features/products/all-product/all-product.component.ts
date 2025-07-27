@@ -30,7 +30,7 @@ export class AllProductComponent implements OnInit {
   sortBy = ""
 
   currentPage = 1
-  itemsPerPage = 1
+  itemsPerPage = 10
   totalPages = 1
 
   constructor(
@@ -130,7 +130,7 @@ export class AllProductComponent implements OnInit {
 
     // Category filter
     if (this.selectedCategoryIds.length > 0) {
-      filtered = filtered.filter((product) => this.selectedCategoryIds.includes(product.category.id))
+      filtered = filtered.filter((product) => this.selectedCategoryIds.includes(product.categoryId))
     }
 
     // Condition filter

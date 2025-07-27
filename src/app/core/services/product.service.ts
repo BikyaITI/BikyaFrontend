@@ -22,7 +22,7 @@ export class ProductService {
   }
 
   getProductsByUser(userId: number): Observable<ApiResponse<IProduct[]>> {
-    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/UserProduct/${userId}`)
+    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/user/${userId}`)
   }
 
   getProductsByCategory(categoryId: number): Observable<ApiResponse<IProduct[]>> {
@@ -34,16 +34,20 @@ export class ProductService {
   }
 
   createProductWithImages(formData: FormData): Observable<ApiResponse<boolean>> {
-    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/AddWithImages`, formData)
+    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/with-images`, formData)
   }
 
-  updateProduct(id: number, product: CreateProductRequest): Observable<ApiResponse<boolean>> {
-    return this.http.put<ApiResponse<boolean>>(`${this.API_URL}/Update/${id}`, product)
+  updateProduct(id: number, formData: FormData): Observable<ApiResponse<boolean>> {
+    return this.http.put<ApiResponse<boolean>>(`${this.API_URL}/Update/${id}`, formData)
   }
 
   deleteProduct(id: number): Observable<ApiResponse<boolean>> {
-    return this.http.delete<ApiResponse<boolean>>(`${this.API_URL}/Delete/${id}`)
+    return this.http.delete<ApiResponse<boolean>>(`${this.API_URL}/${id}`)
   }
+  deleteImage(id: number): Observable<ApiResponse<boolean>> {
+    return this.http.delete<ApiResponse<boolean>>(`${this.API_URL}/images/${id}`)
+  }
+ 
 
   // Admin methods
   getAllProducts(): Observable<ApiResponse<IProduct[]>> {
@@ -55,10 +59,10 @@ export class ProductService {
   }
 
   approveProduct(id: number): Observable<ApiResponse<boolean>> {
-    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/ApproveProduct/${id}`, {})
+    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/approve/${id}`, {})
   }
 
   rejectProduct(id: number): Observable<ApiResponse<boolean>> {
-    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/RejectProduct/${id}`, {})
+    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/reject/${id}`, {})
   }
 }

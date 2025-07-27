@@ -3,6 +3,7 @@
       <div class="product-image">
         <img
           [src]="getMainImage(product()!)"
+          (error)="onImageError($event)"
           class="img-fluid"
           [alt]="product()!.title"
         />
@@ -60,7 +61,7 @@
         <button
           *ngIf="role() === 'user'"
           class="btn btn-primary btn-sm w-100 mt-2"
-          (click)="buy(product()!)"
+        [routerLink]="['/checkout']" [queryParams]="{ productId: product()!.id }"
         >
           <i class="bi bi-cart-plus"></i> Buy Now
         </button>
@@ -80,33 +81,35 @@
           </a>
           <button
             class="btn btn-outline-warning btn-sm"
-            (click)="editProduct(product()!)"
+          [routerLink]="['/edit-product', product()!.id]"
           >
             <i class="bi bi-pencil"></i> Edit
           </button>
           <button
             class="btn btn-outline-danger btn-sm"
-            (click)="deleteProduct(product()!)"
+             (click)="deleteClicked.emit()"
           >
             <i class="bi bi-trash"></i> Delete
           </button>
         </div>
-        <!-- admin action -->
+        <!-- admin action
 
         <div class="btn-group w-100" role="group" *ngIf="role() === 'admin'">
           <button
             class="btn btn-outline-success btn-sm"
-            (click)="editProduct(product()!)"
+            (click)="approveProduct()"
+            [disabled]="product()!.isApproved"
           >
             <i class="bi bi-pencil"></i> Approve
           </button>
           <button
             class="btn btn-outline-danger btn-sm"
-            (click)="deleteProduct(product()!)"
+            (click)="deleteClicked.emit()"
           >
             <i class="bi bi-trash"></i> Delete
           </button>
         </div>
-      </div>
-    </div>
-<!-- </div> -->
+      </div> -->
+      
+    <!-- </div> -->
+</div>

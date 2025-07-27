@@ -1,8 +1,9 @@
-import { Component, input } from '@angular/core';
+import { Component, EventEmitter, input, Output } from '@angular/core';
 import { IProduct } from '../../../core/models/product.model';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import{environment} from '../../../../environments/environment';
+import { ProductService } from '../../../core/services/product.service';
 
 @Component({
   selector: 'app-product-list',
@@ -14,7 +15,10 @@ export class ProductListComponent {
 
   product = input<IProduct>();
   role = input<string>();
-  constructor() {
+  @Output() deleteClicked = new EventEmitter<void>();
+
+
+  constructor(private productService: ProductService,) {
   console.log("ProductListComponent initialized with products:", this.product());
   
 }
@@ -29,6 +33,10 @@ getMainImage(product: IProduct): string {
     : 'product.png';
   }
 
+    onImageError(event: Event) {
+      (event.target as HTMLImageElement).src = 'product.png';
+    }
+  
   getConditionBadgeClass(condition: string): string {
     switch (condition.toLowerCase()) {
       case "new":
@@ -38,11 +46,8 @@ getMainImage(product: IProduct): string {
       default:
         return "bg-secondary"
     }
+    
   }
-
-
-
-
 
   buy(product: IProduct): void {
     // Implement add to cart logic
@@ -60,11 +65,8 @@ getMainImage(product: IProduct): string {
     alert("Edit functionality will be implemented")
   }
 
-  deleteProduct(product: IProduct): void {
-    // this.productToDelete = product
-    // const modal = new (window as any).bootstrap.Modal(document.getElementById("deleteModal"))
-    // modal.show()
-    alert("Delete functionality will be implemented")
-  }
 
+
+
+  
 }

@@ -49,6 +49,7 @@ import { IUser } from "../../../core/models/user.model"
               <a routerLink="/wallet" class="btn btn-outline-primary me-2" routerLinkActive="active">
                 <i class="fas fa-wallet me-1"></i>Wallet
               </a>
+        
               <a href="#" class="btn btn-outline-primary me-2 position-relative">
                 <i class="fas fa-shopping-cart"></i>
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
@@ -99,7 +100,16 @@ export class NavbarComponent implements OnInit {
   }
 
   logout(): void {
-    this.authService.logout()
+    console.log("Logging out...");
+    this.authService.logout().subscribe({
+      next: () => {
+        console.log("Logout successful");
+        this.router.navigate(["/"]);
+      },
+      error: (err) => {
+        console.error("Logout failed:", err);
+      }
+    });
     this.router.navigate(["/"])
   }
 }

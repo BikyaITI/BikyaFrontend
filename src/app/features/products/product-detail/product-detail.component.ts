@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { IProduct } from '../../../core/models/product.model';
 import { IUser } from '../../../core/models/user.model';
 import { AuthService } from '../../../core/services/auth.service';
@@ -12,7 +12,7 @@ import { ProductListComponent } from '../../../shared/components/product-list/pr
 
 @Component({
   selector: 'app-product-detail',
-  imports: [CommonModule, RouterModule, ReactiveFormsModule ,ProductListComponent],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule ,ProductListComponent,RouterLink],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss'
 })
@@ -23,26 +23,28 @@ export class ProductDetailComponent implements OnInit {
   currentUser: IUser | null = null
   isLoading = true
   isPlacingOrder = false
-
-  orderForm: FormGroup
+  doAction = false
+  errorMessage = ""
+  successMessage=""
+  confirmTitle = '';
+  confirmMessage = '';
+  confirmButtonText = '';
+  confirmType: 'approve' | 'delete' = 'delete';
+  confirmbuttonLoading=""
 
   constructor(
     private route: ActivatedRoute,
     private productService: ProductService,
     private authService: AuthService,
     private orderService: OrderService,
+    private router: Router,
     private fb: FormBuilder,
-  ) {
-    this.orderForm = this.fb.group({
-      quantity: [1, [Validators.required, Validators.min(1)]],
-      shippingAddress: ["", Validators.required],
-    })
-  }
+  ) { }
 
   ngOnInit(): void {
-    // this.authService.currentUser$.subscribe((user) => {
-    //   this.currentUser = user
-    // })
+    this.authService.currentUser$.subscribe((user) => {
+      this.currentUser = user
+    })
 
     this.route.params.subscribe((params) => {
       const id = +params["id"]
@@ -100,89 +102,76 @@ export class ProductDetailComponent implements OnInit {
   GetImage(imageUrl: string): string {
     return imageUrl ? `${environment.apiUrl}${imageUrl}` : 'product.png';
   }
-  calculateTotal(): number {
-    if (!this.product) return 0
-    const quantity = this.orderForm.get("quantity")?.value || 1
-    return this.product.price * quantity
+
+
+  
+  
+  deleteProduct(): void {
+    this.confirmTitle = 'Confirm Delete';
+    this.confirmMessage = 'Are you sure you want to delete ';
+    this.confirmButtonText = 'Delete Product';
+    this.confirmType = 'delete';
+    this.confirmbuttonLoading="Deleting..."
+    const modal = new (window as any).bootstrap.Modal(document.getElementById("Modal"))
+    modal.show()
   }
 
-  // placeOrder(): void {
-  //   if (this.orderForm.valid && this.product) {
-  //     this.isPlacingOrder = true
+  approveProduct(): void {
+    this.confirmTitle = 'Confirm Approve';
+    this.confirmMessage = 'Are you sure you want to approve ';
+    this.confirmButtonText = 'Approve Product';
+    this.confirmType = 'approve';
+    this.confirmbuttonLoading = "Approving..."
+    const modal = new (window as any).bootstrap.Modal(document.getElementById("Modal"))
+    modal.show()
+  }
 
-  //     const orderRequest = {
-  //       productId: this.product.id,
-  //       quantity: this.orderForm.get("quantity")?.value,
-  //       shippingAddress: this.orderForm.get("shippingAddress")?.value,
-  //     }
+  confirmAction(): void {
+    if (!this.product) return
 
-      // this.orderService.createOrder(orderRequest).subscribe({
-      //   next: (response) => {
-      //     this.isPlacingOrder = false
-      //     if (response.success) {
-      //       // Close modal and show success message
-      //       const modal = document.getElementById("orderModal")
-      //       if (modal) {
-      //         const bsModal = (window as any).bootstrap.Modal.getInstance(modal)
-      //         bsModal?.hide()
-      //       }
-      //       alert("Order placed successfully!")
-      //     }
-      //   },
-      //   error: () => {
-      //     this.isPlacingOrder = false
-      //     alert("Failed to place order. Please try again.")
-      //   },
-      // })
-    
-  
-  //     this.orderService.createOrder(orderRequest).subscribe({
-  //       next: (response) => {
-  //         this.isPlacingOrder = false
-  //         if (response.success) {
-  //           // Close modal and show success message
-  //           const modal = document.getElementById("orderModal")
-  //           if (modal) {
-  //             const bsModal = (window as any).bootstrap.Modal.getInstance(modal)
-  //             bsModal?.hide()
-  //           }
-  //           alert("Order placed successfully!")
-  //         }
-  //       },
-  //       error: () => {
-  //         this.isPlacingOrder = false
-  //         alert("Failed to place order. Please try again.")
-  //       },
-  //     })
-  //   }
-  // }
-
-  deleteProduct(): void {
-    if (this.product && confirm("Are you sure you want to delete this product?")) {
+    this.doAction = true
+    if (this.confirmType === "delete") {
       this.productService.deleteProduct(this.product.id).subscribe({
         next: (response) => {
+          this.doAction = false
           if (response.success) {
-            alert("Product deleted successfully!")
-            // Navigate back to products list
+            this.router.navigate(['/dashboard']);
           }
         },
         error: (err) => {
-          alert("Failed to delete product."+err.message)
-        },
+          this.doAction = false
+          this.errorMessage = `Error : ${err.message}`
+          const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById("Modal"))
+          modal.hide()
+          //show error
+        }
       })
     }
+    if (this.confirmType === "approve") {
+      this.productService.approveProduct(this.product.id).subscribe({
+        next: (response) => {
+          this.doAction = false
+          if (response.success) {
+            this.successMessage = "Product Approved successfully"
+            const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById("Modal"))
+            modal.hide()
+          }
+        },
+        error: (err) => {
+          this.doAction = false
+          this.errorMessage = `Error : ${err.message}`
+          const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById("deleteModal"))
+          modal.hide()
+          //show error
+        }
+      })
+    }
+    
   }
   AddToWishlist(): void {
     if (this.product) {
       // Implement wishlist logic here
       alert("Product added to wishlist!")
-    }
-  }
-  EditProduct(): void {
-    if (this.product) {
-
-      // this.router.navigate(['/edit-product', this.product.id]);
-      alert("Navigate to edit product page")
     }
   }
 
@@ -197,6 +186,15 @@ export class ProductDetailComponent implements OnInit {
     }
   }
   showRelatedProducts(): boolean|null {
-    return this.relatedProducts.length > 0 && this.currentUser && this.currentUser.role !== 'admin';
+    return this.relatedProducts.length > 0 && this.currentUser && !this.currentUser.roles?.includes("Admin");
+  }
+
+  getRole(): string{
+    if (this.currentUser?.roles?.includes('Admin'))
+      return "admin";
+    else if (this.currentUser?.id === this.product?.userId)
+      return "owner"
+    else
+      return "user"
   }
 }

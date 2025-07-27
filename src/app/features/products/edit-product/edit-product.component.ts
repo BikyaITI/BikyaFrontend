@@ -1,36 +1,40 @@
-import { Component,  OnInit } from "@angular/core"
+import { Component, OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
-import { ReactiveFormsModule,  FormBuilder,  FormGroup, Validators } from "@angular/forms"
-import  { Router } from "@angular/router"
-import  { ProductService } from "../../../core/services/product.service"
-import  { CategoryService } from "../../../core/services/category.service"
-import  { IProduct } from "../../../core/models/product.model"
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from "@angular/forms"
+import { Router, ActivatedRoute } from "@angular/router"
+import { ProductService } from "../../../core/services/product.service"
+import { CategoryService } from "../../../core/services/category.service"
+import { IProduct } from "../../../core/models/product.model"
 import { ICategory } from "../../../core/models/icategory"
 import { map } from 'rxjs/operators';
 import { environment } from "../../../../environments/environment"
 @Component({
-  selector: 'app-add-product',
-   imports: [CommonModule, ReactiveFormsModule],
-templateUrl: './add-product.component.html',
-  styleUrl: './add-product.component.scss'
+  selector: 'app-edit-product',
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './edit-product.component.html',
+  styleUrl: './edit-product.component.scss'
 })
-export class AddProductComponent implements OnInit {
+export class EditProductComponent implements OnInit {
   productForm: FormGroup
+  productId: number  = 0;
   categories: ICategory[] = []
   mainImage: File | null = null
   additionalImages: File[] = []
   mainImagePreview: string | null = null
   additionalImagePreviews: string[] = []
+  initialMainImageUrl: string | null = null;
+  initialAdditionalImages: string[] = [];
   isSubmitting = false
   submitted = false
   errorMessage = ""
   successMessage = ""
-  product:IProduct | null = null
+  product: IProduct | null = null
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
     private categoryService: CategoryService,
     private router: Router,
+    private route: ActivatedRoute
   ) {
     this.productForm = this.fb.group({
       title: ["", [Validators.required, Validators.maxLength(100)]],
@@ -43,25 +47,68 @@ export class AddProductComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const idParam = this.route.snapshot.paramMap.get('id');
+      this.productId = idParam ? +idParam : 0; 
     this.loadCategories()
+    this.loadProduct()
+  }
+  loadProduct(): void {
 
+    this.productService.getProductById(this.productId).subscribe({
+      next: (response) => {
+        if (response.success) {
+          const product = response.data
+          this.productForm.patchValue({
+            title: product.title,
+            description: product.description,
+            price: product.price,
+            categoryId: product.categoryId,
+            condition: product.condition,
+            isForExchange: product.isForExchange,
+          })
+          // Load main image and additional images if available
+          if (product.images) {
+            this.mainImagePreview = this.getMainImage(product)
+            this.initialMainImageUrl = this.getMainImage(product)
+          }
+          if (product.images && product.images.length > 1) {
+            this.additionalImagePreviews = this.getAdditionalImages(product)
+            this.initialAdditionalImages = this.getAdditionalImages(product)
+          }
+
+        } else {
+          console.error("Failed to load product:", response.message)
+        }
+      }
+    })
   }
 
   loadCategories(): void {
-  this.categoryService.getAll().subscribe({
-    next: (response) => {
-      if (response.success) {
-        console.log("Loaded categories:", response.data); // 👈 See the categories
-        this.categories = response.data;
-      } else {
-        console.warn("Failed to load categories:", response.message);
+    this.categoryService.getAll().subscribe({
+      next: (response) => {
+        if (response.success) {
+          console.log("Loaded categories:", response.data); // 👈 See the categories
+          this.categories = response.data;
+        } else {
+          console.warn("Failed to load categories:", response.message);
+        }
+      },
+      error: (err) => {
+        console.error("Error loading categories:", err); // 👈 Handle error if request fails
       }
-    },
-    error: (err) => {
-      console.error("Error loading categories:", err); // 👈 Handle error if request fails
-    }
-  });
-}
+    });
+  }
+
+  getMainImage(product: IProduct): string {
+    const mainImage = product.images?.find((img) => img.isMain)
+    return mainImage && mainImage.imageUrl
+      ? `${environment.apiUrl}${mainImage.imageUrl}`
+      : 'product.png';
+  }
+  getAdditionalImages(product: IProduct): string[] {
+    const image = product.images.filter(image => !image.isMain)
+    return image.length > 0 ? image.map(i => `${environment.apiUrl}${i.imageUrl}`) : [];
+  }
   onMainImageSelected(event: any): void {
     const file = event.target.files[0]
     if (file) {
@@ -144,17 +191,20 @@ export class AddProductComponent implements OnInit {
       formData.append("categoryId", this.productForm.get("categoryId")?.value)
       formData.append("condition", this.productForm.get("condition")?.value)
       formData.append("isForExchange", this.productForm.get("isForExchange")?.value)
-      formData.append("mainImage", this.mainImage)
+      // formData.append("mainImage", this.mainImage)
 
-      this.additionalImages.forEach((image, index) => {
-        formData.append("additionalImages", image)
-      })
-
-      this.productService.createProductWithImages(formData).subscribe({
+      // this.additionalImages.forEach((image, index) => {
+      //   formData.append("additionalImages", image)
+      // })
+      // if (this.initialMainImageUrl !== this.mainImagePreview) {
+      //   this.productService.deleteImage(initialMainImageUrl).subscribe
+      //  }
+      
+      this.productService.updateProduct(this.productId,formData).subscribe({
         next: (response) => {
           this.isSubmitting = false
           if (response.success) {
-            this.successMessage = "Product added successfully! It will be reviewed by admin before being published."
+            this.successMessage = "Product updated successfully! It will be reviewed by admin before being republished."
             setTimeout(() => {
               this.router.navigate(["/my-products"])
             }, 2000)
