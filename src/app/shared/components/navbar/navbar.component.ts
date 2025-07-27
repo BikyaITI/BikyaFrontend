@@ -1,7 +1,7 @@
-import { AfterViewInit, Component,  ElementRef,  OnInit, ViewChild } from "@angular/core"
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from "@angular/core"
 import { CommonModule } from "@angular/common"
-import { RouterModule,  Router } from "@angular/router"
-import  { AuthService } from "../../../core/services/auth.service"
+import { RouterModule, Router } from "@angular/router"
+import { AuthService } from "../../../core/services/auth.service"
 import { IUser } from "../../../core/models/user.model"
 import { Dropdown } from "bootstrap"
 
@@ -89,11 +89,15 @@ import { Dropdown } from "bootstrap"
   <ul class="dropdown-menu dropdown-menu-end shadow-sm mt-2 rounded-4" aria-labelledby="dropdownMenuButton">
     <li><h6 class="dropdown-header text-muted small">My Account</h6></li>
 
-    <li>
-      <a class="dropdown-item d-flex align-items-center gap-2 py-2" (click)="goToProfile()">
-        <i class="fas fa-user text-primary"></i> <span class="fw-medium">Profile</span>
-      </a>
-    </li>
+    <a
+  class="dropdown-item d-flex align-items-center gap-2 py-2"
+  (click)="goToProfile()"
+  style="cursor: pointer;"
+>
+  <i class="fas fa-user text-primary"></i> 
+  <span class="fw-medium">Profile</span>
+</a>
+
 
     <li>
       <a class="dropdown-item d-flex align-items-center gap-2 py-2" routerLink="/my-products">
@@ -145,7 +149,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
