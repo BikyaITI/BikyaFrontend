@@ -4,6 +4,7 @@ export interface IUser {
   email: string
   FullName: string
   fullName: string
+  phone : string
   isActive: boolean
   createdAt: Date
   roles?: string[]
@@ -37,6 +38,7 @@ export interface AuthResponse {
   email?: string;
   fullName?: string;
   FullName?: string;
+  phone?: string;
   userName?: string;
   user?: IUser;
 }

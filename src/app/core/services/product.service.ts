@@ -36,11 +36,11 @@ export class ProductService {
 
   // CRUD operations (require authentication)
   createProduct(product: CreateProductRequest): Observable<ApiResponse<boolean>> {
-    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}`, product)
+    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/add`, product)
   }
 
   createProductWithImages(formData: FormData): Observable<ApiResponse<boolean>> {
-    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/with-images`, formData)
+    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/With-images`, formData)
   }
 
   updateProduct(id: number, product: CreateProductRequest): Observable<ApiResponse<boolean>> {

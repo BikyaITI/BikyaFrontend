@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CategoryService } from '../../core/services/category.service';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
-import { ICategory } from '../../core/models/icategory';
+import { CreateCategoryDTO} from '../../core/models/icategory';
 
 @Component({
   selector: 'app-allCategories',
@@ -12,7 +12,7 @@ import { ICategory } from '../../core/models/icategory';
 })
 
 export class AllCategoriesComponent implements OnInit {
-  categories: ICategory[] = [];
+  categories: CreateCategoryDTO[] = [];
   currentPage = 1;
   pageSize = 9;
   totalPages = 0;
@@ -29,17 +29,18 @@ export class AllCategoriesComponent implements OnInit {
   fetchCategories(): void {
     this.isLoading = true;
     this.categoryService.getPaginated(this.currentPage, this.pageSize).subscribe({
-      next: (res) => {
-        this.categories = res.data.data; // ← هنا مهم تكون res.data.data
-        this.totalPages = res.data.totalPages;
-        this.currentPage = res.data.currentPage;
-        this.isLoading = false;
-      },
-      error: () => {
-        this.errorMessage = '❌ Failed to load categories';
-        this.isLoading = false;
-      }
-    });
+  next: (res) => {
+    this.categories = res.data.items;      // ← items مباشرة
+    this.totalPages = res.data.totalPages;
+    this.currentPage = res.data.currentPage;
+    this.isLoading = false;
+  },
+  error: () => {
+    this.errorMessage = '❌ Failed to load categories';
+    this.isLoading = false;
+  }
+});
+
   }
 
   goToPage(page: number): void {
