@@ -85,6 +85,8 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
   },
 
+
+
   {
     path: "wallet",
     loadComponent: () => import("./features/wallet/wallet.component").then((m) => m.WalletComponent),

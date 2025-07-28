@@ -29,9 +29,14 @@
                aria-label="Search orders by product, buyer, or seller">
       </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-3">
       <button class="btn btn-outline-secondary w-100" (click)="clearFilters()" aria-label="Clear all filters">
         <i class="fas fa-times" aria-hidden="true"></i> Clear Filters
+      </button>
+    </div>
+    <div class="col-md-3">
+      <button class="btn btn-outline-primary w-100" (click)="loadOrders()" aria-label="Refresh orders">
+        <i class="fas fa-sync-alt" aria-hidden="true"></i> Refresh Orders
       </button>
     </div>
   </div>

@@ -189,7 +189,7 @@ confirmDeactivate(): void {
       this.deactiveSuccessMessage = "Your account has been deactivated.";
        console.log(` usrerID ${this.currentUser?.id}`)
       setTimeout(() => {
-        this.authService.logoutLocal(); // ← مسح التوكن محليًا بدون API
+        this.authService.logout(); // ← مسح التوكن محليًا بدون API
         this.router.navigate(['/login']);
       }, 1000);
     },

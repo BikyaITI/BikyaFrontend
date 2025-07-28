@@ -19,12 +19,18 @@ export class OrderManagementComponent implements OnInit {
   searchTerm = '';
   isCancelling: { [key: number]: boolean } = {};
   isProcessing: { [key: number]: boolean } = {};
+  private refreshInterval: any;
 
   orderService = inject(OrderService);
   toastr = inject(ToastrService);
 
   ngOnInit() {
     this.loadOrders();
+    
+    // Auto-refresh orders every 30 seconds to catch webhook updates
+    this.refreshInterval = setInterval(() => {
+      this.loadOrders();
+    }, 30000); // 30 seconds
   }
 
   loadOrders() {
@@ -321,5 +327,12 @@ export class OrderManagementComponent implements OnInit {
         this.toastr.error('تعذر جلب تفاصيل الطلب');
       }
     });
+  }
+
+  ngOnDestroy() {
+    // Clean up the interval when component is destroyed
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
   }
 } 

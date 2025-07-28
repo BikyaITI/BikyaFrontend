@@ -75,4 +75,9 @@ export class OrderService {
   getMyOrders(userId: number): Observable<ApiResponse<Order[]>> {
     return this.getOrdersByUser(userId);
   }
+
+  // Find order by payment intent ID (for webhook processing)
+  findOrderByPaymentIntent(paymentIntentId: string): Observable<ApiResponse<Order>> {
+    return this.http.get<ApiResponse<Order>>(`${this.API_URL}/payment-intent/${paymentIntentId}`);
+  }
 }
