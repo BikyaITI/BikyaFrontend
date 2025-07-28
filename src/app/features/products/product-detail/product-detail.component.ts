@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormBuilder, Validators, FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute, RouterLink, Router } from '@angular/router';
-import { IProduct } from '../../../core/models/product.model';
+import { IProduct, IProductImage } from '../../../core/models/product.model';
 import { IUser } from '../../../core/models/user.model';
 import { AuthService } from '../../../core/services/auth.service';
 import { OrderService } from '../../../core/services/order.service';
@@ -12,25 +12,28 @@ import { ProductListComponent } from '../../../shared/components/product-list/pr
 
 @Component({
   selector: 'app-product-detail',
-  imports: [CommonModule, RouterModule, ReactiveFormsModule ,ProductListComponent,RouterLink],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, ProductListComponent, RouterLink, FormsModule],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss'
 })
 export class ProductDetailComponent implements OnInit {
   product: IProduct | null = null
   relatedProducts: IProduct[] = []
-  selectedImage = ""
+  selectedImage:IProductImage|null = null
   currentUser: IUser | null = null
   isLoading = true
   isPlacingOrder = false
   doAction = false
   errorMessage = ""
-  successMessage=""
+  successMessage = ""
   confirmTitle = '';
   confirmMessage = '';
   confirmButtonText = '';
   confirmType: 'approve' | 'delete' = 'delete';
-  confirmbuttonLoading=""
+  confirmbuttonLoading = ""
+  imageErrorMessage: string = '';
+  selectedFile: File | null = null;
+  newImageIsMain = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -41,22 +44,22 @@ export class ProductDetailComponent implements OnInit {
     private fb: FormBuilder,
   ) { }
 
-    ngOnInit(): void {
+  ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user
     })
 
     this.route.params.subscribe((params) => {
       const id = +params["id"]
-        if (!id || isNaN(id)) {
-    alert("Invalid product ID.")
-    return
-  }
+      if (!id || isNaN(id)) {
+        alert("Invalid product ID.")
+        return
+      }
       this.loadProduct(id)
     })
   }
 
-    loadProduct(id: number): void {
+  loadProduct(id: number): void {
     console.log('Loading product with ID:', id)
     this.isLoading = true
     
@@ -126,24 +129,20 @@ export class ProductDetailComponent implements OnInit {
       })
     }
   }
-    selectImage(imageUrl: string): void {
-      this.selectedImage = this.GetImage(imageUrl)
-    }
+  selectImage(image: IProductImage): void {
+    this.selectedImage = image
+  }
 
-    getMainImage(product: IProduct): string {
-      const mainImage = product.images?.find((img) => img.isMain)
-      if (mainImage && mainImage.imageUrl) {
-        return mainImage.imageUrl.startsWith('http')
-          ? mainImage.imageUrl
-          : `${environment.apiUrl}${mainImage.imageUrl}`;
+  getMainImage(product: IProduct): IProductImage|null {
+    return product.images?.find(img => img.isMain) ?? null;
       }
-      return 'product.png';
-    }
-    GetImage(imageUrl: string): string {
-      if (!imageUrl) return 'product.png';
-      return imageUrl.startsWith('http')
-        ? imageUrl
-        : `${environment.apiUrl}${imageUrl}`;
+   
+    
+    GetImageUrl(image: IProductImage): string {
+      if (!image.imageUrl) return 'product.png';
+      return image.imageUrl.startsWith('http')
+        ? image.imageUrl
+        : `${environment.apiUrl}${image.imageUrl}`;
     }
 
   
@@ -170,7 +169,8 @@ export class ProductDetailComponent implements OnInit {
 
   confirmAction(): void {
     if (!this.product) return
-
+    this.successMessage = ""
+    this.errorMessage = ""
     this.doAction = true
     if (this.confirmType === "delete") {
       this.productService.deleteProduct(this.product.id).subscribe({
@@ -246,4 +246,128 @@ export class ProductDetailComponent implements OnInit {
     else
       return "user"
   }
+
+  validateImage(file: File): boolean {
+    const maxSize = 5 * 1024 * 1024;
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+
+    if (!allowedTypes.includes(file.type)) {
+      this.imageErrorMessage = "Only JPG and PNG images are allowed";
+      return false;
+    }
+
+    if (file.size > maxSize) {
+      this.imageErrorMessage = "Image size should not exceed 5MB";
+      return false;
+    }
+
+    return true;
+  }
+
+
+  deleteImage(image: IProductImage | null): void {
+    if (!image || !this.product) return;
+    this.successMessage = ""
+    this.errorMessage=""
+    this.productService.deleteImage(image.id).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.successMessage = 'Image deleted successfully.';
+          this.loadProduct(this.product!.id); // reload product data
+        } else {
+          console.log(res.message)
+          this.errorMessage =  'Failed to delete image.';
+        }
+      },
+      error: (err) => {
+        console.log (err.error?.message)
+        this.errorMessage =  'Server error while deleting image.';
+      }
+    });
+  }
+
+  setAsMain(image: IProductImage | null): void {
+    if (!image || !this.product) return;
+
+    this.successMessage = ""
+    this.errorMessage = ""
+
+    this.productService.setImageAsMain(image.id).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.successMessage = "Main image updated successfully.";
+          this.loadProduct(this.product!.id); // reload product to reflect main image change
+        } else {
+          console.log(res.message)
+          this.errorMessage =  "Failed to set main image.";
+        }
+      },
+      error: (err) => {
+        console.log(err.error?.message)
+        this.errorMessage =   "Server error while setting main image.";
+      }
+    });
+  }
+ 
+
+
+  // add Images
+
+  addImage() {
+    this.successMessage = ""
+    this.errorMessage = ""
+    const imageCount = this.product!.images?.length ?? 0;
+    if (imageCount >= 5) {
+      this.errorMessage = "You can only upload up to 5 images.";
+      return;
+    }
+    const modal = new (window as any).bootstrap.Modal(document.getElementById("addImageModal"));
+    this.errorMessage = '';
+    this.selectedFile = null;
+    this.newImageIsMain = false;
+    modal.show();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+
+      if (!this.validateImage(file)) {
+        input.value = ''; // clear file
+        return;
+      }
+
+      this.imageErrorMessage = ''; // clear any previous error
+      this.selectedFile = file;
+    }
+  }
+  submitNewImage() {
+    if (!this.product || !this.selectedFile) return;
+    this.successMessage = ""
+    this.errorMessage = ""
+    const formData = new FormData();
+    formData.append("image", this.selectedFile);
+    formData.append("productId", this.product.id.toString());
+    formData.append("isMain", String(this.newImageIsMain));
+
+    this.productService.createImage(this.product.id, formData).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.successMessage = 'Image uploaded successfully';
+          const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById("addImageModal"))
+          modal.hide()
+          this.loadProduct(this.product!.id); // Refresh product with images
+        } else {
+          console.log(res.message)
+          this.imageErrorMessage =  'Upload failed';
+        }
+      },
+      error: (err) => {
+        console.log(err.error?.message)
+        this.imageErrorMessage =  'Server error while uploading image';
+      }
+    });
+  }
+
 }

@@ -25,32 +25,37 @@ export class ProductService {
   getProductsByUser(userId: number): Observable<ApiResponse<IProduct[]>> {
     return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/user/${userId}`)
   }
-
+  getApprovedProductsByUser(userId: number): Observable<ApiResponse<IProduct[]>> {
+    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/approved/user/${userId}`)
+  }
   getProductsByCategory(categoryId: number): Observable<ApiResponse<IProduct[]>> {
     return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/category/${categoryId}`)
   }
 
   // CRUD operations (require authentication)
-  createProduct(product: CreateProductRequest): Observable<ApiResponse<boolean>> {
-    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/add`, product)
-  }
+  // createProduct(product: CreateProductRequest): Observable<ApiResponse<boolean>> {
+  //   return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/add`, product)
+  // }
 
   createProductWithImages(formData: FormData): Observable<ApiResponse<boolean>> {
-    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/with-images`, formData)
+    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/add`, formData)
   }
-  createImage(productId:number,image: CreateProductImageRequest): Observable<ApiResponse<boolean>> {
-    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/${productId}/images`,image)
-  }
-
+  
   updateProduct(id: number, formData: FormData): Observable<ApiResponse<boolean>> {
-    return this.http.put<ApiResponse<boolean>>(`${this.API_URL}/Update/${id}`, formData)
+    return this.http.put<ApiResponse<boolean>>(`${this.API_URL}/${id}`, formData)
   }
-
+  
   deleteProduct(id: number): Observable<ApiResponse<boolean>> {
     return this.http.delete<ApiResponse<boolean>>(`${this.API_URL}/${id}`)
   }
+  createImage(productId:number,image: FormData): Observable<ApiResponse<boolean>> {
+    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/${productId}/images`,image)
+  }
+  setImageAsMain(id: number): Observable<ApiResponse<boolean>> {
+    return this.http.put<ApiResponse<boolean>>(`${this.API_URL}/image/${id}/set-main`, {})
+  }
   deleteImage(id: number): Observable<ApiResponse<boolean>> {
-    return this.http.delete<ApiResponse<boolean>>(`${this.API_URL}/images/${id}`)
+    return this.http.delete<ApiResponse<boolean>>(`${this.API_URL}/image/${id}`)
   }
  
 

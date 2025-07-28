@@ -128,59 +128,6 @@
                   </div>
                 </div>
 
-                <!-- Images -->
-                <div class="section-header mb-4 mt-4">
-                  <h5 class="text-primary"><i class="bi bi-images"></i> Product Images</h5>
-                  <hr>
-                </div>
-
-                <div class="mb-3">
-                  <label for="mainImage" class="form-label">Main Image *</label>
-                  <input
-                    type="file"
-                    class="form-control"
-                    id="mainImage"
-                    (change)="onMainImageSelected($event)"
-                    accept="image/*"
-                    [class.is-invalid]="!mainImagePreview && submitted">
-                  <div class="invalid-feedback">
-                    Main image is required
-                  </div>
-                  <div class="form-text">Upload the main image for your product (JPG, PNG, max 5MB)</div>
-
-                  <!-- Main Image Preview -->
-                  <div class="mt-2" *ngIf="mainImagePreview">
-                    <img [src]="mainImagePreview" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
-                  </div>
-                </div>
-
-                <div class="mb-3">
-                  <label for="additionalImages" class="form-label">Additional Images (Optional)</label>
-                  <input
-                    type="file"
-                    class="form-control"
-                    id="additionalImages"
-                    (change)="onAdditionalImagesSelected($event)"
-                    accept="image/*"
-                    multiple>
-                  <div class="form-text">Upload up to 4 additional images (JPG, PNG, max 5MB each)</div>
-
-                  <!-- Additional Images Preview -->
-                  <div class="row mt-2" *ngIf="additionalImagePreviews.length > 0">
-                    <div class="col-3" *ngFor="let preview of additionalImagePreviews; let i = index">
-                      <div class="position-relative">
-                        <img [src]="preview" class="img-thumbnail w-100" style="height: 100px; object-fit: cover;">
-                        <button
-                          type="button"
-                          class="btn btn-danger btn-sm position-absolute top-0 end-0"
-                          (click)="removeAdditionalImage(i)"
-                          style="transform: translate(25%, -25%);">
-                          <i class="bi bi-x"></i>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
 
                 <!-- Error Messages -->
                 <div class="alert alert-danger" *ngIf="errorMessage">
@@ -203,7 +150,7 @@
                     [disabled]="productForm.invalid || isSubmitting">
                     <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
                     <i class="bi bi-plus-circle" *ngIf="!isSubmitting"></i>
-                    {{isSubmitting ? 'Adding Product...' : 'Add Product'}}
+                    {{isSubmitting ? 'Editing Product...' : 'Edit Product'}}
                   </button>
                 </div>
               </form>

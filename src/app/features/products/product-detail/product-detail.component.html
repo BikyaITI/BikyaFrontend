@@ -1,12 +1,20 @@
 <div class="container mt-4" *ngIf="product">
-  <div class="alert alert-danger" *ngIf="errorMessage">
+  <!-- <div class="alert alert-danger" *ngIf="errorMessage">
     <i class="bi bi-exclamation-triangle"></i> {{ errorMessage }}
-  </div>
+  </div> -->
+<!-- erorr Message  -->
+<div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="errorMessage">
+  <i class="bi bi-check-circle me-2"></i>
+  {{ errorMessage }}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 
   <!-- Success Message -->
-  <div class="alert alert-success" *ngIf="successMessage">
-    <i class="bi bi-check-circle"></i> {{ successMessage }}
-  </div>
+  <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="successMessage">
+  <i class="bi bi-check-circle me-2"></i>
+  {{ successMessage }}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
@@ -15,35 +23,78 @@
     </ol>
   </nav>
 
-      <div class="row">
-        <!-- Product Images -->
-        <div class="col-lg-6">
-          <div class="product-gallery">
-            <div class="main-image mb-3">
-              <img
-                [src]="selectedImage"
-                [alt]="product.title"
-                class="img-fluid rounded shadow-sm w-100"
-                style="height: 400px; object-fit: cover;"
-                (error)="onImageError($event)">
-            </div>
+  <div class="row">
+    <!-- Product Images -->
+    <div class="col-lg-6">
+      <div class="product-gallery">
+        <div class="main-image mb-3 position-relative">
+          <img
+            [src]="selectedImage ? GetImageUrl(selectedImage) : '/product.png'"
+            [alt]="product.title"
+            class="img-fluid rounded shadow-sm w-100"
+            style="height: 400px; object-fit: cover"
+            (error)="onImageError($event)"
+          />
+          <div class="dropdown position-absolute top-0 end-0 m-1">
+            <button
+              class="btn btn-md btn-outline-dark"
+              [hidden]="getRole() !== 'owner'"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="bi bi-gear-fill"></i>
+            </button>
 
-            <div class="thumbnail-images" *ngIf="product.images && product.images.length > 1">
-              <div class="row g-2">
-                <div class="col-3" *ngFor="let image of product.images">
-                  <img
-                    [src]="GetImage(image.imageUrl)"
-                    [alt]="product.title"
-                    class="img-fluid rounded cursor-pointer thumbnail"
-                    [class.active]="selectedImage === image.imageUrl"
-                    (click)="selectImage(image.imageUrl)"
-                    (error)="onImageError($event)"
-                    style="height: 80px; object-fit: cover;">
-                </div>
-              </div>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a
+                  class="dropdown-item d-flex align-items-center gap-2 add"
+                  (click)="addImage()"
+                >
+                  <i class="bi bi-plus-circle"></i> Add Image
+                </a>
+              </li>
+              <li>
+                <a
+                  class="dropdown-item d-flex align-items-center gap-2 delete"
+                  (click)="deleteImage(selectedImage!)"
+                >
+                  <i class="bi bi-trash-fill text-danger"></i> Delete Image
+                </a>
+              </li>
+              <li>
+                <a
+                  class="dropdown-item d-flex align-items-center gap-2 main"
+                  (click)="setAsMain(selectedImage!)"
+                >
+                  <i class="bi bi-star-fill text-warning"></i> Set as Main
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div
+          class="thumbnail-images"
+          *ngIf="product.images && product.images.length > 1"
+        >
+          <div class="row g-2">
+            <div class="col-3" *ngFor="let image of product.images">
+              <img
+                [src]="GetImageUrl(image)"
+                [alt]="product.title"
+                class="img-fluid rounded cursor-pointer thumbnail"
+                [class.active]="selectedImage?.id === image.id"
+                [class.main]="image.isMain"
+                (click)="selectImage(image)"
+                (error)="onImageError($event)"
+                style="height: 80px; width: 100px; object-fit: cover"
+              />
             </div>
           </div>
         </div>
+      </div>
+    </div>
 
     <!-- Product Info -->
     <div class="col-lg-6">
@@ -167,7 +218,7 @@
 
         <!-- admin Actions -->
 
-        <div class="admin-actions" *ngIf="currentUser && getRole() == 'admin'">
+        <div class="admin-actions" *ngIf="currentUser && getRole() === 'admin'">
           <div class="row g-2">
             <div class="col-6">
               <button
@@ -215,47 +266,93 @@
     </div>
   </div>
 
-    <!-- Loading State -->
-    <div class="container mt-5" *ngIf="isLoading">
-      <div class="text-center">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
+  <!-- Loading State -->
+  <div class="container mt-5" *ngIf="isLoading">
+    <div class="text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-3">Loading product details...</p>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div class="container mt-5" *ngIf="!isLoading && !product">
+    <div class="text-center">
+      <i
+        class="fas fa-exclamation-triangle text-warning"
+        style="font-size: 3rem"
+      ></i>
+      <h3 class="mt-3">Product Not Found</h3>
+      <p class="text-muted" *ngIf="errorMessage">{{ errorMessage }}</p>
+      <p class="text-muted" *ngIf="!errorMessage">
+        The product you're looking for doesn't exist or has been removed.
+      </p>
+      <a routerLink="/products" class="btn btn-primary">Back to Products</a>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="container mt-5" *ngIf="isLoading">
+    <div class="loading-spinner">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade" id="Modal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ confirmTitle }}</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+          ></button>
         </div>
-        <p class="mt-3">Loading product details...</p>
-      </div>
-    </div>
-
-    <!-- Error State -->
-    <div class="container mt-5" *ngIf="!isLoading && !product">
-      <div class="text-center">
-        <i
-          class="fas fa-exclamation-triangle text-warning"
-          style="font-size: 3rem"
-        ></i>
-        <h3 class="mt-3">Product Not Found</h3>
-        <p class="text-muted" *ngIf="errorMessage">{{ errorMessage }}</p>
-        <p class="text-muted" *ngIf="!errorMessage">
-          The product you're looking for doesn't exist or has been removed.
-        </p>
-        <a routerLink="/products" class="btn btn-primary">Back to Products</a>
-      </div>
-    </div>
-
-    <!-- Loading State -->
-    <div class="container mt-5" *ngIf="isLoading">
-      <div class="loading-spinner">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
+        <div class="modal-body">
+          <p>
+            {{ confirmMessage }} "<strong>{{ product.title }}</strong
+            >"?
+          </p>
+          <p class="text-muted">This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn"
+            [class.btn-danger]="confirmType === 'delete'"
+            [class.btn-success]="confirmType === 'approve'"
+            (click)="confirmAction()"
+            [disabled]="doAction"
+          >
+            <span
+              *ngIf="doAction"
+              class="spinner-border spinner-border-sm me-2"
+            ></span>
+            {{ doAction ? confirmbuttonLoading : confirmButtonText }}
+          </button>
         </div>
       </div>
     </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="Modal" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
+  </div>
+  <!-- Add Image Modal -->
+  <div class="modal fade" id="addImageModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form (ngSubmit)="submitNewImage()" #imageForm="ngForm">
           <div class="modal-header">
-            <h5 class="modal-title">{{ confirmTitle }}</h5>
+            <h5 class="modal-title">Add New Image</h5>
             <button
               type="button"
               class="btn-close"
@@ -263,11 +360,32 @@
             ></button>
           </div>
           <div class="modal-body">
-            <p>
-              {{ confirmMessage }} "<strong>{{ product.title }}</strong
-              >"?
-            </p>
-            <p class="text-muted">This action cannot be undone.</p>
+            <div class="mb-3">
+              <label for="imageFile" class="form-label">Select Image</label>
+              <input
+                type="file"
+                class="form-control"
+                id="imageFile"
+                (change)="onFileSelected($event)"
+                required
+              />
+            </div>
+            <div class="form-check">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                id="setAsMain"
+                [(ngModel)]="newImageIsMain"
+                name="isMain"
+              />
+              <label class="form-check-label" for="setAsMain"
+                >Set as Main</label
+              >
+              <div class="text-danger mt-1" *ngIf="imageErrorMessage">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                {{ imageErrorMessage }}
+              </div>
+            </div>
           </div>
           <div class="modal-footer">
             <button
@@ -278,22 +396,15 @@
               Cancel
             </button>
             <button
-              type="button"
-              class="btn"
-              [class.btn-danger]="confirmType === 'delete'"
-              [class.btn-success]="confirmType === 'approve'"
-              (click)="confirmAction()"
-              [disabled]="doAction"
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="!selectedFile"
             >
-              <span
-                *ngIf="doAction"
-                class="spinner-border spinner-border-sm me-2"
-              ></span>
-              {{ doAction ? confirmbuttonLoading : confirmButtonText }}
+              Upload
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   </div>
-
+</div>

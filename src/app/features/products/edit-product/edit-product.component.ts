@@ -4,7 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from "@angula
 import { Router, ActivatedRoute } from "@angular/router"
 import { ProductService } from "../../../core/services/product.service"
 import { CategoryService } from "../../../core/services/category.service"
-import { CreateProductImageRequest, IProduct, IProductImage } from "../../../core/models/product.model"
+import {  IProduct } from "../../../core/models/product.model"
 import { ICategory } from "../../../core/models/icategory"
 import { map, filter } from 'rxjs/operators';
 import { environment } from "../../../../environments/environment"
@@ -13,19 +13,13 @@ import { environment } from "../../../../environments/environment"
   selector: 'app-edit-product',
   imports: [CommonModule, ReactiveFormsModule],
 
-templateUrl: './edit-product.component.html',
+  templateUrl: './edit-product.component.html',
   styleUrl: './edit-product.component.scss'
 })
 export class EditProductComponent implements OnInit {
   productForm: FormGroup
-  productId: number  = 0;
+  productId: number = 0;
   categories: ICategory[] = []
-  mainImage: File | null = null
-  additionalImages: File[] = []
-  mainImagePreview: string | null = null
-  additionalImagePreviews: string[] = []
-  initialMainImage: IProductImage = { id: 0, imageUrl : "", isMain :false};
-  initialAdditionalImages: IProductImage[] = [];
   isSubmitting = false
   submitted = false
   errorMessage = ""
@@ -50,7 +44,7 @@ export class EditProductComponent implements OnInit {
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
-      this.productId = idParam ? +idParam : 0; 
+    this.productId = idParam ? +idParam : 0;
     this.loadCategories()
     this.loadProduct()
   }
@@ -68,16 +62,7 @@ export class EditProductComponent implements OnInit {
             condition: product.condition,
             isForExchange: product.isForExchange,
           })
-          // Load main image and additional images if available
-          if (product.images) {
-            this.mainImagePreview = this.getMainImage(product)
-            this.initialMainImage = product.images.find(p => p.isMain === true) || { id: 0, imageUrl: "", isMain: false };
-          }
-          if (product.images && product.images.length > 1) {
-            this.additionalImagePreviews = this.getAdditionalImages(product)
-            this.initialAdditionalImages = product.images.filter(p=>p.isMain===false)
-          }
-
+  
         } else {
           console.error("Failed to load product:", response.message)
         }
@@ -101,76 +86,6 @@ export class EditProductComponent implements OnInit {
     });
   }
 
-  getMainImage(product: IProduct): string {
-    const mainImage = product.images?.find((img) => img.isMain)
-    return mainImage && mainImage.imageUrl
-      ? `${environment.apiUrl}${mainImage.imageUrl}`
-      : 'product.png';
-  }
-  getAdditionalImages(product: IProduct): string[] {
-    const image = product.images.filter(image => !image.isMain)
-    return image.length > 0 ? image.map(i => `${environment.apiUrl}${i.imageUrl}`) : [];
-  }
-  onMainImageSelected(event: any): void {
-    const file = event.target.files[0]
-    if (file) {
-      if (this.validateImage(file)) {
-        this.mainImage = file
-        this.createImagePreview(file, (preview) => {
-          this.mainImagePreview = preview
-        })
-      }
-    }
-  }
-
-  onAdditionalImagesSelected(event: any): void {
-    const files = Array.from(event.target.files) as File[]
-
-    if (files.length + this.additionalImages.length > 4) {
-      this.errorMessage = "You can upload maximum 4 additional images"
-      return
-    }
-
-    files.forEach((file) => {
-      if (this.validateImage(file)) {
-        this.additionalImages.push(file)
-        this.createImagePreview(file, (preview) => {
-          this.additionalImagePreviews.push(preview)
-        })
-      }
-    })
-  }
-
-  removeAdditionalImage(index: number): void {
-    this.additionalImages.splice(index, 1)
-    this.additionalImagePreviews.splice(index, 1)
-  }
-
-  validateImage(file: File): boolean {
-    const maxSize = 5 * 1024 * 1024 // 5MB
-    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"]
-
-    if (!allowedTypes.includes(file.type)) {
-      this.errorMessage = "Only JPG and PNG images are allowed"
-      return false
-    }
-
-    if (file.size > maxSize) {
-      this.errorMessage = "Image size should not exceed 5MB"
-      return false
-    }
-
-    return true
-  }
-
-  createImagePreview(file: File, callback: (preview: string) => void): void {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      callback(e.target?.result as string)
-    }
-    reader.readAsDataURL(file)
-  }
-
   getDescriptionCountClass(): string {
     const length = this.productForm.get("description")?.value?.length || 0
     if (length > 450) return "text-danger"
@@ -183,7 +98,7 @@ export class EditProductComponent implements OnInit {
     this.errorMessage = ""
     this.successMessage = ""
 
-    if (this.productForm.valid && (this.mainImage || this.mainImagePreview)) {
+    if (this.productForm.valid) {
       this.isSubmitting = true
 
       const formData = new FormData()
@@ -193,29 +108,16 @@ export class EditProductComponent implements OnInit {
       formData.append("categoryId", this.productForm.get("categoryId")?.value)
       formData.append("condition", this.productForm.get("condition")?.value)
       formData.append("isForExchange", this.productForm.get("isForExchange")?.value)
-      // formData.append("mainImage", this.mainImage)
+      
 
-      // this.additionalImages.forEach((image, index) => {
-      //   formData.append("additionalImages", image)
-      // })
-
-      if (this.initialMainImage.imageUrl !== this.mainImagePreview&&this.mainImage!==null) {
-        this.productService.deleteImage(this.initialMainImage.id).subscribe()
-        const image : CreateProductImageRequest ={
-          image: this.mainImage,
-          isMain:true
-        }
-        this.productService.createImage(this.product!.id,image).subscribe()
-       }
-
-      this.productService.updateProduct(this.productId,formData).subscribe({
+      this.productService.updateProduct(this.productId, formData).subscribe({
         next: (response) => {
           this.isSubmitting = false
           if (response.success) {
             this.successMessage = "Product updated successfully! It will be reviewed by admin before being republished."
             setTimeout(() => {
               this.router.navigate(["/my-products"])
-            }, 2000)
+            }, 1000)
           } else {
             this.errorMessage = response.message
           }
@@ -226,13 +128,13 @@ export class EditProductComponent implements OnInit {
         },
       })
     } else {
-      if (!this.mainImage) {
-        this.errorMessage = "Please select a main image for your product"
-      }
+      this.errorMessage = "Invalid input"
     }
   }
+  
 
   goBack(): void {
     this.router.navigate(["/dashboard"])
   }
+
 }
