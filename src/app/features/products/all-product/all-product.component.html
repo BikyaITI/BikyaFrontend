@@ -80,12 +80,12 @@
                 <h6 class="filter-title">Condition</h6>
                 <div class="filter-options">
                   <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="excellent" value="Excellent" (change)="onConditionChange($event)">
-                    <label class="form-check-label" for="excellent">new</label>
+                    <input class="form-check-input" type="checkbox" id="new" value="new" (change)="onConditionChange($event)">
+                    <label class="form-check-label" for="new">new</label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="good" value="Good" (change)="onConditionChange($event)">
-                    <label class="form-check-label" for="good">used</label>
+                    <input class="form-check-input" type="checkbox" id="used" value="used" (change)="onConditionChange($event)">
+                    <label class="form-check-label" for="used">used</label>
                   </div>
                   
                 </div>
@@ -128,8 +128,9 @@
                   <i class="fas fa-search search-icon"></i>
                 </div>
                 <select class="form-select" style="width: auto;" [(ngModel)]="sortBy" (change)="onSortChange()">
-                   <option value="price-low">Name: Low to High</option>
-                   <option value="price-low">Name: High to Low</option>
+                  <option value="" disabled selected>Sort by</option>
+                   <option value="name-low">Name: A to Z</option>
+                   <option value="name-high">Name: Z to A</option>
                    <option value="price-low">Price: Low to High</option>
                    <option value="price-high">Price: High to Low</option>
                    <option value="newest">Newest First</option>
@@ -144,9 +145,14 @@
               </div>
             </div>
 
-          <!-- product list -->
-             <app-product-list *ngIf="!isLoading" [products]="filteredProducts"></app-product-list>
 
+
+<div class="row" *ngIf="!isLoading">
+
+  <div  class="col-lg-4 col-md-6 mb-4" *ngFor="let product of pagedProducts()">
+       <app-product-list  [product]="product" [role]="'user'"></app-product-list>
+  </div>
+</div>
             <div *ngIf="!isLoading && filteredProducts.length === 0" class="text-center py-5">
               <i class="fas fa-box-open display-1 text-muted mb-3"></i>
               <h3>No products found</h3>
@@ -157,18 +163,19 @@
             <nav aria-label="Products pagination" class="mt-5" *ngIf="filteredProducts.length > 0">
               <ul class="pagination justify-content-center">
                 <li class="page-item" [class.disabled]="currentPage === 1">
-                  <a class="page-link" href="#" (click)="goToPage(currentPage - 1)" tabindex="-1">Previous</a>
+                  <a class="page-link" href="#" (click)="goToPage(currentPage - 1);$event.preventDefault()" tabindex="-1">Previous</a>
                 </li>
                 <li class="page-item"
                     *ngFor="let page of getPageNumbers()"
                     [class.active]="page === currentPage">
-                  <a class="page-link" href="#" (click)="goToPage(page)">{{page}}</a>
+                  <a class="page-link" href="#" (click)="goToPage(page); $event.preventDefault()">{{page}}</a>
                 </li>
                 <li class="page-item" [class.disabled]="currentPage === totalPages">
-                  <a class="page-link" href="#" (click)="goToPage(currentPage + 1)">Next</a>
+                 <a class="page-link" href="#" (click)="goToPage(currentPage + 1); $event.preventDefault()">Next</a>
                 </li>
               </ul>
             </nav>
+
           </div>
         </div>
       </div>

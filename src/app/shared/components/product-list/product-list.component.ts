@@ -1,8 +1,9 @@
-import { Component, input } from '@angular/core';
+import { Component, EventEmitter, input, Output } from '@angular/core';
 import { IProduct } from '../../../core/models/product.model';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import{environment} from '../../../../environments/environment';
+import { ProductService } from '../../../core/services/product.service';
 
 @Component({
   selector: 'app-product-list',
@@ -12,15 +13,16 @@ import{environment} from '../../../../environments/environment';
 })
 export class ProductListComponent {
 
-  products = input<IProduct[]>();
-  constructor() {
-  console.log("ProductListComponent initialized with products:", this.products());
+  product = input<IProduct>();
+  role = input<string>();
+  @Output() deleteClicked = new EventEmitter<void>();
 
+
+  constructor(private productService: ProductService,) {
+  console.log("ProductListComponent initialized with products:", this.product());
+  
 }
-//  get productsArray(): IProduct[] {
-//     const value = this.products();
-//     return Array.isArray(value) ? value : [];
-//   }
+
 getMainImage(product: IProduct): string {
     const mainImage = product.images?.find((img) => img.isMain)
    return mainImage && mainImage.imageUrl
@@ -28,6 +30,10 @@ getMainImage(product: IProduct): string {
     : 'product.png';
   }
 
+    onImageError(event: Event) {
+      (event.target as HTMLImageElement).src = 'product.png';
+    }
+  
   getConditionBadgeClass(condition: string): string {
     switch (condition.toLowerCase()) {
       case "new":
@@ -37,19 +43,27 @@ getMainImage(product: IProduct): string {
       default:
         return "bg-secondary"
     }
+    
   }
 
-
-
-
-
-  addToCart(product: IProduct): void {
+  buy(product: IProduct): void {
     // Implement add to cart logic
-    console.log("Added to cart:", product)
+    console.log("Added to buy:", product)
   }
 
   addToWishlist(product: IProduct): void {
     // Implement add to wishlist logic
     console.log("Added to wishlist:", product)
   }
+
+  editProduct(product: IProduct): void {
+    // Navigate to edit product page
+    // For now, just show an alert
+    alert("Edit functionality will be implemented")
+  }
+
+
+
+
+  
 }

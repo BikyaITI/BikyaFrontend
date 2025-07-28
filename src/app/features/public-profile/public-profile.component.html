@@ -1,0 +1,57 @@
+<div *ngIf="loading()" class="text-center my-5">
+    <div class="spinner-border text-primary"></div>
+</div>
+
+<div *ngIf="!loading() && profile()" class="container my-5">
+    <div class="row">
+        <!-- 🧍‍♂️ Left Side: User Information -->
+        <div class="col-md-4 text-center border-end">
+            <img [src]="profile()?.profileImageUrl || 'assets/default-profile.png'"
+                class="img-fluid rounded-circle mb-3 shadow" width="150" />
+            <h4 class="fw-bold">{{ profile()?.fullName }}</h4>
+
+            <div class="mt-4 text-start px-4">
+                <p><strong>Number of Products:</strong> {{ profile()?.productCount }}</p>
+                <p><strong>Number of Sales:</strong> {{ profile()?.salesCount }}</p>
+                <p>
+                    <strong>Average Rating:</strong>
+                    <span class="text-warning">
+                        <ng-container *ngFor="let star of [].constructor(5); let i = index">
+                            <i class="bi"
+                                [ngClass]="i < (profile()?.averageRating || 0) ? 'bi-star-fill' : 'bi-star'"></i>
+                        </ng-container>
+                    </span>
+                    <span class="ms-1">({{ profile()?.averageRating?.toFixed(1) || '0.0' }})</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- 📦 Right Side: Products and Reviews -->
+        <div class="col-md-8">
+            <!-- 🛒 Products -->
+            <div>
+                <h5 class="mb-3">Available Products</h5>
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 mb-4" *ngFor="let product of profile()?.productsForSale">
+                        <app-product-item [product]="product"></app-product-item>
+                    </div>
+                </div>
+                <div *ngIf="profile()?.productsForSale?.length === 0" class="text-muted text-center">
+                    No products available at the moment.
+                </div>
+            </div>
+
+            <!-- 💬 Reviews -->
+            <div class="mt-5">
+                <h5 class="mb-3">Reviews</h5>
+                <!-- <ng-container *ngIf="profile() as data">
+                    <app-review [reviews]="data.reviews ?? []"></app-review>
+                </ng-container> -->
+
+                <div *ngIf="profile()?.reviews?.length === 0" class="text-muted text-center">
+                    No reviews yet.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -4,7 +4,7 @@ import { IProduct } from '../../../core/models/product.model';
 import { CategoryService } from '../../../core/services/category.service';
 import { ProductService } from '../../../core/services/product.service';
 import { CommonModule } from "@angular/common"
-import { RouterModule } from "@angular/router"
+import { ActivatedRoute, Route, RouterModule } from "@angular/router"
 import { FormsModule } from "@angular/forms"
 import { ProductListComponent } from '../../../shared/components/product-list/product-list.component';
 
@@ -27,18 +27,23 @@ export class AllProductComponent implements OnInit {
   minPrice: number | null = null
   maxPrice: number | null = null
   exchangeOnly = false
-  sortBy = "featured"
+  sortBy = ""
 
   currentPage = 1
-  itemsPerPage = 5
+  itemsPerPage = 10
   totalPages = 1
 
   constructor(
     private productService: ProductService,
     private categoryService: CategoryService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      this.searchTerm = params['search'] || '';
+      this.searchProducts();
+    });
     this.loadProducts()
     this.loadCategories()
   }
@@ -86,6 +91,7 @@ export class AllProductComponent implements OnInit {
     } else {
       this.selectedConditions = this.selectedConditions.filter((c) => c !== condition)
     }
+    console.log(this.selectedConditions)
     // this.applyFilters()
   }
 
@@ -166,8 +172,10 @@ export class AllProductComponent implements OnInit {
         return products.sort((a, b) => b.price - a.price)
       case "newest":
         return products.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      case "rating":
-        return products.sort((a, b) => 5 - 4) // Mock rating sort
+      case "name-low":
+        return products.sort((a, b) => a.title.localeCompare(b.title))
+       case "name-high":
+        return products.sort((a, b) => b.title.localeCompare(a.title))
       default:
         return products
     }
@@ -180,7 +188,7 @@ export class AllProductComponent implements OnInit {
     this.minPrice = null
     this.maxPrice = null
     this.exchangeOnly = false
-    this.sortBy = "featured"
+    this.sortBy = ""
 
     // Clear checkboxes
     const checkboxes = document.querySelectorAll('input[type="checkbox"]') as NodeListOf<HTMLInputElement>
@@ -205,9 +213,9 @@ export class AllProductComponent implements OnInit {
     }
   }
 
-  //   pagedProducts(): IProduct[] {
-  //   const start = (this.currentPage - 1) * this.itemsPerPage;
-  //   return this.filteredProducts.slice(start, start + this.itemsPerPage);
-  // }
-
+  pagedProducts(): IProduct[] {
+  const start = (this.currentPage - 1) * this.itemsPerPage;
+  return this.filteredProducts.slice(start, start + this.itemsPerPage);
+  }
+  
 }

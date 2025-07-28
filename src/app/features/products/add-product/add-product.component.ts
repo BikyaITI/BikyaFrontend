@@ -4,13 +4,14 @@ import { ReactiveFormsModule,  FormBuilder,  FormGroup, Validators } from "@angu
 import  { Router } from "@angular/router"
 import  { ProductService } from "../../../core/services/product.service"
 import  { CategoryService } from "../../../core/services/category.service"
-import  { Category } from "../../../core/models/product.model"
+import  { IProduct } from "../../../core/models/product.model"
 import { ICategory } from "../../../core/models/icategory"
-
+import { map } from 'rxjs/operators';
+import { environment } from "../../../../environments/environment"
 @Component({
   selector: 'app-add-product',
    imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './add-product.component.html',
+templateUrl: './add-product.component.html',
   styleUrl: './add-product.component.scss'
 })
 export class AddProductComponent implements OnInit {
@@ -24,7 +25,7 @@ export class AddProductComponent implements OnInit {
   submitted = false
   errorMessage = ""
   successMessage = ""
-
+  product:IProduct | null = null
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
@@ -43,18 +44,24 @@ export class AddProductComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadCategories()
+
   }
 
   loadCategories(): void {
-    this.categoryService.getAll().subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.categories = response.data
-        }
-      },
-    })
-  }
-
+  this.categoryService.getAll().subscribe({
+    next: (response) => {
+      if (response.success) {
+        console.log("Loaded categories:", response.data); // 👈 See the categories
+        this.categories = response.data;
+      } else {
+        console.warn("Failed to load categories:", response.message);
+      }
+    },
+    error: (err) => {
+      console.error("Error loading categories:", err); // 👈 Handle error if request fails
+    }
+  });
+}
   onMainImageSelected(event: any): void {
     const file = event.target.files[0]
     if (file) {

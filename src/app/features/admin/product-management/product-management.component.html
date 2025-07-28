@@ -1,0 +1,108 @@
+div class="container">
+  <h2 class="mb-4">Admin Product Management</h2>
+  
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="my-3 text-center" role="status" aria-live="polite">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading products...</span>
+    </div>
+  </div>
+  
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    <i class="fas fa-exclamation-triangle" aria-hidden="true"></i> {{ errorMessage }}
+  </div>
+  
+  <!-- Search and Filter Controls -->
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <label for="searchInput" class="visually-hidden">Search products</label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="fas fa-search" aria-hidden="true"></i></span>
+        <input type="text" 
+               id="searchInput"
+               class="form-control" 
+               placeholder="Search products... (Press Enter to search)" 
+               [(ngModel)]="searchTerm" 
+               (input)="searchProducts()"
+               (keydown.enter)="searchProducts()"
+               aria-label="Search products by title or description">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <button class="btn btn-outline-secondary w-100" (click)="clearFilters()" aria-label="Clear all filters">
+        <i class="fas fa-times" aria-hidden="true"></i> Clear Filters
+      </button>
+    </div>
+  </div>
+  
+  <!-- Products Table -->
+  <div class="table-responsive">
+    <table class="table table-striped" *ngIf="!isLoading && products.length" role="table" aria-label="Products list">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Title</th>
+          <th scope="col">Description</th>
+          <th scope="col">Price</th>
+          <th scope="col">Status</th>
+          <th scope="col">Created</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products">
+          <td>{{ product.id }}</td>
+          <td>{{ product.title }}</td>
+          <td>{{ product.description | slice:0:50 }}{{ product.description.length > 50 ? '...' : '' }}</td>
+          <td>{{ product.price | currency:'USD':'symbol':'1.2-2' }}</td>
+          <td>
+            <span [class]="getStatusBadgeClass(product)" [attr.aria-label]="'Product status: ' + getStatusText(product)">
+              {{ getStatusText(product) }}
+            </span>
+          </td>
+          <td>{{ product.createdAt | date:'short' }}</td>
+          <td>
+            <div class="btn-group" role="group" [attr.aria-label]="'Actions for product ' + product.title">
+              <a class="btn btn-primary btn-sm me-1" 
+                      title="View Product"
+                      [attr.aria-label]="'view product ' + product.title"
+               [routerLink]="['/products', product.id]">
+                 <i class="bi bi-eye"></i>  View
+            </a>
+              
+              <button class="btn btn-success btn-sm me-1" 
+                      [disabled]="isApproving[product.id] || product.isApproved" 
+                      (click)="confirmApprove(product)"
+                      title="Approve product"
+                      [attr.aria-label]="'Approve product ' + product.title">
+                <span *ngIf="isApproving[product.id]" class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                <i class="fas fa-check" *ngIf="!isApproving[product.id]" aria-hidden="true"></i> Approve
+              </button>
+                <button class="btn btn-danger btn-sm me-1" 
+                      [disabled]="isDeleting[product.id]" 
+                      (click)="confirmDelete(product)"
+                      title="Delete product permanently"
+                      [attr.aria-label]="'Delete product ' + product.title">
+                <span *ngIf="isDeleting[product.id]" class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                <i class="fas fa-trash" *ngIf="!isDeleting[product.id]" aria-hidden="true"></i> Reject
+              </button>
+              <!-- <button class="btn btn-danger btn-sm" 
+                      [disabled]="isRejecting[product.id] || !product.isApproved" 
+                      (click)="confirmReject(product)"
+                      title="Reject product"
+                      [attr.aria-label]="'Reject product ' + product.title">
+                <span *ngIf="isRejecting[product.id]" class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                <i class="fas fa-times" *ngIf="!isRejecting[product.id]" aria-hidden="true"></i> Reject
+              </button> -->
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- No Products Message -->
+  <div *ngIf="!isLoading && !products.length" class="alert alert-info" role="status">
+    <i class="fas fa-info-circle" aria-hidden="true"></i> No products found.
+  </div>

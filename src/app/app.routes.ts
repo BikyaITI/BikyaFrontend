@@ -1,6 +1,6 @@
-import { Routes } from '@angular/router';
-import { AuthGuard } from './core/guards/auth.guard';
-import { AdminGuard } from './core/guards/admin.guard';
+import { Routes } from "@angular/router";
+import { AuthGuard } from "./core/guards/auth.guard";
+import { AdminGuard } from "./core/guards/admin.guard";
 
 export const routes: Routes = [
   {
@@ -16,98 +16,116 @@ export const routes: Routes = [
     loadComponent: () => import("./features/auth/register/register.component").then((m) => m.RegisterComponent),
   },
   {
+    path: "category/:id",
+    loadComponent: () => import("./features/category-details/category-details.component").then((m) => m.CategoryDetailsComponent),
+  },
+  {
     path: "products",
-    loadComponent: () =>
-      import("./features/products/all-product/all-product.component").then((m) => m.AllProductComponent),
+    loadComponent: () => import("./features/products/all-product/all-product.component").then((m) => m.AllProductComponent),
   },
   {
     path: "products/:id",
-    loadComponent: () =>
-      import("./features/products/product-detail/product-detail.component").then((m) => m.ProductDetailComponent),
+    loadComponent: () => import("./features/products/product-detail/product-detail.component").then((m) => m.ProductDetailComponent),
   },
   {
     path: "dashboard",
     loadComponent: () => import("./features/dashboard/dashboard.component").then((m) => m.DashboardComponent),
-    // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
   },
   {
     path: "add-product",
     loadComponent: () =>
       import("./features/products/add-product/add-product.component").then((m) => m.AddProductComponent),
+    canActivate: [AuthGuard],
+  },
+  {
+    path: "edit-product/:id",
+    loadComponent: () =>
+      import("./features/products/edit-product/edit-product.component").then((m) => m.EditProductComponent),
     // canActivate: [AuthGuard],
   },
   {
     path: "my-products",
     loadComponent: () =>
       import("./features/products/my-products/my-products.component").then((m) => m.MyProductsComponent),
-    // canActivate: [AuthGuard],
-  },
-  {
-    path: "checkout",
-    loadComponent: () => import("./features/orders/checkout/checkout.component").then((m) => m.CheckoutComponent),
-    // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
   },
   {
     path: "orders",
     loadComponent: () => import("./features/orders/order-list/order-list.component").then((m) => m.OrderListComponent),
-    // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
   },
   {
-    path: 'admin/orders',
-    loadComponent: () => import("./features/orders/admin-orders/admin-orders.component").then((m) => m.AdminOrdersComponent),
-    // canActivate: [AdminGuard]
+    path: "checkout",
+    loadComponent: () => import("./features/orders/checkout/checkout.component").then((m) => m.CheckoutComponent),
+    canActivate: [AuthGuard],
   },
-
   {
     path: "profile",
     loadComponent: () => import("./features/profile/profile.component").then((m) => m.ProfileComponent),
-    // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
   },
+   {
+    path: "payment/:orderId/:amount",
+    loadComponent: () => import("./features/payment/payment.component").then((m) => m.PaymentComponent),
+    canActivate: [AuthGuard],
+  },
+
+  {
+    path: "payment/success",
+    loadComponent: () => import("./features/payment/success/success.component").then((m) => m.PaymentSuccessComponent),
+  },
+  {
+    path: "payment/cancel",
+    loadComponent: () => import("./features/payment/cancel/cancel.component").then((m) => m.PaymentCancelComponent),
+  },
+  {
+    path: "payment/history",
+    loadComponent: () => import("./features/payment/payment-history/payment-history.component").then((m) => m.PaymentHistoryComponent),
+    canActivate: [AuthGuard],
+  },
+
   {
     path: "wallet",
     loadComponent: () => import("./features/wallet/wallet.component").then((m) => m.WalletComponent),
-    // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
   },
   {
     path: "wallet/payment",
     loadComponent: () => import("./features/payment/payment.component").then((m) => m.PaymentComponent),
-    // canActivate: [AuthGuard],
-  },
-  {
-    path: "admin",
-    loadChildren: () => import("./features/admin/admin.routes").then((m) => m.adminRoutes),
-    // canActivate: [AdminGuard],
+    canActivate: [AuthGuard],
   },
   {
     path: "allcategories",
     loadComponent: () => import("./features/allcategories/allcategories.component").then((m) => m.AllCategoriesComponent),
-    // canActivate: [AuthGuard],
   },
   {
     path: "shipping/create",
-    loadComponent: () => import("./features/shipping/create-shipping/create-shipping.component").then(m => m.CreateShippingComponent)
+    loadComponent: () => import("./features/shipping/create-shipping/create-shipping.component").then(m => m.CreateShippingComponent),
+    canActivate: [AuthGuard],
   },
   {
     path: "shipping/track",
-    loadComponent: () => import("./features/shipping/track-shipping/track-shipping.component").then(m => m.TrackShippingComponent)
+    loadComponent: () => import("./features/shipping/track-shipping/track-shipping.component").then(m => m.TrackShippingComponent),
+    canActivate: [AuthGuard],
   },
   {
     path: "admin/shippings",
-    loadComponent: () => import("./features/shipping/admin-shipping-list/admin-shipping-list.component").then(m => m.AdminShippingListComponent)
+    loadComponent: () => import("./features/shipping/admin-shipping-list/admin-shipping-list.component").then(m => m.AdminShippingListComponent),
+    canActivate: [AdminGuard],
   },
   {
     path: "shipping/calculate",
-    loadComponent: () => import("./features/shipping/calculate-shipping-cost/calculate-shipping-cost.component").then(m => m.CalculateShippingCostComponent)
+    loadComponent: () => import("./features/shipping/calculate-shipping-cost/calculate-shipping-cost.component").then(m => m.CalculateShippingCostComponent),
+    canActivate: [AuthGuard],
   },
-
- {
+  {
     path: "verify-email",
     loadComponent: () => import("./features/auth/verify-email/verify-email.component").then((m) => m.VerifyEmailComponent),
   },
   {
     path: "forgot-password",
     loadComponent: () => import("./features/auth/forgot-password/forgot-password.component").then(m => m.ForgotPasswordComponent),
-
   },
   {
     path: "reset-password",
@@ -117,25 +135,22 @@ export const routes: Routes = [
     path: "logout",
     loadComponent: () => import("./features/auth/logout/logout.component").then(m => m.LogoutComponent),
   },
- {
+  {
     path: "profile/edit",
     loadComponent: () => import("./features/profile/profile-edit/profile-edit.component").then(m => m.ProfileEditComponent),
+    canActivate: [AuthGuard],
   },
   {
     path: "profile/change-password",
     loadComponent: () => import("./features/profile/change-password/change-password.component").then(m => m.ChangePasswordComponent),
+    canActivate: [AuthGuard],
   },
-   {
-    path: "home",
-    loadComponent: () => import("./features/home/home.component").then((m) => m.HomeComponent),
-    // لا يوجد canActivate هنا، الصفحة متاحة للجميع
+  // Admin Routes (Admin Only)
+  {
+    path: "admin",
+    loadChildren: () => import("./features/admin/admin.routes").then((m) => m.adminRoutes),
+    canActivate: [AdminGuard],
   },
-
-
-
-
-
-
   {
     path: "**",
     redirectTo: "",

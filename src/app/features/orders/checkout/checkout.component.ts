@@ -17,8 +17,17 @@ import { ProductService } from '../../../core/services/product.service';
   styleUrls: ['./checkout.component.scss']
 })
 export class CheckoutComponent implements OnInit {
-  getProductImage() {
-    throw new Error('Method not implemented.');
+  getProductImage(): string {
+    if (!this.product) return 'product.png';
+    
+    const mainImage = this.product.images?.find((img) => img.isMain);
+    if (mainImage && mainImage.imageUrl) {
+      return mainImage.imageUrl.startsWith('http') 
+        ? mainImage.imageUrl 
+        : `https://localhost:65162${mainImage.imageUrl}`;
+    }
+    
+    return 'product.png';
   }
   product: IProduct | null = null;
   shippingInfo: ShippingInfo = {
@@ -125,9 +134,7 @@ export class CheckoutComponent implements OnInit {
       next: (response) => {
         this.isLoading = false;
         if (response.success) {
-          this.router.navigate(['/payment'], {
-            queryParams: { orderId: response.data.id, totalAmount: this.totalAmount }
-          });
+          this.router.navigate(['/payment', response.data.id, this.totalAmount]);
         }
       },
       error: (error) => {

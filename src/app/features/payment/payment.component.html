@@ -1,57 +1,167 @@
 <div class="payment-container">
-  <h2>Make Payment</h2>
-  <form [formGroup]="paymentForm" (ngSubmit)="submit()" class="payment-form">
-    <div class="form-group">
-      <label for="userId">User ID</label>
-      <input id="userId" formControlName="userId" type="number" class="form-control" required />
-    </div>
-    <div class="form-group">
-      <label for="amount">Amount</label>
-      <input id="amount" formControlName="amount" type="number" class="form-control" required min="1" />
-    </div>
-    <div class="form-group">
-      <label for="orderId">Order ID</label>
-      <input id="orderId" formControlName="orderId" type="number" class="form-control" />
-    </div>
-    <div class="form-group">
-      <label for="gateway">Gateway</label>
-      <select id="gateway" formControlName="gateway" class="form-control">
-        <option *ngFor="let g of gateways" [value]="g">{{g}}</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="description">Description</label>
-      <input id="description" formControlName="description" type="text" class="form-control" />
-    </div>
-    <button type="submit" class="btn btn-primary" [disabled]="isLoading || !paymentForm.valid">Submit Payment</button>
-  </form>
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-md-8 mx-auto">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="mb-0">
+              <i class="fas fa-credit-card me-2"></i>
+              Payment Processing
+            </h3>
+          </div>
+          <div class="card-body">
+            <!-- Order Details Display -->
+            <div *ngIf="orderDetails" class="order-summary mb-4">
+              <h5 class="text-primary mb-3">
+                <i class="fas fa-receipt me-2"></i>
+                Order Summary
+              </h5>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="info-item">
+                    <strong>Order ID:</strong>
+                    <span class="badge bg-primary ms-2">#{{ orderDetails.id }}</span>
+                  </div>
+                  <div class="info-item">
+                    <strong>Product:</strong>
+                    <span class="ms-2">{{ orderDetails.product?.title }}</span>
+                  </div>
+                  <div class="info-item">
+                    <strong>Quantity:</strong>
+                    <span class="ms-2">{{ orderDetails.quantity }}</span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="info-item">
+                    <strong>Total Amount:</strong>
+                    <span class="badge bg-success ms-2 fs-6">{{ orderAmount | currency:'EGP' }}</span>
+                  </div>
+                  <div class="info-item">
+                    <strong>Status:</strong>
+                    <span class="badge bg-warning ms-2">{{ orderDetails.status }}</span>
+                  </div>
+                  <div class="info-item">
+                    <strong>Date:</strong>
+                    <span class="ms-2">{{ orderDetails.createdAt | date:'short' }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-  <div *ngIf="errorMessage" class="alert alert-danger mt-2">{{errorMessage}}</div>
-  <div *ngIf="successMessage" class="alert alert-success mt-2">{{successMessage}}</div>
+            <!-- Payment Form -->
+            <form [formGroup]="paymentForm" (ngSubmit)="submit()" class="payment-form">
+              <div class="form-group mb-3">
+                <label for="description" class="form-label">
+                  <i class="fas fa-comment me-2"></i>
+                  Payment Description (Optional)
+                </label>
+                <textarea 
+                  id="description" 
+                  formControlName="description" 
+                  class="form-control" 
+                  rows="3"
+                  placeholder="Add any additional notes about this payment..."
+                ></textarea>
+              </div>
 
-  <hr />
-  <h3>Payment History</h3>
-  <div *ngIf="payments.length === 0 && !isLoading" class="text-muted">No payments found.</div>
-  <table *ngIf="payments.length > 0" class="table table-striped payment-table">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Amount</th>
-        <th>Gateway</th>
-        <th>Status</th>
-        <th>Created At</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let p of payments">
-        <td>{{p.id}}</td>
-        <td>{{p.amount}}</td>
-        <td>{{p.gateway}}</td>
-        <td>{{p.status}}</td>
-        <td>{{p.createdAt | date:'short'}}</td>
-        <td>{{p.description}}</td>
-      </tr>
-    </tbody>
-  </table>
+              <div class="d-grid">
+                <button 
+                  type="submit" 
+                  class="btn btn-primary btn-lg" 
+                  [disabled]="isLoading || !orderId || !orderAmount"
+                >
+                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                  <i class="fab fa-stripe me-2"></i>
+                  {{ isLoading ? 'Processing...' : 'Pay ' + (orderAmount | currency:'EGP') + ' with Stripe' }}
+                </button>
+              </div>
+            </form>
+
+            <!-- Alert Messages -->
+            <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              {{ errorMessage }}
+            </div>
+            
+            <div *ngIf="successMessage" class="alert alert-success mt-3">
+              <i class="fas fa-check-circle me-2"></i>
+              {{ successMessage }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment History -->
+        <div class="card mt-4" *ngIf="payments.length > 0">
+          <div class="card-header">
+            <h5 class="mb-0">
+              <i class="fas fa-history me-2"></i>
+              Payment History for Order #{{ orderId }}
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th>Payment ID</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let payment of payments">
+                    <td>{{ payment.id }}</td>
+                    <td>
+                      <span class="badge bg-primary">{{ payment.amount | currency:'EGP' }}</span>
+                    </td>
+                    <td>
+                      <span 
+                        class="badge" 
+                        [ngClass]="{
+                          'bg-warning': payment.status === 'Pending',
+                          'bg-success': payment.status === 'Paid',
+                          'bg-danger': payment.status === 'Failed'
+                        }"
+                      >
+                        {{ payment.status }}
+                      </span>
+                    </td>
+                    <td>{{ payment.createdAt | date:'short' }}</td>
+                    <td>
+                      <button 
+                        class="btn btn-sm btn-outline-info"
+                        (click)="checkPaymentStatus(payment.id)"
+                        [disabled]="isLoading"
+                      >
+                        <i class="fas fa-sync-alt"></i>
+                        Check Status
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- No Payments Message -->
+        <div *ngIf="payments.length === 0 && !isLoading && orderId" class="text-center mt-4">
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            No payment history found for this order.
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="isLoading && !orderDetails" class="text-center mt-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Loading order details...</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div> 

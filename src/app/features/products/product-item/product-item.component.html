@@ -1,0 +1,43 @@
+<div class="product-card border rounded shadow-sm h-100" *ngIf="product() as p">
+  <div class="product-image position-relative">
+    
+    <img
+      [src]="getMainImage(p.images[0])"
+      class="img-fluid rounded-top"
+      [alt]="p.title"
+      style="height: 200px; object-fit: cover;"
+    />
+    <div class="product-badges position-absolute top-0 start-0 m-2">
+      <span class="badge" [class]="getConditionBadgeClass(p.condition)">
+        {{ p.condition }}
+      </span>
+    </div>
+    <div class="product-overlay position-absolute bottom-0 start-0 end-0 text-center p-2 bg-white bg-opacity-75">
+      <button class="btn btn-primary btn-sm me-2" [routerLink]="['/products', p.id]">
+        Quick View
+      </button>
+      <button class="btn btn-outline-primary btn-sm" (click)="addToWishlist(p)">
+        <i class="fas fa-heart"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="product-info p-3">
+    <h6 class="product-title mb-2">{{ p.title }}</h6>
+    <div class="product-price">
+      <span class="current-price fw-bold">\${{ p.price | number:'1.2-2' }}</span>
+
+      <span
+        class="original-price text-muted text-decoration-line-through ms-2"
+        *ngIf="getOriginalPrice(p.price) > p.price">
+        \${{ getOriginalPrice(p.price) | number:'1.2-2' }}
+      </span>
+
+      <span
+        class="discount-badge badge bg-danger ms-2"
+        *ngIf="getDiscountPercentage(p.price) > 0">
+        {{ getDiscountPercentage(p.price) }}% OFF
+      </span>
+    </div>
+  </div>
+</div>

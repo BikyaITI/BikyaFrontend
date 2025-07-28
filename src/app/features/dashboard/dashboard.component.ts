@@ -8,6 +8,7 @@ import  { IProduct} from "../../core/models/product.model"
 import  { Order } from "../../core/models/order.model"
 import { CategoryService } from "../../core/services/category.service"
 import { IUser } from "../../core/models/user.model"
+import { environment } from "../../../environments/environment"
 
 @Component({
   selector: "app-dashboard",
@@ -323,11 +324,12 @@ export class DashboardComponent implements OnInit {
     ]
   }
 
-  getMainImage(product: IProduct): string {
+getMainImage(product: IProduct): string {
     const mainImage = product.images?.find((img) => img.isMain)
-    return mainImage?.imageUrl || "/placeholder.svg?height=50&width=50"
+   return mainImage && mainImage.imageUrl
+    ? `${environment.apiUrl}${mainImage.imageUrl}`
+    : 'product.png';
   }
-
   getProductStatus(product: IProduct): string {
     return product.isApproved ? "Approved" : "Pending"
   }

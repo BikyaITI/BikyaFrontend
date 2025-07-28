@@ -83,6 +83,7 @@ export class ProfileComponent implements OnInit {
       console.log(`User ID: ${user.id}`);
       this.cdr.detectChanges();
       this.loadUserStats();
+      this.loadAverageRating();
     });
   }
 
@@ -149,6 +150,7 @@ updateProfile(): void {
 
     const updateRequest: IUpdateProfileRequest = {
       fullName: this.profileForm.get("fullName")?.value,
+      FullName: this.profileForm.get("fullName")?.value,
       email: this.profileForm.get("email")?.value,
     };
 

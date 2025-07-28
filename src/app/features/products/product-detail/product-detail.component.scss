@@ -2,16 +2,25 @@
   cursor: pointer;
   transition: all 0.3s ease;
   border: 2px solid transparent;
+  
+  &.main {
+      border-color:darkgoldenrod;
+    }
 }
 
 .thumbnail:hover {
   border-color: var(--bs-primary);
-  transform: scale(1.05);
+
 }
 
 .thumbnail.active {
   border-color: var(--bs-primary);
+    transform: scale(.5);
 }
+// .thumbnail .main {
+//   border-color: var(--bs-success);
+  
+// }
 
 .product-gallery .main-image {
   position: relative;
@@ -30,8 +39,12 @@
   font-weight: 500;
 }
 
-.order-summary {
-  background-color: #f8f9fa;
-  padding: 1rem;
-  border-radius: 0.5rem;
+.dropdown-menu .dropdown-item {
+  transition: background-color 0.2s, border-left 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.dropdown-menu .dropdown-item:hover {
+  background-color: #f8f9fa; // Light gray
+  border-left: 3px solid #0d6efd; // Bootstrap primary
 }

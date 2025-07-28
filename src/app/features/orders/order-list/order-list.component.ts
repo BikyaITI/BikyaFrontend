@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
-import { RouterModule } from "@angular/router"
+import { RouterModule, Router } from "@angular/router"
 import { OrderService } from "../../../core/services/order.service"
 import { AuthService } from "../../../core/services/auth.service"
 import { Order, OrderStatus } from "../../../core/models/order.model"
@@ -24,6 +24,7 @@ export class OrderListComponent implements OnInit {
   constructor(
     private orderService: OrderService,
     private authService: AuthService,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -123,5 +124,9 @@ export class OrderListComponent implements OnInit {
         },
       })
     }
+  }
+
+  payForOrder(order: Order): void {
+    this.router.navigate(['/payment', order.id, order.totalAmount]);
   }
 }

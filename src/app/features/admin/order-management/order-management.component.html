@@ -1,0 +1,111 @@
+<div class="container">
+  <h2 class="mb-4">Admin Order Management</h2>
+  
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="my-3 text-center" role="status" aria-live="polite">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading orders...</span>
+    </div>
+  </div>
+  
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    <i class="fas fa-exclamation-triangle" aria-hidden="true"></i> {{ errorMessage }}
+  </div>
+  
+  <!-- Search and Filter Controls -->
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <label for="searchInput" class="visually-hidden">Search orders</label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="fas fa-search" aria-hidden="true"></i></span>
+        <input type="text" 
+               id="searchInput"
+               class="form-control" 
+               placeholder="Search orders... (Press Enter to search)" 
+               [(ngModel)]="searchTerm" 
+               (input)="searchOrders()"
+               (keydown.enter)="searchOrders()"
+               aria-label="Search orders by product, buyer, or seller">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <button class="btn btn-outline-secondary w-100" (click)="clearFilters()" aria-label="Clear all filters">
+        <i class="fas fa-times" aria-hidden="true"></i> Clear Filters
+      </button>
+    </div>
+  </div>
+  
+  <!-- Orders Table -->
+  <div class="table-responsive">
+    <table class="table table-striped" *ngIf="!isLoading && orders.length" role="table" aria-label="Orders list">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Product</th>
+          <th scope="col">Buyer</th>
+          <th scope="col">Seller</th>
+          <th scope="col">Total</th>
+          <th scope="col">Status</th>
+          <th scope="col">Created</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of orders">
+          <td>{{ order.id }}</td>
+          <td>{{ order.productTitle || 'N/A' }}</td>
+          <td>{{ order.buyerName || 'N/A' }}</td>
+          <td>{{ order.sellerName || 'N/A' }}</td>
+          <td>{{ order.totalAmount | number:'1.2-2' }}</td>
+          <td>
+            <select class="form-select form-select-sm"
+                    [ngModel]="getStatusStringFromEnum(order.status)"
+                    (ngModelChange)="onStatusChange(order, $event)">
+              <option [ngValue]="'Pending'">Pending</option>
+              <option [ngValue]="'Paid'">Paid</option>
+              <option [ngValue]="'Shipped'">Shipped</option>
+              <option [ngValue]="'Completed'">Completed</option>
+              <option [ngValue]="'Cancelled'">Cancelled</option>
+            </select>
+          </td>
+          <td>{{ order.createdAt ? (order.createdAt | date:'short') : 'N/A' }}</td>
+          <td>
+            <div class="btn-group" role="group" [attr.aria-label]="'Actions for order ' + order.id">
+              <button class="btn btn-danger btn-sm me-1" 
+                      [disabled]="isCancelling[order.id] || order.status === 'Cancelled'" 
+                      (click)="confirmCancelOrder(order)"
+                      title="Cancel order"
+                      [attr.aria-label]="'Cancel order ' + order.id">
+                <span *ngIf="isCancelling[order.id]" class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                <i class="fas fa-times" *ngIf="!isCancelling[order.id]" aria-hidden="true"></i> Cancel
+              </button>
+              
+              <button class="btn btn-success btn-sm me-1" 
+                      [disabled]="isProcessing[order.id] || order.status === 'Delivered' || order.status === 'Completed'" 
+                      (click)="confirmCompleteOrder(order)"
+                      title="Mark as completed"
+                      [attr.aria-label]="'Complete order ' + order.id">
+                <span *ngIf="isProcessing[order.id]" class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                <i class="fas fa-check" *ngIf="!isProcessing[order.id]" aria-hidden="true"></i> Complete
+              </button>
+              
+              <button class="btn btn-info btn-sm" 
+                      [disabled]="isProcessing[order.id]" 
+                      (click)="viewOrderDetails(order)"
+                      title="View order details"
+                      [attr.aria-label]="'View details for order ' + order.id">
+                <i class="fas fa-eye" aria-hidden="true"></i> Details
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- No Orders Message -->
+  <div *ngIf="!isLoading && !orders.length" class="alert alert-info" role="status">
+    <i class="fas fa-info-circle" aria-hidden="true"></i> No orders found.
+  </div>
+</div> 

@@ -4,12 +4,13 @@ import { RouterModule, Router } from "@angular/router"
 import { AuthService } from "../../../core/services/auth.service"
 import { IUser } from "../../../core/models/user.model"
 import { Dropdown } from "bootstrap"
+import { FormsModule } from "@angular/forms"
 
 
 @Component({
   selector: "app-navbar",
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   template: `
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
       <div class="container">
@@ -38,97 +39,96 @@ import { Dropdown } from "bootstrap"
             <li class="nav-item" *ngIf="currentUser">
               <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
             </li>
+            <!-- Admin Links -->
+            <li class="nav-item dropdown" *ngIf="isAdmin">
+              <a class="nav-link dropdown-toggle" href="#" role="button" (click)="toggleAdminDropdown($event)">
+                Admin
+              </a>
+              <ul class="dropdown-menu" [class.show]="showAdminDropdown">
+                <li><a class="dropdown-item" routerLink="/admin" (click)="hideAdminDropdown()"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                <li><a class="dropdown-item" routerLink="/admin/users" (click)="hideAdminDropdown()"><i class="fas fa-users me-2"></i>Users</a></li>
+                <li><a class="dropdown-item" routerLink="/admin/products" (click)="hideAdminDropdown()"><i class="fas fa-box me-2"></i>Products</a></li>
+                <li><a class="dropdown-item" routerLink="/admin/orders" (click)="hideAdminDropdown()"><i class="fas fa-receipt me-2"></i>Orders</a></li>
+              </ul>
+            </li>
           </ul>
 
           <div class="d-flex align-items-center">
-            <div class="search-container me-3">
+            
+  <div class="search-container me-3" style="width: 250px;">
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search products..."
+      [(ngModel)]="navSearchTerm"
+      (keyup.enter)="onNavSearch()">
+    <i class="fas fa-search search-icon"></i>
+  </div>
+
+            <!-- <div class="search-container me-3">
               <input type="search" class="form-control" placeholder="Search products...">
               <i class="fas fa-search search-icon"></i>
-            </div>
+            </div> -->
 
             <ng-container *ngIf="currentUser; else loginLinks">
               <a routerLink="/wallet" class="btn btn-outline-primary me-2" routerLinkActive="active">
                 <i class="fas fa-wallet me-1"></i>Wallet
               </a>
-              <a href="#" class="btn btn-outline-primary me-2 position-relative">
-                <i class="fas fa-shopping-cart"></i>
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
-              </a>
+        
+       <div class="position-relative d-inline-block  me-3">
+  <!-- Badge Positioned Above -->
+  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger z-1">
+    45
+  </span>
 
-            <!-- <div class="dropdown">
-  <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
-          data-bs-toggle="dropdown" aria-expanded="false">
-    <i class="fas fa-user me-1"></i>{{ currentUser.fullName }}
-  </button>
-  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    <li>
-      <a class="dropdown-item" [routerLink]="['/profile', currentUser.id]">
-        <i class="fas fa-user me-2"></i>Profile
-      </a>
-    </li>
-    <li><a class="dropdown-item" routerLink="/my-products"><i class="fas fa-box me-2"></i>My Products</a></li>
-    <li><a class="dropdown-item" routerLink="/orders"><i class="fas fa-receipt me-2"></i>Orders</a></li>
-    <li><a class="dropdown-item" routerLink="/wallet"><i class="fas fa-wallet me-2"></i>Wallet</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li>
-      <a class="dropdown-item text-danger" href="#" (click)="logout()">
-        <i class="fas fa-sign-out-alt me-2"></i>Logout
-      </a>
-    </li>
-  </ul>
-          </div>
-           -->
-            <div class="dropdown">
-  <button class="btn btn-light rounded-pill px-4 py-2 shadow-sm d-flex align-items-center gap-2"
-          type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-    <i class="fas fa-user-circle fa-lg text-primary"></i>
-    <span class="fw-semibold">{{ currentUser.fullName }}</span>
-    <i class="fas fa-chevron-down ms-2"></i>
-  </button>
-
-  <ul class="dropdown-menu dropdown-menu-end shadow-sm mt-2 rounded-4" aria-labelledby="dropdownMenuButton">
-    <li><h6 class="dropdown-header text-muted small">My Account</h6></li>
-
-    <a
-  class="dropdown-item d-flex align-items-center gap-2 py-2"
-  (click)="goToProfile()"
-  style="cursor: pointer;"
->
-  <i class="fas fa-user text-primary"></i> 
-  <span class="fw-medium">Profile</span>
-</a>
-
-
-    <li>
-      <a class="dropdown-item d-flex align-items-center gap-2 py-2" routerLink="/my-products">
-        <i class="fas fa-baby-carriage text-success"></i> <span class="fw-medium">My Products</span>
-      </a>
-    </li>
-
-    <li>
-      <a class="dropdown-item d-flex align-items-center gap-2 py-2" routerLink="/orders">
-        <i class="fas fa-receipt text-info"></i> <span class="fw-medium">Orders</span>
-      </a>
-    </li>
-
-    <li>
-      <a class="dropdown-item d-flex align-items-center gap-2 py-2" routerLink="/wallet">
-        <i class="fas fa-wallet text-warning"></i> <span class="fw-medium">Wallet</span>
-      </a>
-    </li>
-
-    <li><hr class="dropdown-divider my-1"></li>
-
-    <li>
-      <a class="dropdown-item d-flex align-items-center gap-2 py-2 text-danger fw-medium cursor-pointer" href="/logout" (click)="logout()">
-        <i class="fas fa-sign-out-alt"></i> Logout
-      </a>
-    </li>
-  </ul>
+  <!-- Button -->
+  <a href="#" class="btn btn-outline-primary">
+    <i class="fas fa-heart"></i>
+  </a>
 </div>
+              <div class="dropdown">
+                <button class="btn btn-outline-primary rounded-pill px-4 py-2 shadow-sm d-flex align-items-center gap-2"
+                        type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-user-circle fa-lg text-primary"></i>
+                  <span class="fw-semibold">{{ currentUser.fullName }}</span>
+                  <i class="fas fa-chevron-down ms-2"></i>
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm mt-2 rounded-4" aria-labelledby="dropdownMenuButton">
+                  <li><h6 class="dropdown-header text-muted small">My Account</h6></li>
+
+                  <a
+                    class="dropdown-item d-flex align-items-center gap-2 py-2"
+                    (click)="goToProfile()"
+                    style="cursor: pointer;"
+                  >
+                    <i class="fas fa-user text-primary"></i> 
+                    <span class="fw-medium">Profile</span>
+                  </a>
+
+                  <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" routerLink="/my-products">
+                      <i class="fas fa-baby-carriage text-success"></i> <span class="fw-medium">My Products</span>
+                    </a>
+                  </li>
+
+                  <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" routerLink="/orders">
+                      <i class="fas fa-receipt text-info"></i> <span class="fw-medium">Orders</span>
+                    </a>
+                  </li>
 
 
 
+                  <li><hr class="dropdown-divider my-1"></li>
+
+                  <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-2 text-danger fw-medium cursor-pointer" href="/logout" (click)="logout()">
+                      <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </ng-container>
 
             <ng-template #loginLinks>
@@ -140,11 +140,20 @@ import { Dropdown } from "bootstrap"
       </div>
     </nav>
   `,
+  styles: [`
+    .dropdown-menu.show {
+      display: block !important;
+    }
+  `]
 })
 export class NavbarComponent implements OnInit, AfterViewInit {
   @ViewChild('dropdownBtn', { static: false }) dropdownBtn?: ElementRef;
 
   currentUser: IUser | null = null;
+  isAdmin: boolean = false;
+  showAdminDropdown = false;
+  showUserDropdown = false;
+  navSearchTerm = "";
 
   constructor(
     private authService: AuthService,
@@ -154,6 +163,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
+      this.isAdmin = this.checkIfAdmin(user);
     });
   }
 
@@ -172,6 +182,36 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     } else {
       this.router.navigate(['/profile']);
     }
+  }
+  onNavSearch() {
+    if (this.navSearchTerm.trim()) {
+      this.router.navigate(['/products'], { queryParams: { search: this.navSearchTerm.trim() } });
+    }
+  }
+
+  private checkIfAdmin(user: IUser | null): boolean {
+    if (!user || !user.roles) return false;
+    return user.roles.includes('Admin');
+  }
+
+  toggleAdminDropdown(event: Event): void {
+    event.preventDefault();
+    this.showAdminDropdown = !this.showAdminDropdown;
+    this.showUserDropdown = false;
+  }
+
+  toggleUserDropdown(event: Event): void {
+    event.preventDefault()
+    this.showUserDropdown = !this.showUserDropdown
+    this.showAdminDropdown = false
+  }
+
+  hideAdminDropdown(): void {
+    this.showAdminDropdown = false;
+  }
+
+  hideUserDropdown(): void {
+    this.showUserDropdown = false
   }
 
   logout(): void {

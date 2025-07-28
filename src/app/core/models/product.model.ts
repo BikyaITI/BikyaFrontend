@@ -11,7 +11,8 @@ export interface IProduct {
   categoryId: number
   categoryName: string
   userId: number
-  user: IUser
+  userName: string
+  status:string
   isApproved: boolean
   createdAt: Date
   images: IProductImage[]
@@ -19,16 +20,9 @@ export interface IProduct {
 }
 
 export interface IProductImage {
-  // id: number
-  // productId: number
+  id: number
   imageUrl: string
   isMain: boolean
-}
-
-export interface Category {
-  id: number
-  name: string
-  description: string
 }
 
 export interface CreateProductRequest {
@@ -43,4 +37,8 @@ export interface CreateProductRequest {
 export interface CreateProductWithImagesRequest extends CreateProductRequest {
   mainImage: File
   additionalImages: File[]
+}
+export interface CreateProductImageRequest {
+  image: File
+  isMain: boolean
 }
