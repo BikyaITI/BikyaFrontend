@@ -66,15 +66,13 @@ export class ProductDetailComponent implements OnInit {
     // Try to get product by ID first
     this.productService.getProductById(id).subscribe({
       next: (response) => {
-        console.log('Product response:', response)
         if (response.success) {
           this.product = response.data
-          console.log('Product loaded:', this.product)
           this.selectedImage = this.getMainImage(this.product)
           this.loadRelatedProducts()
         } else {
           console.error('Failed to load product:', response.message)
-          // Try to get from all products as fallback
+          this.errorMessage=`Error ${response.message}`
           this.loadProductFromAllProducts(id)
         }
         this.isLoading = false
@@ -85,6 +83,9 @@ export class ProductDetailComponent implements OnInit {
         // Try to get from all products as fallback
         this.loadProductFromAllProducts(id)
       },
+      complete: () => {
+        this.isLoading = false;
+      }
     })
   }
 
@@ -110,6 +111,9 @@ export class ProductDetailComponent implements OnInit {
         console.error('Error loading from all products:', error)
         this.errorMessage = 'Failed to load product'
         this.isLoading = false
+      }, complete: () => {
+        this.isLoading = false;
+      
       }
     })
   }
@@ -179,12 +183,16 @@ export class ProductDetailComponent implements OnInit {
           if (response.success) {
             this.router.navigate(['/dashboard']);
           }
+          else {
+            this.errorMessage=`Error, ${response.message}`
+            
+}
         },
         error: (err) => {
           this.doAction = false
-          this.errorMessage = `Error : ${err.message}`
+          this.errorMessage = `Error: ${err.error?.message || err.message || 'Unexpected error'}`;
           const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById("Modal"))
-          modal.hide()
+          if (modal) modal.hide();
           //show error
         }
       })
@@ -196,14 +204,17 @@ export class ProductDetailComponent implements OnInit {
           if (response.success) {
             this.successMessage = "Product Approved successfully"
             const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById("Modal"))
-            modal.hide()
+            if (modal) modal.hide();
+          }
+          else {
+            this.errorMessage = `Error, ${response.message}`
           }
         },
         error: (err) => {
           this.doAction = false
-          this.errorMessage = `Error : ${err.message}`
+          this.errorMessage = `Error: ${err.error?.message || err.message || 'Unexpected error'}`;
           const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById("deleteModal"))
-          modal.hide()
+          if (modal) modal.hide();
           //show error
         }
       })
@@ -276,12 +287,13 @@ export class ProductDetailComponent implements OnInit {
           this.loadProduct(this.product!.id); // reload product data
         } else {
           console.log(res.message)
-          this.errorMessage =  'Failed to delete image.';
+          this.errorMessage =  `Failed to delete image. ${res.message}`;
         }
       },
       error: (err) => {
-        console.log (err.error?.message)
-        this.errorMessage =  'Server error while deleting image.';
+        const message = err.error?.message || 'Server error while deleting image.';
+        console.log(message);
+        this.errorMessage = `Failed to delete image. ${message}`;
       }
     });
   }
@@ -299,12 +311,12 @@ export class ProductDetailComponent implements OnInit {
           this.loadProduct(this.product!.id); // reload product to reflect main image change
         } else {
           console.log(res.message)
-          this.errorMessage =  "Failed to set main image.";
+          this.errorMessage = `Failed to set main image. ${res.message}`;
         }
       },
       error: (err) => {
-        console.log(err.error?.message)
-        this.errorMessage =   "Server error while setting main image.";
+        console.log(err.message)
+        this.errorMessage = `Server error while setting main image. ${err.error?.message}`;
       }
     });
   }
@@ -356,7 +368,7 @@ export class ProductDetailComponent implements OnInit {
         if (res.success) {
           this.successMessage = 'Image uploaded successfully';
           const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById("addImageModal"))
-          modal.hide()
+          if (modal) modal.hide();
           this.loadProduct(this.product!.id); // Refresh product with images
         } else {
           console.log(res.message)
