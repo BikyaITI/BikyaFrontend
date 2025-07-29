@@ -31,6 +31,10 @@ export class ProfileComponent implements OnInit {
   router = inject(Router)
   isUpdatingProfile = false
   isChangingPassword = false
+ selectedFile: File | null = null;
+  previewUrl: string | ArrayBuffer | null = null;
+  uploading = false;
+  message = '';
 
   profileSuccessMessage = ""
   profileErrorMessage = ""
@@ -80,6 +84,7 @@ export class ProfileComponent implements OnInit {
         email: user.email,
         phone:user.phone
       });
+     this.previewUrl = user?.profileImageUrl || null;
       console.log(`User ID: ${user.id}`);
       this.cdr.detectChanges();
       this.loadUserStats();
@@ -150,7 +155,6 @@ updateProfile(): void {
 
     const updateRequest: IUpdateProfileRequest = {
       fullName: this.profileForm.get("fullName")?.value,
-      FullName: this.profileForm.get("fullName")?.value,
       email: this.profileForm.get("email")?.value,
     };
 
@@ -240,6 +244,51 @@ loadAverageRating(): void {
     }
   });
 }
+onFileSelected(event: any) {
+  const file = event.target.files[0];
+  if (file) {
+    this.selectedFile = file;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previewUrl = reader.result;
+
+      // بعد ما يتم توليد البريفيو نرفع الصورة على طول
+      this.upload(); 
+    };
+    reader.readAsDataURL(file);
+  }
+}
+upload() {
+  if (!this.selectedFile) return;
+
+  this.uploading = true;
+
+  this.userService.uploadProfileImage(this.selectedFile).subscribe({
+    next: (res) => {
+      this.message = 'تم رفع الصورة بنجاح';
+       console.log(res)
+      // ✅ حفظ الصورة الجديدة في الواجهة
+      this.previewUrl = res.data;
+
+      // ✅ تحديث بيانات المستخدم في الذاكرة والمحلي
+      const currentUser = this.authService.getCurrentUser(); // جيبي المستخدم الحالي من السيرفس
+      if (currentUser) {
+        currentUser.profileImageUrl = res.data;
+        this.authService.setCurrentUserToLacal(currentUser); // احفظ التعديل
+      }
+    },
+    error: () => {
+      this.message = 'حدث خطأ أثناء رفع الصورة';
+      console.log(this.message)
+    },
+    complete: () => {
+      this.uploading = false;
+      console.log(this.uploading)
+    }
+  });
+}
+
 
 
 navigateToAddProduct(): void {

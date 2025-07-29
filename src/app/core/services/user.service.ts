@@ -87,11 +87,11 @@ export class UserService {
   }
 
   // Upload profile image for current user
-  uploadProfileImage(file: File): Observable<ApiResponse<any>> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post<ApiResponse<any>>(`${this.baseUrl}/upload-profile-image`, formData);
-  }
+  // uploadProfileImage(file: File): Observable<ApiResponse<any>> {
+  //   const formData = new FormData();
+  //   formData.append('file', file);
+  //   return this.http.post<ApiResponse<any>>(`${this.baseUrl}/upload-profile-image`, formData);
+  // }
 
   // Legacy methods for backward compatibility
   getProfile(userId: number): Observable<ApiResponse<IUser>> {
@@ -115,5 +115,12 @@ export class UserService {
     // This endpoint doesn't exist in the backend, so we'll need to calculate stats from other endpoints
     // For now, return a placeholder implementation
     return this.http.get<ApiResponse<IUserStats>>(`${this.baseUrl}/stats/${userId}`);
+  }
+   uploadProfileImage(file: File) {
+    const formData = new FormData();
+    formData.append('imageFile', file);
+
+    return this.http.post<ApiResponse<string>>(`${this.baseUrl}/upload-profile-image`,formData
+);
   }
 }

@@ -111,7 +111,8 @@ export class CategoryFormComponent implements OnInit {
       name: '',
       description: '',
       iconUrl: '',
-      parentCategoryId: null
+      parentCategoryId: null,
+      parentname :''
     });
 
     // Clear preview image
@@ -145,7 +146,8 @@ export class CategoryFormComponent implements OnInit {
           name: this.selectedCategory.name,
           description: this.selectedCategory.description,
           iconUrl: this.selectedCategory.iconUrl,
-          parentCategoryId: this.selectedCategory.parentCategoryId
+          parentCategoryId: this.selectedCategory.parentCategoryId,
+          parentname : this.selectedCategory.parentName
         });
 
         this.isEditing = true;

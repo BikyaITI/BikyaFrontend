@@ -5,10 +5,31 @@
       <div class="card shadow-sm">
         <div class="card-body text-center">
           <div class="profile-avatar mb-3">
-            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center mx-auto"
-              style="width: 120px; height: 120px;">
-              <i class="bi bi-person-fill text-white" style="font-size: 4rem;"></i>
-            </div>
+
+      <div class="position-relative mx-auto" style="width: 120px; height: 120px;">
+  <label for="fileInput"
+         class="w-100 h-100 bg-primary rounded-circle d-flex align-items-center justify-content-center overflow-hidden position-relative"
+         style="cursor: pointer;">
+    
+    <img *ngIf="previewUrl" [src]="previewUrl" class="w-100 h-100 object-fit-cover rounded-circle" />
+
+    <ng-container *ngIf="!previewUrl">
+      <i class="bi bi-plus-lg text-white" style="font-size: 2rem;"></i>
+    </ng-container>
+
+    <div class="position-absolute top-0 start-0 w-100 h-100 rounded-circle bg-black bg-opacity-25 d-flex align-items-center justify-content-center opacity-0 hover-overlay">
+      <i class="bi bi-camera text-white fs-4"></i>
+    </div>
+  </label>
+
+  <input type="file"
+         id="fileInput"
+         accept="image/*"
+         (change)="onFileSelected($event)"
+         class="d-none" />
+</div>
+
+
           </div>
           <h4 class="mb-1">{{currentUser?.fullName}}</h4>
           <p class="text-muted mb-3">{{currentUser?.email}}</p>

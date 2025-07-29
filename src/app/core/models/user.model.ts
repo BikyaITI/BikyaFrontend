@@ -2,8 +2,8 @@ export interface IUser {
   id: number
   userName: string
   email: string
-  FullName: string
   fullName: string
+ FullName: string
   phone : string
   isActive: boolean
   createdAt: Date
@@ -11,6 +11,7 @@ export interface IUser {
   lockoutEnd?: Date
   isDeleted?: boolean
   lockoutEnabled?: boolean
+  profileImageUrl? :string | ArrayBuffer ;
 }
 
 export interface LoginRequest {
@@ -23,7 +24,6 @@ export interface RegisterRequest {
   password: string
   confirmPassword: string
   fullName: string
-  FullName: string
 }
 
 // export interface AuthResponse {
@@ -37,14 +37,13 @@ export interface AuthResponse {
   userId?: number;
   email?: string;
   fullName?: string;
-  FullName?: string;
+   FullName?: string
   phone?: string;
   userName?: string;
   user?: IUser;
 }
 export interface IUpdateProfileRequest {
   fullName: string
-  FullName: string
   email: string
 }
 
@@ -59,3 +58,4 @@ export interface IUserStats {
   totalOrders: number;
   totalSales: number;
 }
+

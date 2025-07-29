@@ -23,3 +23,10 @@
     .card:hover {
       transform: translateY(-2px);
     }
+    .hover-overlay {
+  transition: opacity 0.3s ease;
+}
+
+label:hover .hover-overlay {
+  opacity: 1 !important;
+}
