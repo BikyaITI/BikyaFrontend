@@ -16,7 +16,8 @@ import { IUser } from "../../../core/models/user.model"
   styleUrl: './my-products.component.scss'
 })
 export class MyProductsComponent implements OnInit {
-
+  errorMessage = ""
+  successMessage = ""
   allProducts: IProduct[] = []
   approvedProducts: IProduct[] = []
   pendingProducts: IProduct[] = []
@@ -103,7 +104,8 @@ export class MyProductsComponent implements OnInit {
     if (!this.productToDelete) return
 
     this.isDeleting = true
-
+    this.errorMessage = "";
+    this.successMessage = "";
     this.productService.deleteProduct(this.productToDelete.id).subscribe({
       next: (response) => {
         this.isDeleting = false
@@ -113,16 +115,21 @@ export class MyProductsComponent implements OnInit {
           this.approvedProducts = this.approvedProducts.filter((p) => p.id !== this.productToDelete!.id)
           this.pendingProducts = this.pendingProducts.filter((p) => p.id !== this.productToDelete!.id)
 
+          this.successMessage = "Product deleted successfully.";
           // Close modal
           const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById("deleteModal"))
           modal.hide()
 
           this.productToDelete = null
         }
+           else {
+          this.errorMessage = `Failed to delete product: ${response.message}`;
+        
+        }
       },
-      error: () => {
+      error: (err) => {
         this.isDeleting = false
-        alert("Failed to delete product. Please try again.")
+        this.errorMessage = err.error?.message || "Server error while deleting the product.";
       },
     })
   }
