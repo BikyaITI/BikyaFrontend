@@ -250,7 +250,7 @@ export class AdminUserListComponent implements OnInit, OnDestroy {
     
     const result = await Swal.fire({
       title: `تأكيد ${actionText}`,
-      text: `هل أنت متأكد من ${actionText} المستخدم "${user.FullName}"؟`,
+      text: `هل أنت متأكد من ${actionText} المستخدم "${user.fullName}"؟`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: isLocked ? '#28a745' : '#ffc107',
@@ -349,7 +349,7 @@ export class AdminUserListComponent implements OnInit, OnDestroy {
     
     const result = await Swal.fire({
       title: `تأكيد ${actionText}`,
-      text: `هل أنت متأكد من ${actionText} للمستخدم "${user.FullName}"؟`,
+      text: `هل أنت متأكد من ${actionText} للمستخدم "${user.fullName}"؟`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: isAdmin ? '#dc3545' : '#17a2b8',
