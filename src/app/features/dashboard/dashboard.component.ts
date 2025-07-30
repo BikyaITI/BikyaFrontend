@@ -45,19 +45,19 @@ import { environment } from "../../../environments/environment"
                       <p class="stat-label">Orders</p>
                     </div>
                   </div>
-                  <div class="col-4">
+                  <!-- <div class="col-4">
                     <div class="stat-item">
                       <h3 class="stat-number">\${{stats.walletBalance}}</h3>
                       <p class="stat-label">Wallet</p>
                     </div>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>
           </div>
           <div class="col-lg-6">
             <div class="hero-image">
-              <img src="/placeholder.svg?height=500&width=600" alt="Dashboard" class="img-fluid rounded-4 shadow-lg">
+              <img src="#" alt="Dashboard" class="img-fluid rounded-4 shadow-lg">
             </div>
           </div>
         </div>

@@ -11,6 +11,7 @@ import { ProductListComponent } from '../../../shared/components/product-list/pr
 
 @Component({
   selector: 'app-all-product',
+  standalone: true,
   imports: [CommonModule, RouterModule, FormsModule, ProductListComponent],
   templateUrl: './all-product.component.html',
   styleUrl: './all-product.component.scss'

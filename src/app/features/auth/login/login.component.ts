@@ -51,9 +51,9 @@ export class LoginComponent {
             // Redirect based on role
             const roles: string[] = data.roles || [];
             if (roles.includes('Admin')) {
-              this.router.navigate(['/dashboard']);
+              this.router.navigate(['/admin']);
             } else {
-              this.router.navigate(['/home']);
+              this.router.navigate(['/dashboard']);
             }
           } else if (!response.success) {
             // Check for unverified email error

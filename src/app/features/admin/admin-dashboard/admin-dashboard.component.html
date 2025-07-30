@@ -1,4 +1,4 @@
-<div class="container-fluid mt-4">
+
   <!-- Loading Spinner -->
   <div *ngIf="isLoading" class="text-center my-5">
     <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
@@ -9,35 +9,7 @@
 
   <!-- Dashboard Content -->
   <div *ngIf="!isLoading">
-    <div class="row">
-      <!-- Admin Sidebar -->
-      <div class="col-md-3">
-        <div class="card shadow-sm">
-          <div class="card-header bg-primary text-white">
-            <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Admin Panel</h5>
-          </div>
-          <div class="list-group list-group-flush">
-            <a routerLink="/admin" class="list-group-item list-group-item-action" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-              <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-            </a>
-            <a routerLink="/admin/products" class="list-group-item list-group-item-action" routerLinkActive="active">
-              <i class="fas fa-box me-2"></i>Products
-            </a>
-             <a routerLink="/admin/categories" class="list-group-item list-group-item-action" routerLinkActive="active">
-              <i class="fas fa-box me-2"></i>Categories
-            </a>
-            <a routerLink="/admin/users" class="list-group-item list-group-item-action" routerLinkActive="active">
-              <i class="fas fa-users me-2"></i>Users
-            </a>
-            <a routerLink="/admin/orders" class="list-group-item list-group-item-action" routerLinkActive="active">
-              <i class="fas fa-receipt me-2"></i>Orders
-            </a>
-          </div>
-        </div>
-      </div>
-
       <!-- Main Content -->
-      <div class="col-md-9">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h2>Admin Dashboard</h2>
           <div class="d-flex align-items-center">
@@ -65,7 +37,7 @@
             <div class="card text-center shadow-sm h-100" style="border-left: 4px solid var(--success-color);">
               <div class="card-body">
                 <div class="text-success mb-2">
-                  <i class="fas fa-box" style="font-size: 2rem;"></i>
+                  <i class="fas fa-shopping-bag" style="font-size: 2rem;"></i>
                 </div>
                 <h3 class="mb-1">{{products.length}}</h3>
                 <p class="text-muted mb-0">Total Products</p>
@@ -76,7 +48,7 @@
             <div class="card text-center shadow-sm h-100" style="border-left: 4px solid var(--success-color);">
               <div class="card-body">
                 <div class="text-success mb-2">
-                  <i class="fas fa-box" style="font-size: 2rem;"></i>
+                  <i class="fas fa-th-large" style="font-size: 2rem;"></i>
                 </div>
                 <h3 class="mb-1">{{categories.length}}</h3>
                 <p class="text-muted mb-0">Total Categories</p>
@@ -98,9 +70,9 @@
             <div class="card text-center shadow-sm h-100" style="border-left: 4px solid var(--info-color);">
               <div class="card-body">
                 <div class="text-info mb-2">
-                  <i class="fas fa-dollar-sign" style="font-size: 2rem;"></i>
+                  <i class="fas fa-money-bill-wave " style="font-size: 2rem;"></i>
                 </div>
-                <h3 class="mb-1">\${{stats.totalRevenue | number:'1.0-0'}}</h3>
+                <h3 class="mb-1">{{stats.totalRevenue | number:'1.0-0'}} EGP</h3>
                 <p class="text-muted mb-0">Total Revenue</p>
               </div>
             </div>
@@ -159,7 +131,7 @@
                   </div>
                   <div class="flex-grow-1 ms-3">
                     <h6 class="mb-1">Order #{{order.id}}</h6>
-                    <small class="text-muted">\${{order.totalAmount | number:'1.2-2'}}</small>
+                    <small class="text-muted">{{order.totalAmount | number:'1.'}} EGP</small>
                   </div>
                   <div class="flex-shrink-0">
                     <span [class]="'badge bg-' + (order.status === 'Completed' ? 'success' : order.status === 'Pending' ? 'warning' : 'info')">
@@ -171,7 +143,6 @@
             </div>
           </div>
         </div>
-      </div>
+     
     </div>
-  </div>
-</div>
+

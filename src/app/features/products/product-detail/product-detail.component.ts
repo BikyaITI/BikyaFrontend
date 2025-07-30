@@ -12,6 +12,7 @@ import { ProductListComponent } from '../../../shared/components/product-list/pr
 
 @Component({
   selector: 'app-product-detail',
+  standalone: true,
   imports: [CommonModule, RouterModule, ReactiveFormsModule, ProductListComponent, RouterLink, FormsModule],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss'
@@ -181,7 +182,12 @@ export class ProductDetailComponent implements OnInit {
         next: (response) => {
           this.doAction = false
           if (response.success) {
-            this.router.navigate(['/dashboard']);
+            // Optional: Close modal if one is open
+            const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById("Modal"));
+            modal?.hide();
+            setTimeout(() => {
+              this.router.navigate(['/my-products']);
+            }, 1000); 
           }
           else {
             this.errorMessage=`Error, ${response.message}`

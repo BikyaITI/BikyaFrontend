@@ -11,6 +11,7 @@ import { IUser } from "../../../core/models/user.model"
 
 @Component({
   selector: 'app-my-products',
+  standalone: true,
   imports: [CommonModule, RouterModule, ProductListComponent],
   templateUrl: './my-products.component.html',
   styleUrl: './my-products.component.scss'
