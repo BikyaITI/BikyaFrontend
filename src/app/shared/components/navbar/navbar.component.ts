@@ -39,7 +39,7 @@ import { FormsModule } from "@angular/forms"
             </li>
             <li class="nav-item" *ngIf="currentUser">
               <a class="nav-link" routerLink="/dashboard" routerLinkActive="active"
-              (click)="goToProfile()"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+              (click)="goToDashboard()"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
             </li>
           </ul>
   <!-- Right Side Actions -->
@@ -155,8 +155,8 @@ export class NavbarComponent implements OnInit, AfterViewInit {
       new Dropdown(this.dropdownBtn.nativeElement);
     }
   }
-
-  goToProfile(): void {
+  
+  goToDashboard(): void {
     const user = this.authService.getCurrentUser();
     const roles = user?.roles; // نوعها: string[] | undefined
 
@@ -166,7 +166,7 @@ export class NavbarComponent implements OnInit, AfterViewInit {
       this.router.navigate(['/dashboard']);
     }
   }
-  goToDashboard(): void {
+  goToProfile(): void {
     const user = this.authService.getCurrentUser();
     const roles = user?.roles; // نوعها: string[] | undefined
 
