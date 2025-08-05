@@ -284,9 +284,16 @@ export class DashboardComponent implements OnInit {
     this.productService.getProductsByUser(this.currentUser.id).subscribe({
       next: (response) => {
         if (response.success) {
-          this.recentProducts = response.data.slice(0, 5)
-          this.stats.totalProducts = response.data.length
+          this.recentProducts = response.data?.slice(0, 5) || []
+          this.stats.totalProducts = response.data?.length || 0
+        } else {
+          this.recentProducts = []
+          this.stats.totalProducts = 0
         }
+      },
+      error: (error) => {
+        this.recentProducts = []
+        this.stats.totalProducts = 0
       },
     })
 
@@ -294,10 +301,19 @@ export class DashboardComponent implements OnInit {
     this.orderService.getMyOrders(this.currentUser.id).subscribe({
       next: (response) => {
         if (response.success) {
-          this.recentOrders = response.data.slice(0, 5)
-          this.stats.totalOrders = response.data.length
-          this.stats.pendingOrders = response.data.filter((o) => o.status === "Pending").length
+          this.recentOrders = response.data?.slice(0, 5) || []
+          this.stats.totalOrders = response.data?.length || 0
+          this.stats.pendingOrders = response.data?.filter((o) => o.status === "Pending").length || 0
+        } else {
+          this.recentOrders = []
+          this.stats.totalOrders = 0
+          this.stats.pendingOrders = 0
         }
+      },
+      error: (error) => {
+        this.recentOrders = []
+        this.stats.totalOrders = 0
+        this.stats.pendingOrders = 0
       },
     })
 

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -8,6 +8,10 @@ import { RouterModule } from '@angular/router';
   templateUrl: './admin-layout.component.html',
   styleUrl: './admin-layout.component.scss'
 })
-export class AdminLayoutComponent {
+export class AdminLayoutComponent implements OnInit {
+
+  ngOnInit(): void {
+    console.log('AdminLayoutComponent: Initializing...'); // Debug
+  }
 
 }

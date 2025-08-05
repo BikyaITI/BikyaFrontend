@@ -1,4 +1,4 @@
-import { Component, EventEmitter, input, Output } from '@angular/core';
+import { Component, EventEmitter, input, Output, OnInit } from '@angular/core';
 import { IProduct } from '../../../core/models/product.model';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -14,9 +14,9 @@ import { AuthService } from '../../../core/services/auth.service';
 templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
 })
-export class ProductListComponent {
+export class ProductListComponent implements OnInit {
 
-  product = input<IProduct>();
+  product = input<IProduct | undefined>();
   role = input<string>();
   currentUser:IUser|null=null
   @Output() deleteClicked = new EventEmitter<void>();
@@ -24,20 +24,25 @@ export class ProductListComponent {
 
   constructor(private productService: ProductService, private wishListService: WishListService,private authService:AuthService) {
 
-    console.log("ProductListComponent initialized with products:", this.product());
+    }
 
     // Subscribe to auth state
-    this.authService.currentUser$.subscribe(user => {
-      this.currentUser = user;
-    });
-  
+    
+    ngOnInit() {
+      this.authService.currentUser$.subscribe(user => {
+        this.currentUser = user;
+      });
   }
 
-  getMainImage(product: IProduct): string {
+getMainImage(product: IProduct): string {
+    if (!product || !product.images) {
+      return 'product.png';
+    }
+    
     const mainImage = product.images?.find((img) => img.isMain)
-    return mainImage && mainImage.imageUrl
-      ? `${environment.apiUrl}${mainImage.imageUrl}`
-      : 'product.png';
+     return mainImage && mainImage.imageUrl
+        ? `${environment.apiUrl}${mainImage.imageUrl}`
+        : 'product.png';
   }
 
   onImageError(event: Event) {
@@ -45,6 +50,8 @@ export class ProductListComponent {
   }
   
   getConditionBadgeClass(condition: string): string {
+    if (!condition) return "bg-secondary";
+    
     switch (condition.toLowerCase()) {
       case "new":
         return "bg-primary"
@@ -58,7 +65,6 @@ export class ProductListComponent {
 
   buy(product: IProduct): void {
     // Implement add to cart logic
-    console.log("Added to buy:", product)
   }
 
   ToggleWishlist(product: IProduct): void {

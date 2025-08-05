@@ -12,7 +12,7 @@ import { environment } from '../../../environments/environment';
 })
 export class CategoryService {
 
-  private baseUrl = `${environment.apiUrl}/api/Category/Category`; // ✅ غيّرها حسب API بتاعتك
+  private baseUrl = `${environment.apiUrl}/api/Category/Category`;
 
   constructor(private http: HttpClient) {}
 
@@ -47,17 +47,4 @@ delete(id: number): Observable<ApiResponse<null>> {
 bulkCreate(categories: ICategory[]): Observable<ApiResponse<ICategory[]>> {
   return this.http.post<ApiResponse<ICategory[]>>(`${this.baseUrl}/bulk`, { categories });
 }
-
-//   get userRole(): string | null {
-//   const token = localStorage.getItem('token');
-//   if (!token) return null;
-
-//   const payload = JSON.parse(atob(token.split('.')[1]));
-//   return payload['role'] || null;
-// }
-
-// get isAdmin(): boolean {
-//   return this.userRole === 'Admin';
-// }
-
 }

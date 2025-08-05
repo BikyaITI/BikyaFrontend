@@ -4,7 +4,7 @@ import { CanActivate, Router, ActivatedRouteSnapshot } from '@angular/router';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuard implements CanActivate {
+export class DeliveryGuard implements CanActivate {
   constructor(private router: Router) {}
 
   canActivate(route: ActivatedRouteSnapshot): boolean {
@@ -16,11 +16,11 @@ export class AuthGuard implements CanActivate {
       return false;
     }
 
-    // إذا كان المستخدم موظف توصيل، توجيه للوحة تحكم التوصيل
     if (userRoles && userRoles.includes('Delivery')) {
+      // إذا كان المستخدم موظف توصيل، تأكد من أنه في صفحات التوصيل فقط
       const currentPath = route.routeConfig?.path || '';
       
-      // إذا كان في صفحة توصيل، السماح
+      // السماح فقط بصفحات التوصيل
       if (currentPath.startsWith('delivery/') || currentPath === 'delivery') {
         return true;
       } else {
@@ -30,6 +30,7 @@ export class AuthGuard implements CanActivate {
       }
     }
 
-    return true;
+    this.router.navigate(['/login']);
+    return false;
   }
-}
+} 

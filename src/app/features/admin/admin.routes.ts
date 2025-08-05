@@ -28,6 +28,11 @@ export const adminRoutes: Routes = [
         path: "orders",
         loadComponent: () =>
           import("./order-management/order-management.component").then((m) => m.OrderManagementComponent),
+      },
+      {
+        path: "delivery-setup",
+        loadComponent: () =>
+          import("./delivery-setup/delivery-setup.component").then((m) => m.DeliverySetupComponent),
       }]
   }
 ]

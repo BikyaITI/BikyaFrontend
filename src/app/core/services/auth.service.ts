@@ -20,17 +20,24 @@ export class AuthService {
   }
 
   private loadUserFromStorage(): void {
+    console.log('AuthService: Loading user from storage...'); // Debug
     const token = localStorage.getItem('token');
     const userStr = localStorage.getItem('user');
 
     if (token && userStr) {
       try {
         const user = JSON.parse(userStr) as IUser;
+        console.log('AuthService: Loaded user from storage:', user); // Debug
+        // حفظ البيانات المطلوبة للنظام الجديد
+        localStorage.setItem("userRoles", JSON.stringify(user.roles || []));
+        localStorage.setItem("userEmail", user.email);
+        localStorage.setItem("userName", user.fullName || user.FullName || '');
         this.currentUserSubject.next(user);
       } catch {
         // إذا فشل في parse الـ user، جرب استخراجه من التوكن
         try {
           const decoded: any = jwtDecode(token);
+          console.log('AuthService: Decoded token from storage:', decoded); // Debug
           const user: IUser = {
             id: Number(decoded?.nameid || decoded?.sub || decoded?.id),
             userName: decoded?.unique_name || decoded?.username || '',
@@ -42,11 +49,19 @@ export class AuthService {
             createdAt: new Date(decoded?.iat * 1000),
             roles: decoded?.role ? [decoded.role] : decoded?.roles || []
           };
+          console.log('AuthService: Created user from storage token:', user); // Debug
+          // حفظ البيانات المطلوبة للنظام الجديد
+          localStorage.setItem("userRoles", JSON.stringify(user.roles || []));
+          localStorage.setItem("userEmail", user.email);
+          localStorage.setItem("userName", user.fullName || user.FullName || '');
           this.currentUserSubject.next(user);
         } catch {
+          console.log('AuthService: Failed to load user from storage, clearing auth data'); // Debug
           this.clearAuthData();
         }
       }
+    } else {
+      console.log('AuthService: No token or user data in storage'); // Debug
     }
   }
 
@@ -61,8 +76,12 @@ export class AuthService {
   }
 
   register(request: RegisterRequest): Observable<ApiResponse<AuthResponse>> {
+    console.log('AuthService: Register request:', request); // Debug
+    console.log('AuthService: Register URL:', `${this.API_URL}/register`); // Debug
+    
     return this.http.post<ApiResponse<AuthResponse>>(`${this.API_URL}/register`, request).pipe(
       tap((response) => {
+        console.log('AuthService: Register response:', response); // Debug
         if (response.success) {
           this.setCurrentUser(response.data)
         }
@@ -129,6 +148,9 @@ return this.http.post<ApiResponse<boolean>>(`${environment.apiUrl}/api/Identity/
     localStorage.removeItem("token")
     localStorage.removeItem("refreshToken")
     localStorage.removeItem("user")
+    localStorage.removeItem("userRoles")
+    localStorage.removeItem("userEmail")
+    localStorage.removeItem("userName")
     this.currentUserSubject.next(null)
     console.log('Auth data cleared')
   }
@@ -138,19 +160,28 @@ return this.http.post<ApiResponse<boolean>>(`${environment.apiUrl}/api/Identity/
   }
 
   getToken(): string | null {
-    return localStorage.getItem("token")
+    const token = localStorage.getItem("token");
+    console.log('AuthService: Getting token:', token ? 'Token exists' : 'No token'); // Debug
+    return token;
   }
 
   getCurrentUser(): IUser | null {
-    return this.currentUserSubject.value
+    const user = this.currentUserSubject.value;
+    console.log('AuthService: Getting current user:', user); // Debug
+    return user;
   }
 
  setCurrentUserToLacal(user: IUser): void {
   localStorage.setItem('user', JSON.stringify(user));
+  localStorage.setItem("userRoles", JSON.stringify(user.roles || []));
+  localStorage.setItem("userEmail", user.email);
+  localStorage.setItem("userName", user.fullName || user.FullName || '');
   this.currentUserSubject.next(user);
 }
    setCurrentUser(authResponse: AuthResponse): void {
+    console.log('AuthService: Setting current user:', authResponse); // Debug
     if (!authResponse || !authResponse.token) {
+      console.log('AuthService: No token in response'); // Debug
       return;
     }
 
@@ -159,12 +190,17 @@ return this.http.post<ApiResponse<boolean>>(`${environment.apiUrl}/api/Identity/
 
     // حفظ معلومات المستخدم
     if (authResponse.user) {
+      console.log('AuthService: Saving user data:', authResponse.user); // Debug
       localStorage.setItem("user", JSON.stringify(authResponse.user));
+      localStorage.setItem("userRoles", JSON.stringify(authResponse.user.roles || []));
+      localStorage.setItem("userEmail", authResponse.user.email);
+      localStorage.setItem("userName", authResponse.user.fullName || authResponse.user.FullName || '');
       this.currentUserSubject.next(authResponse.user);
     } else {
       // إذا لم يكن هناك user object، استخرجه من التوكن
       try {
         const decoded: any = jwtDecode(authResponse.token);
+        console.log('AuthService: Decoded token:', decoded); // Debug
         const user: IUser = {
           id: Number(decoded?.nameid || decoded?.sub || decoded?.id),
           userName: decoded?.unique_name || decoded?.username || '',
@@ -176,10 +212,14 @@ return this.http.post<ApiResponse<boolean>>(`${environment.apiUrl}/api/Identity/
           createdAt: new Date(decoded?.iat * 1000),
           roles: decoded?.role ? [decoded.role] : decoded?.roles || []
         };
+        console.log('AuthService: Created user from token:', user); // Debug
         localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("userRoles", JSON.stringify(user.roles || []));
+        localStorage.setItem("userEmail", user.email);
+        localStorage.setItem("userName", user.fullName || user.FullName || '');
         this.currentUserSubject.next(user);
       } catch (error) {
-        console.error('Error decoding token:', error);
+        console.error('AuthService: Error decoding token:', error);
       }
     }
   }

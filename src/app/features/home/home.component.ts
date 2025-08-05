@@ -22,9 +22,10 @@ import { ProductListComponent } from "../../shared/components/product-list/produ
                 <a routerLink="/products" class="btn btn-primary btn-lg me-3">
                   <i class="fas fa-shopping-bag me-2"></i>Shop Now
                 </a>
-                <a routerLink="/register" class="btn btn-outline-primary btn-lg">
+                <a routerLink="/register" class="btn btn-outline-primary btn-lg me-3">
                   <i class="fas fa-user-plus me-2"></i>Join Community
                 </a>
+               
               </div>
               <div class="hero-stats mt-5">
                 <div class="row">
@@ -50,11 +51,11 @@ import { ProductListComponent } from "../../shared/components/product-list/produ
               </div>
             </div>
           </div>
-          <div class="col-lg-6">
-            <div class="hero-image">
-              <img src="/placeholder.svg?height=500&width=600" alt="Children's Products" class="img-fluid rounded-4 shadow-lg">
-            </div>
-          </div>
+                     <div class="col-lg-6">
+             <div class="hero-image">
+               <img src="https://via.placeholder.com/600x500/4F46E5/FFFFFF?text=Bikya+Products" alt="Children's Products" class="img-fluid rounded-4 shadow-lg">
+             </div>
+           </div>
         </div>
       </div>
     </section>
