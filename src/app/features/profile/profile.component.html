@@ -6,12 +6,16 @@
         <div class="card-body text-center">
           <div class="profile-avatar mb-3">
 
-      <div class="position-relative mx-auto" style="width: 120px; height: 120px;">
+  <!-- profile-image.component.html -->
+<div class="position-relative mx-auto" style="width: 120px; height: 120px;">
   <label for="fileInput"
          class="w-100 h-100 bg-primary rounded-circle d-flex align-items-center justify-content-center overflow-hidden position-relative"
          style="cursor: pointer;">
-    
-    <img *ngIf="previewUrl" [src]="previewUrl" class="w-100 h-100 object-fit-cover rounded-circle" />
+
+    <img *ngIf="previewUrl"
+         [src]="previewUrl"
+         class="w-100 h-100 object-fit-cover rounded-circle"
+         alt="Profile Image" />
 
     <ng-container *ngIf="!previewUrl">
       <i class="bi bi-plus-lg text-white" style="font-size: 2rem;"></i>
@@ -28,6 +32,12 @@
          (change)="onFileSelected($event)"
          class="d-none" />
 </div>
+
+<!-- رسالة رفع الصورة -->
+<div *ngIf="message" class="text-center mt-2 text-success">
+  {{ message }}
+</div>
+
 
 
           </div>

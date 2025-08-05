@@ -10,6 +10,7 @@ import { Router } from "@angular/router"
 import { ReviewComponent } from "../review/review.component"
 import { IUser, IUserStats, IUpdateProfileRequest, IChangePasswordRequest } from "../../core/models/user.model"
 import { filter, take } from 'rxjs/operators';
+import { ToastrService } from "ngx-toastr"
 
 @Component({
   selector: "app-profile",
@@ -28,6 +29,7 @@ export class ProfileComponent implements OnInit {
   userService = inject(UserService)
   reviewService= inject (ReviewService)
   cdr = inject(ChangeDetectorRef)
+  toast= inject(ToastrService)
   router = inject(Router)
   isUpdatingProfile = false
   isChangingPassword = false
@@ -83,6 +85,7 @@ export class ProfileComponent implements OnInit {
         fullName: user.fullName,
         email: user.email,
         phone:user.phone
+        
       });
      this.previewUrl = user?.profileImageUrl || null;
       console.log(`User ID: ${user.id}`);
@@ -244,50 +247,63 @@ loadAverageRating(): void {
     }
   });
 }
-onFileSelected(event: any) {
-  const file = event.target.files[0];
-  if (file) {
-    this.selectedFile = file;
+ onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.previewUrl = reader.result;
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewUrl = reader.result as string; // عرض مؤقت للمعاينة
 
-      // بعد ما يتم توليد البريفيو نرفع الصورة على طول
-      this.upload(); 
-    };
-    reader.readAsDataURL(file);
+        // بعد المعاينة، نبدأ الرفع
+        this.upload();
+      };
+      reader.readAsDataURL(file);
+    }
   }
-}
-upload() {
+
+  upload() {
   if (!this.selectedFile) return;
 
   this.uploading = true;
 
   this.userService.uploadProfileImage(this.selectedFile).subscribe({
     next: (res) => {
-      this.message = 'تم رفع الصورة بنجاح';
-       console.log(res)
-      // ✅ حفظ الصورة الجديدة في الواجهة
-      this.previewUrl = res.data;
-
-      // ✅ تحديث بيانات المستخدم في الذاكرة والمحلي
-      const currentUser = this.authService.getCurrentUser(); // جيبي المستخدم الحالي من السيرفس
-      if (currentUser) {
-        currentUser.profileImageUrl = res.data;
-        this.authService.setCurrentUserToLacal(currentUser); // احفظ التعديل
+      if (res.success) {
+        // ✅ عرض الصورة بعد الرفع مع كسر الكاش
+        this.previewUrl = res.data + '?t=' + new Date().getTime();
+        this.message = 'Uploading succeeded';
+        
+        // ✅ تحديث بيانات المستخدم
+        const currentUser = this.authService.getCurrentUser();
+        if (currentUser) {
+          currentUser.profileImageUrl = res.data;
+          this.authService.setCurrentUserToLacal(currentUser);
+        }
+      } else {
+        this.message = res.message || 'Failed to upload';
       }
+
+      // ✅ إخفاء الرسالة بعد 3 ثواني
+      setTimeout(() => {
+        this.message = '';
+      }, 3000);
     },
     error: () => {
-      this.message = 'حدث خطأ أثناء رفع الصورة';
-      console.log(this.message)
+      this.message = 'Error while uploading';
+
+      // ✅ إخفاء الرسالة بعد 3 ثواني
+      setTimeout(() => {
+        this.message = '';
+      }, 3000);
     },
     complete: () => {
       this.uploading = false;
-      console.log(this.uploading)
     }
   });
 }
+
 
 
 
