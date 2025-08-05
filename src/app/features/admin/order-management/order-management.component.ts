@@ -1,10 +1,11 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { OrderService } from '../../../core/services/order.service';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { OrderStatus } from '../../../core/models/order.model';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-order-management',
@@ -12,7 +13,7 @@ import { OrderStatus } from '../../../core/models/order.model';
   standalone: true,
   imports: [CommonModule, FormsModule],
 })
-export class OrderManagementComponent implements OnInit {
+export class OrderManagementComponent implements OnInit, OnDestroy {
   orders: any[] = [];
   isLoading = false;
   errorMessage = '';
@@ -20,6 +21,7 @@ export class OrderManagementComponent implements OnInit {
   isCancelling: { [key: number]: boolean } = {};
   isProcessing: { [key: number]: boolean } = {};
   private refreshInterval: any;
+  private refreshSubscription?: Subscription;
 
   orderService = inject(OrderService);
   toastr = inject(ToastrService);
@@ -27,10 +29,27 @@ export class OrderManagementComponent implements OnInit {
   ngOnInit() {
     this.loadOrders();
     
-    // Auto-refresh orders every 30 seconds to catch webhook updates
+    // Auto-refresh orders every 15 seconds to catch updates
     this.refreshInterval = setInterval(() => {
       this.loadOrders();
-    }, 30000); // 30 seconds
+    }, 15000); // 15 seconds
+    
+    // Additional refresh subscription for more frequent updates
+    this.refreshSubscription = interval(10000).subscribe(() => {
+      if (!this.isLoading) {
+        this.loadOrders();
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    // Clean up the interval when component is destroyed
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
+    if (this.refreshSubscription) {
+      this.refreshSubscription.unsubscribe();
+    }
   }
 
   loadOrders() {
@@ -43,12 +62,15 @@ export class OrderManagementComponent implements OnInit {
           // فلترة العناصر الفارغة أو غير الصالحة
           this.orders = Array.isArray(res.data) ? res.data.filter((o: any) => o && o.id) : [];
           if (this.orders.length > 0) {
+            console.log(`Loaded ${this.orders.length} orders successfully`);
             this.toastr.success(`Loaded ${this.orders.length} orders successfully`);
           } else {
+            console.log('No orders found');
             this.toastr.info('No orders found');
           }
         } else {
           this.errorMessage = res.message || 'Failed to load orders.';
+          console.error('Failed to load orders:', res.message);
           this.toastr.error(this.errorMessage);
         }
       },
@@ -69,8 +91,8 @@ export class OrderManagementComponent implements OnInit {
         }
         
         this.errorMessage = errorMsg;
-        this.toastr.error(errorMsg);
         console.error('Error loading orders:', err);
+        this.toastr.error(errorMsg);
       }
     });
   }
@@ -327,12 +349,5 @@ export class OrderManagementComponent implements OnInit {
         this.toastr.error('تعذر جلب تفاصيل الطلب');
       }
     });
-  }
-
-  ngOnDestroy() {
-    // Clean up the interval when component is destroyed
-    if (this.refreshInterval) {
-      clearInterval(this.refreshInterval);
-    }
   }
 } 

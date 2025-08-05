@@ -4,145 +4,763 @@
     <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
       <span class="visually-hidden">Loading...</span>
     </div>
-    <p class="mt-3 text-muted">Loading dashboard data...</p>
+    <p class="mt-3 text-muted">Loading data...</p>
   </div>
 
   <!-- Dashboard Content -->
-  <div *ngIf="!isLoading">
-      <!-- Main Content -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h2>Admin Dashboard</h2>
-          <div class="d-flex align-items-center">
-            <span class="text-muted me-3">Welcome, Admin</span>
-            <a routerLink="/" class="btn btn-outline-primary btn-sm">
-              <i class="fas fa-home me-1"></i>Back to Site
+  <div *ngIf="!isLoading" class="dashboard-container">
+    <!-- Header Section -->
+    <div class="dashboard-header mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="header-content">
+          <h1 class="dashboard-title mb-1">Bikya Dashboard</h1>
+          <p class="text-muted mb-0">Welcome to the system management center</p>
+        </div>
+        <div class="header-actions d-flex align-items-center gap-3">
+          <button (click)="loadDashboardData()" class="btn btn-refresh" [disabled]="isLoading">
+            <i class="fas fa-sync-alt me-2" [class.fa-spin]="isLoading"></i>
+            {{ isLoading ? 'Updating...' : 'Refresh Data' }}
+          </button>
+          <div class="admin-info">
+            <span class="admin-label">Welcome, Admin</span>
+            <a routerLink="/" class="btn btn-home">
+              <i class="fas fa-home me-2"></i>Back to Site
             </a>
           </div>
         </div>
-
-        <!-- Stats Cards -->
-        <div class="row mb-4">
-          <div class="col-md-3 mb-3">
-            <div class="card text-center shadow-sm h-100" style="border-left: 4px solid var(--primary-color);">
-              <div class="card-body">
-                <div class="text-primary mb-2">
-                  <i class="fas fa-users" style="font-size: 2rem;"></i>
-                </div>
-                <h3 class="mb-1">{{stats.totalUsers}}</h3>
-                <p class="text-muted mb-0">Total Users</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3 mb-3">
-            <div class="card text-center shadow-sm h-100" style="border-left: 4px solid var(--success-color);">
-              <div class="card-body">
-                <div class="text-success mb-2">
-                  <i class="fas fa-shopping-bag" style="font-size: 2rem;"></i>
-                </div>
-                <h3 class="mb-1">{{products.length}}</h3>
-                <p class="text-muted mb-0">Total Products</p>
-              </div>
-            </div>
-          </div>
-            <div class="col-md-3 mb-3">
-            <div class="card text-center shadow-sm h-100" style="border-left: 4px solid var(--success-color);">
-              <div class="card-body">
-                <div class="text-success mb-2">
-                  <i class="fas fa-th-large" style="font-size: 2rem;"></i>
-                </div>
-                <h3 class="mb-1">{{categories.length}}</h3>
-                <p class="text-muted mb-0">Total Categories</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3 mb-3">
-            <div class="card text-center shadow-sm h-100" style="border-left: 4px solid var(--warning-color);">
-              <div class="card-body">
-                <div class="text-warning mb-2">
-                  <i class="fas fa-receipt" style="font-size: 2rem;"></i>
-                </div>
-                <h3 class="mb-1">{{stats.totalOrders}}</h3>
-                <p class="text-muted mb-0">Total Orders</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3 mb-3">
-            <div class="card text-center shadow-sm h-100" style="border-left: 4px solid var(--info-color);">
-              <div class="card-body">
-                <div class="text-info mb-2">
-                  <i class="fas fa-money-bill-wave " style="font-size: 2rem;"></i>
-                </div>
-                <h3 class="mb-1">{{stats.totalRevenue | number:'1.0-0'}} EGP</h3>
-                <p class="text-muted mb-0">Total Revenue</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recent Activity -->
-        <div class="row">
-          <!-- Recent Products -->
-          <div class="col-md-6 mb-4">
-            <div class="card shadow-sm">
-              <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-box me-2"></i>Recent Products</h5>
-              </div>
-              <div class="card-body">
-                <div *ngIf="recentProducts.length === 0" class="text-center text-muted">
-                  <i class="fas fa-box-open" style="font-size: 3rem; opacity: 0.3;"></i>
-                  <p class="mt-2">No recent products</p>
-                </div>
-                <div *ngFor="let product of recentProducts.slice(0, 5)" class="d-flex align-items-center mb-3">
-                  <div class="flex-shrink-0">
-                    <div class="bg-light rounded p-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                      <i class="fas fa-box text-muted"></i>
-                    </div>
-                  </div>
-                  <div class="flex-grow-1 ms-3">
-                    <h6 class="mb-1">{{product.title}}</h6>
-                    <small class="text-muted">by {{product.user?.fullName || 'Unknown'}}</small>
-                  </div>
-                  <div class="flex-shrink-0">
-                    <span [class]="product.isApproved ? 'badge bg-success' : 'badge bg-warning'">
-                      {{product.isApproved ? 'Approved' : 'Pending'}}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Recent Orders -->
-          <div class="col-md-6 mb-4">
-            <div class="card shadow-sm">
-              <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Recent Orders</h5>
-              </div>
-              <div class="card-body">
-                <div *ngIf="recentOrders.length === 0" class="text-center text-muted">
-                  <i class="fas fa-receipt" style="font-size: 3rem; opacity: 0.3;"></i>
-                  <p class="mt-2">No recent orders</p>
-                </div>
-                <div *ngFor="let order of recentOrders.slice(0, 5)" class="d-flex align-items-center mb-3">
-                  <div class="flex-shrink-0">
-                    <div class="bg-light rounded p-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                      <i class="fas fa-receipt text-muted"></i>
-                    </div>
-                  </div>
-                  <div class="flex-grow-1 ms-3">
-                    <h6 class="mb-1">Order #{{order.id}}</h6>
-                    <small class="text-muted">{{order.totalAmount | number:'1.'}} EGP</small>
-                  </div>
-                  <div class="flex-shrink-0">
-                    <span [class]="'badge bg-' + (order.status === 'Completed' ? 'success' : order.status === 'Pending' ? 'warning' : 'info')">
-                      {{order.status}}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-     
+      </div>
     </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid mb-5">
+      <div class="stat-card users-card" (click)="showChart('users')">
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{stats.totalUsers}}</div>
+          <div class="stat-label">Total Users</div>
+          <div class="stat-trend positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>+12%</span>
+          </div>
+        </div>
+        <div class="stat-bg"></div>
+        <div class="click-hint">
+          <i class="fas fa-chart-bar"></i>
+          <span>Click to view chart</span>
+        </div>
+      </div>
+
+      <div class="stat-card products-card" (click)="showChart('products')">
+        <div class="stat-icon">
+          <i class="fas fa-box-open"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{stats.totalProducts}}</div>
+          <div class="stat-label">Total Products</div>
+          <div class="stat-trend positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>+8%</span>
+          </div>
+        </div>
+        <div class="stat-bg"></div>
+        <div class="click-hint">
+          <i class="fas fa-chart-bar"></i>
+          <span>Click to view chart</span>
+        </div>
+      </div>
+
+      <div class="stat-card categories-card" (click)="showChart('categories')">
+        <div class="stat-icon">
+          <i class="fas fa-th-large"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{categories.length}}</div>
+          <div class="stat-label">Total Categories</div>
+          <div class="stat-trend positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>+5%</span>
+          </div>
+        </div>
+        <div class="stat-bg"></div>
+        <div class="click-hint">
+          <i class="fas fa-chart-bar"></i>
+          <span>Click to view chart</span>
+        </div>
+      </div>
+
+      <div class="stat-card orders-card" (click)="showChart('orders')">
+        <div class="stat-icon">
+          <i class="fas fa-receipt"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{stats.totalOrders}}</div>
+          <div class="stat-label">Total Orders</div>
+          <div class="stat-trend positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>+15%</span>
+          </div>
+        </div>
+        <div class="stat-bg"></div>
+        <div class="click-hint">
+          <i class="fas fa-chart-bar"></i>
+          <span>Click to view chart</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Revenue Section -->
+    <div class="revenue-section mb-5">
+      <div class="revenue-card">
+        <div class="revenue-content">
+          <div class="revenue-info">
+            <h3 class="revenue-title">Total Revenue</h3>
+            <div class="revenue-amount">{{stats.totalRevenue | number:'1.0-0'}} <span class="currency">EGP</span></div>
+            <p class="revenue-description">Total revenue from all completed orders</p>
+            <div class="revenue-stats">
+              <div class="revenue-stat">
+                <span class="stat-number">{{stats.totalOrders}}</span>
+                <span class="stat-text">Total Orders</span>
+              </div>
+              <div class="revenue-stat">
+                <span class="stat-number">{{stats.totalRevenue > 0 ? ((stats.totalRevenue / stats.totalOrders) | number:'1.0-0') : '0'}}</span>
+                <span class="stat-text">Average Order</span>
+              </div>
+            </div>
+          </div>
+          <div class="revenue-visual">
+            <div class="revenue-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="revenue-chart-placeholder">
+              <div class="chart-bar" style="height: 60%"></div>
+              <div class="chart-bar" style="height: 80%"></div>
+              <div class="chart-bar" style="height: 45%"></div>
+              <div class="chart-bar" style="height: 90%"></div>
+              <div class="chart-bar" style="height: 70%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="activity-section">
+      <div class="activity-grid">
+        <!-- Recent Products -->
+        <div class="activity-card">
+          <div class="activity-header">
+            <h5><i class="fas fa-box me-2"></i>Recent Products</h5>
+          </div>
+          <div class="activity-body">
+            <div *ngIf="recentProducts.length === 0" class="empty-state">
+              <div class="empty-icon">
+                <i class="fas fa-box-open"></i>
+              </div>
+              <p>No recent products</p>
+            </div>
+            <div *ngFor="let product of recentProducts.slice(0, 5)" class="activity-item">
+              <div class="activity-icon product-icon">
+                <i class="fas fa-box"></i>
+              </div>
+              <div class="activity-content">
+                <h6>{{product.title}}</h6>
+                <p>By {{product.user?.FullName || 'Unknown'}}</p>
+              </div>
+              <div class="activity-status">
+                <span [class]="product.isApproved ? 'status-badge approved' : 'status-badge pending'">
+                  {{product.isApproved ? 'Approved' : 'Pending'}}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="activity-card">
+          <div class="activity-header">
+            <h5><i class="fas fa-receipt me-2"></i>Recent Orders</h5>
+          </div>
+          <div class="activity-body">
+            <div *ngIf="recentOrders.length === 0" class="empty-state">
+              <div class="empty-icon">
+                <i class="fas fa-receipt"></i>
+              </div>
+              <p>No recent orders</p>
+            </div>
+            <div *ngFor="let order of recentOrders.slice(0, 5)" class="activity-item">
+              <div class="activity-icon order-icon">
+                <i class="fas fa-receipt"></i>
+              </div>
+              <div class="activity-content">
+                <h6>Order #{{order.id}}</h6>
+                <p>{{order.totalAmount | number:'1.0-0'}} EGP</p>
+              </div>
+              <div class="activity-status">
+                <span [class]="'status-badge ' + (order.status === 'Completed' ? 'completed' : order.status === 'Pending' ? 'pending' : 'processing')">
+                  {{order.status}}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart Modal -->
+  <div class="chart-modal" [class.show]="showModal" (click)="closeModal()">
+    <div class="chart-modal-content" (click)="$event.stopPropagation()">
+      <div class="chart-modal-header">
+        <h3>{{getChartTitle()}}</h3>
+        <button class="close-btn" (click)="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="chart-modal-body">
+        <div class="chart-container">
+          <canvas baseChart 
+                  [data]="getChartData()" 
+                  [type]="getChartType()"
+                  [options]="getChartOptions()">
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .dashboard-container {
+      padding: 2rem;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      min-height: 100vh;
+    }
+
+    .dashboard-header {
+      background: white;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .dashboard-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .btn-refresh {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-refresh:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-home {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      border: none;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-home:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(240, 147, 251, 0.3);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+    }
+
+    .stat-card:active {
+      transform: translateY(-2px);
+    }
+
+    .click-hint {
+      position: absolute;
+      bottom: 1rem;
+      right: 1rem;
+      background: rgba(0, 0, 0, 0.1);
+      color: #666;
+      padding: 0.5rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .stat-card:hover .click-hint {
+      opacity: 1;
+    }
+
+    .stat-bg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      opacity: 0.1;
+      transform: translate(30px, -30px);
+    }
+
+    .users-card .stat-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .products-card .stat-bg {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .categories-card .stat-bg {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .orders-card .stat-bg {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+      margin-bottom: 1rem;
+    }
+
+    .users-card .stat-icon {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .products-card .stat-icon {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .categories-card .stat-icon {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .orders-card .stat-icon {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #1a202c;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: #718096;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    .stat-trend {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+    }
+
+    .stat-trend.positive {
+      color: #48bb78;
+    }
+
+    .revenue-section {
+      margin: 2rem 0;
+    }
+
+    .revenue-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 25px;
+      padding: 3rem;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+    }
+
+    .revenue-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(180deg); }
+    }
+
+    .revenue-content {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .revenue-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      opacity: 0.9;
+    }
+
+    .revenue-amount {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+
+    .currency {
+      font-size: 2rem;
+      opacity: 0.8;
+    }
+
+    .revenue-description {
+      opacity: 0.8;
+      margin-bottom: 2rem;
+    }
+
+    .revenue-stats {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .revenue-stat {
+      text-align: center;
+    }
+
+    .stat-number {
+      display: block;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .stat-text {
+      font-size: 0.875rem;
+      opacity: 0.8;
+    }
+
+    .revenue-visual {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .revenue-icon {
+      font-size: 3rem;
+      opacity: 0.8;
+    }
+
+    .revenue-chart-placeholder {
+      display: flex;
+      align-items: end;
+      gap: 0.5rem;
+      height: 80px;
+    }
+
+    .chart-bar {
+      width: 8px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+      animation: chartAnimation 2s ease-out;
+    }
+
+    @keyframes chartAnimation {
+      from { height: 0; }
+      to { height: var(--height); }
+    }
+
+    .activity-section {
+      margin: 2rem 0;
+    }
+
+    .activity-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 2rem;
+    }
+
+    .activity-card {
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+    }
+
+    .activity-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+    }
+
+    .activity-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .activity-header h5 {
+      margin: 0;
+      font-weight: 700;
+      color: #1a202c;
+    }
+
+    .activity-body {
+      padding: 1.5rem 2rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #718096;
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+      opacity: 0.3;
+      margin-bottom: 1rem;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border-radius: 12px;
+      background: #f8fafc;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .activity-item:hover {
+      background: #e2e8f0;
+      transform: translateX(5px);
+    }
+
+    .activity-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.875rem;
+    }
+
+    .product-icon {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .order-icon {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .activity-content {
+      flex: 1;
+    }
+
+    .activity-content h6 {
+      margin: 0 0 0.25rem 0;
+      font-weight: 600;
+      color: #1a202c;
+    }
+
+    .activity-content p {
+      margin: 0;
+      color: #718096;
+      font-size: 0.875rem;
+    }
+
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge.approved {
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+      color: white;
+    }
+
+    .status-badge.pending {
+      background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+      color: white;
+    }
+
+    .status-badge.completed {
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+      color: white;
+    }
+
+    .status-badge.processing {
+      background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+      color: white;
+    }
+
+    /* Chart Modal Styles */
+    .chart-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .chart-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .chart-modal-content {
+      background: white;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 80vh;
+      overflow: hidden;
+      transform: scale(0.7);
+      transition: transform 0.3s ease;
+    }
+
+    .chart-modal.show .chart-modal-content {
+      transform: scale(1);
+    }
+
+    .chart-modal-header {
+      padding: 2rem;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chart-modal-header h3 {
+      margin: 0;
+      font-weight: 700;
+      color: #1a202c;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #718096;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .close-btn:hover {
+      background: #f1f5f9;
+      color: #1a202c;
+    }
+
+    .chart-modal-body {
+      padding: 2rem;
+    }
+
+    .chart-container {
+      height: 400px;
+      position: relative;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-container {
+        padding: 1rem;
+      }
+
+      .dashboard-title {
+        font-size: 2rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .activity-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .revenue-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .revenue-amount {
+        font-size: 2.5rem;
+      }
+
+      .chart-modal-content {
+        width: 95%;
+        margin: 1rem;
+      }
+
+      .chart-container {
+        height: 300px;
+      }
+    }
+  </style>
 

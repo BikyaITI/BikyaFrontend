@@ -1,0 +1,175 @@
+<div class="order-details-container">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="header-left">
+        <button
+          (click)="goBack()"
+          class="back-button"
+        >
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <div class="header-text">
+          <h1>تفاصيل الطلب #{{ orderId }}</h1>
+          <p>مرحباً، {{ userName }}</p>
+        </div>
+      </div>
+      <button
+        (click)="logout()"
+        class="logout-button"
+      >
+        تسجيل الخروج
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">جاري تحميل تفاصيل الطلب...</p>
+      </div>
+    </div>
+
+    <!-- Order Details -->
+    <div *ngIf="!isLoading && order" class="order-details">
+      <!-- Order Summary -->
+      <div class="order-summary">
+        <div class="summary-header">
+          <h2>ملخص الطلب</h2>
+          <span [class]="getStatusClass(order.status)" class="status-badge">
+            {{ getStatusText(order.status) }}
+          </span>
+        </div>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <div class="label">رقم الطلب</div>
+            <div class="value">#{{ order.id }}</div>
+          </div>
+          <div class="summary-item">
+            <div class="label">إجمالي المبلغ</div>
+            <div class="value amount">{{ order.totalAmount | currency:'EGP' }}</div>
+          </div>
+          <div class="summary-item">
+            <div class="label">تاريخ الطلب</div>
+            <div class="value">{{ order.createdAt | date:'short' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Info -->
+      <div class="product-info">
+        <h3>تفاصيل المنتج</h3>
+        <div class="product-content">
+          <div class="product-image">
+            <img *ngIf="order.productImage && order.productImage !== '' && !order.productImage.includes('placeholder.com')" [src]="order.productImage" alt="Product">
+            <div *ngIf="!order.productImage || order.productImage === '' || order.productImage.includes('placeholder.com')" class="placeholder">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+          </div>
+          <div class="product-details">
+            <h4>{{ order.productName }}</h4>
+            <p>تاريخ الدفع: {{ order.paidAt | date:'short' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <!-- Customer Info -->
+        <div class="info-card">
+          <h3>معلومات العميل</h3>
+          <div class="info-list">
+            <div class="info-item">
+              <div class="label">الاسم</div>
+              <div class="value">{{ order.buyerName || 'غير متوفر' }}</div>
+            </div>
+            <div class="info-item">
+              <div class="label">البريد الإلكتروني</div>
+              <div class="value">{{ order.buyerEmail || 'غير متوفر' }}</div>
+            </div>
+            <div class="info-item">
+              <div class="label">رقم الهاتف</div>
+              <div class="value">{{ order.buyerPhone || 'غير متوفر' }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delivery Info -->
+        <div class="info-card">
+          <h3>معلومات التوصيل</h3>
+          <div class="info-list">
+            <div class="info-item">
+              <div class="label">اسم المستلم</div>
+              <div class="value">{{ order.recipientName || 'غير متوفر' }}</div>
+            </div>
+            <div class="info-item">
+              <div class="label">العنوان</div>
+              <div class="value">{{ order.address || 'غير متوفر' }}</div>
+            </div>
+            <div class="info-item">
+              <div class="label">المدينة</div>
+              <div class="value">{{ order.city || 'غير متوفر' }}</div>
+            </div>
+            <div class="info-item">
+              <div class="label">رقم الهاتف</div>
+              <div class="value">{{ order.phoneNumber || 'غير متوفر' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-section">
+        <div class="action-buttons">
+          <button
+            (click)="goBack()"
+            class="action-button secondary"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+            </svg>
+            العودة للوحة التحكم
+          </button>
+          
+          <div class="status-info">
+            <div class="current-status">
+              <span class="status-label">الحالة الحالية:</span>
+              <span [class]="getStatusClass(order.status)" class="status-badge">
+                {{ getStatusText(order.status) }}
+              </span>
+            </div>
+            <p class="status-note">
+              يمكنك تحديث حالة الطلب من لوحة التحكم الرئيسية
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Not Found -->
+    <div *ngIf="!isLoading && !order" class="not-found">
+      <div class="not-found-content">
+        <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h3>الطلب غير موجود</h3>
+        <p>لم يتم العثور على الطلب المطلوب.</p>
+        <div class="warning">
+          <p><strong>ملاحظة:</strong> تأكد من أن الـ backend يعمل على المنفذ 65162</p>
+        </div>
+        <button
+          (click)="goBack()"
+          class="back-button"
+        >
+          العودة للوحة التحكم
+        </button>
+      </div>
+    </div>
+  </main>
+</div> 

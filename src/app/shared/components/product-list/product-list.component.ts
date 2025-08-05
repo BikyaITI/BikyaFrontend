@@ -1,4 +1,4 @@
-import { Component, EventEmitter, input, Output } from '@angular/core';
+import { Component, EventEmitter, input, Output, OnInit } from '@angular/core';
 import { IProduct } from '../../../core/models/product.model';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -11,23 +11,28 @@ import { ProductService } from '../../../core/services/product.service';
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
 })
-export class ProductListComponent {
+export class ProductListComponent implements OnInit {
 
-  product = input<IProduct>();
+  product = input<IProduct | undefined>();
   role = input<string>();
   @Output() deleteClicked = new EventEmitter<void>();
 
 
   constructor(private productService: ProductService,) {
-  console.log("ProductListComponent initialized with products:", this.product());
-  
-}
+  }
+
+  ngOnInit() {
+  }
 
 getMainImage(product: IProduct): string {
+    if (!product || !product.images) {
+      return 'product.png';
+    }
+    
     const mainImage = product.images?.find((img) => img.isMain)
-   return mainImage && mainImage.imageUrl
-    ? `${environment.apiUrl}${mainImage.imageUrl}`
-    : 'product.png';
+    return mainImage && mainImage.imageUrl
+      ? `${environment.apiUrl}${mainImage.imageUrl}`
+      : 'product.png';
   }
 
     onImageError(event: Event) {
@@ -35,6 +40,8 @@ getMainImage(product: IProduct): string {
     }
   
   getConditionBadgeClass(condition: string): string {
+    if (!condition) return "bg-secondary";
+    
     switch (condition.toLowerCase()) {
       case "new":
         return "bg-primary"
@@ -48,12 +55,10 @@ getMainImage(product: IProduct): string {
 
   buy(product: IProduct): void {
     // Implement add to cart logic
-    console.log("Added to buy:", product)
   }
 
   addToWishlist(product: IProduct): void {
     // Implement add to wishlist logic
-    console.log("Added to wishlist:", product)
   }
 
   editProduct(product: IProduct): void {
@@ -61,9 +66,4 @@ getMainImage(product: IProduct): string {
     // For now, just show an alert
     alert("Edit functionality will be implemented")
   }
-
-
-
-
-  
 }
