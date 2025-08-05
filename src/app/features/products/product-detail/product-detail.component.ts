@@ -9,12 +9,13 @@ import { OrderService } from '../../../core/services/order.service';
 import { ProductService } from '../../../core/services/product.service';
 import { environment } from '../../../../environments/environment';
 import { ProductListComponent } from '../../../shared/components/product-list/product-list.component';
+import { WishListService } from '../../../core/services/wish-list.service';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
   imports: [CommonModule, RouterModule, ReactiveFormsModule, ProductListComponent, RouterLink, FormsModule],
-  templateUrl: './product-detail.component.html',
+templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss'
 })
 export class ProductDetailComponent implements OnInit {
@@ -41,7 +42,7 @@ export class ProductDetailComponent implements OnInit {
     private router: Router,
     private productService: ProductService,
     private authService: AuthService,
-    private orderService: OrderService,
+    private wishListService: WishListService,
     private fb: FormBuilder,
   ) { }
 
@@ -227,11 +228,21 @@ export class ProductDetailComponent implements OnInit {
     }
     
   }
-  AddToWishlist(): void {
-    if (this.product) {
-      // Implement wishlist logic here
-      alert("Product added to wishlist!")
-    }
+  ToggleWishlist(product: IProduct): void {
+    const action$ = product.isInWishlist
+      ? this.wishListService.removefromWishlist(product.id)
+      : this.wishListService.addToWishlist(product.id);
+
+    action$.subscribe({
+      next: (res) => {
+        if (res.success)
+          product.isInWishlist = !product.isInWishlist;
+        this.wishListService.updateCount(res.data);
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
   }
 
   getConditionBadgeClass(condition: string): string {

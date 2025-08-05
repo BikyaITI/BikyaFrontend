@@ -4,35 +4,45 @@ import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import{environment} from '../../../../environments/environment';
 import { ProductService } from '../../../core/services/product.service';
+import { WishListService } from '../../../core/services/wish-list.service';
+import { IUser } from '../../../core/models/user.model';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-product-list',
   imports: [CommonModule,RouterLink],
-  templateUrl: './product-list.component.html',
+templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
 })
 export class ProductListComponent {
 
   product = input<IProduct>();
   role = input<string>();
+  currentUser:IUser|null=null
   @Output() deleteClicked = new EventEmitter<void>();
 
 
-  constructor(private productService: ProductService,) {
-  console.log("ProductListComponent initialized with products:", this.product());
-  
-}
+  constructor(private productService: ProductService, private wishListService: WishListService,private authService:AuthService) {
 
-getMainImage(product: IProduct): string {
-    const mainImage = product.images?.find((img) => img.isMain)
-   return mainImage && mainImage.imageUrl
-    ? `${environment.apiUrl}${mainImage.imageUrl}`
-    : 'product.png';
+    console.log("ProductListComponent initialized with products:", this.product());
+
+    // Subscribe to auth state
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
+  
   }
 
-    onImageError(event: Event) {
-      (event.target as HTMLImageElement).src = 'product.png';
-    }
+  getMainImage(product: IProduct): string {
+    const mainImage = product.images?.find((img) => img.isMain)
+    return mainImage && mainImage.imageUrl
+      ? `${environment.apiUrl}${mainImage.imageUrl}`
+      : 'product.png';
+  }
+
+  onImageError(event: Event) {
+    (event.target as HTMLImageElement).src = 'product.png';
+  }
   
   getConditionBadgeClass(condition: string): string {
     switch (condition.toLowerCase()) {
@@ -51,19 +61,27 @@ getMainImage(product: IProduct): string {
     console.log("Added to buy:", product)
   }
 
-  addToWishlist(product: IProduct): void {
-    // Implement add to wishlist logic
-    console.log("Added to wishlist:", product)
+  ToggleWishlist(product: IProduct): void {
+    // Prevent adding own product to wishlist
+    if (this.currentUser?.id === product.userId) return;
+    console.log("inside toggle")
+    const action$ = product.isInWishlist
+      ? this.wishListService.removefromWishlist(product.id)
+      : this.wishListService.addToWishlist(product.id);
+
+    action$.subscribe({
+      next: (res) => {
+        if(res.success)
+          product.isInWishlist = !product.isInWishlist;
+        this.wishListService.updateCount(res.data); 
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
   }
-
-  editProduct(product: IProduct): void {
-    // Navigate to edit product page
-    // For now, just show an alert
-    alert("Edit functionality will be implemented")
-  }
-
-
-
-
+   
   
+
+ 
 }

@@ -51,6 +51,12 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: "wishlist",
+    loadComponent: () =>
+      import("./features/products/wishlist-product/wishlist-product.component").then((m) => m.WishlistProductComponent),
+    canActivate: [AuthGuard],
+  },
+  {
     path: "orders",
     loadComponent: () => import("./features/orders/order-list/order-list.component").then((m) => m.OrderListComponent),
     canActivate: [AuthGuard],

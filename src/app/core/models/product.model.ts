@@ -15,6 +15,7 @@ export interface IProduct {
   status:string
   isApproved: boolean
   createdAt: Date
+  isInWishlist:boolean
   images: IProductImage[]
 
 }
