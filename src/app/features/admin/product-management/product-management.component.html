@@ -1,4 +1,4 @@
-div class="container">
+<div class="container">
   <h2 class="mb-4">Admin Product Management</h2>
   
   <!-- Loading Spinner -->
@@ -55,9 +55,9 @@ div class="container">
           <td>{{ product.id }}</td>
           <td>{{ product.title }}</td>
           <td>{{ product.description | slice:0:50 }}{{ product.description.length > 50 ? '...' : '' }}</td>
-          <td>{{ product.price | currency:'USD':'symbol':'1.2-2' }}</td>
+          <td>{{ product.price | currency:'':'':'1.' }} EGP</td>
           <td>
-            <span [class]="getStatusBadgeClass(product)" [attr.aria-label]="'Product status: ' + getStatusText(product)">
+            <span class="badge" [class]="getStatusBadgeClass(product)" [attr.aria-label]="'Product status: ' + getStatusText(product)">
               {{ getStatusText(product) }}
             </span>
           </td>

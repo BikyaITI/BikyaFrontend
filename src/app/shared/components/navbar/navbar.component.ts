@@ -5,7 +5,8 @@ import { AuthService } from "../../../core/services/auth.service"
 import { IUser } from "../../../core/models/user.model"
 import { Dropdown } from "bootstrap"
 import { FormsModule } from "@angular/forms"
-
+import { WishListService } from "../../../core/services/wish-list.service"
+import { Collapse } from 'bootstrap';
 
 @Component({
   selector: "app-navbar",
@@ -14,47 +15,38 @@ import { FormsModule } from "@angular/forms"
   template: `
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
       <div class="container">
+            <!-- Brand Logo -->
         <a class="navbar-brand d-flex align-items-center" routerLink="/">
           <div class="logo-container me-2">
             <i class="fas fa-baby-carriage"></i>
           </div>
           <span class="brand-name">Bikya</span>
         </a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+     <!-- Mobile Toggle Button -->
+        <button class="navbar-toggler" type="button" (click)="toggleNavbar()" data-bs-target="#navbarNav">
           <span class="navbar-toggler-icon"></span>
         </button>
-
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto">
+      <!-- Navigation Menu -->
+       
+        <div  #navbarCollapse class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto ">
             <li class="nav-item">
-              <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+              <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">   <i class="fas fa-home me-2 pl-2"></i>Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" routerLink="/products" routerLinkActive="active">Products</a>
+              <a class="nav-link" routerLink="/products" routerLinkActive="active"> <i class="fas fa-shopping-bag me-2"></i>Products</a>
             </li>
              <li class="nav-item">
-              <a class="nav-link" routerLink="/allcategories" routerLinkActive="active">Categories</a>
+              <a class="nav-link" routerLink="/allcategories" routerLinkActive="active">   <i class="fas fa-th-large me-2"></i>Categories</a>
             </li>
             <li class="nav-item" *ngIf="currentUser">
-              <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
-            </li>
-            <!-- Admin Links -->
-            <li class="nav-item dropdown" *ngIf="isAdmin">
-              <a class="nav-link dropdown-toggle" href="#" role="button" (click)="toggleAdminDropdown($event)">
-                Admin
-              </a>
-              <ul class="dropdown-menu" [class.show]="showAdminDropdown">
-                <li><a class="dropdown-item" routerLink="/admin" (click)="hideAdminDropdown()"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
-                <li><a class="dropdown-item" routerLink="/admin/users" (click)="hideAdminDropdown()"><i class="fas fa-users me-2"></i>Users</a></li>
-                <li><a class="dropdown-item" routerLink="/admin/products" (click)="hideAdminDropdown()"><i class="fas fa-box me-2"></i>Products</a></li>
-                <li><a class="dropdown-item" routerLink="/admin/orders" (click)="hideAdminDropdown()"><i class="fas fa-receipt me-2"></i>Orders</a></li>
-              </ul>
+              <a class="nav-link" routerLink="/dashboard" routerLinkActive="active"
+              (click)="goToDashboard()"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
             </li>
           </ul>
-
+  <!-- Right Side Actions -->
           <div class="d-flex align-items-center">
-            
+                 <!-- Search Container -->
   <div class="search-container me-3" style="width: 250px;">
     <input
       type="search"
@@ -65,27 +57,20 @@ import { FormsModule } from "@angular/forms"
     <i class="fas fa-search search-icon"></i>
   </div>
 
-            <!-- <div class="search-container me-3">
-              <input type="search" class="form-control" placeholder="Search products...">
-              <i class="fas fa-search search-icon"></i>
-            </div> -->
-
+              <!-- User Actions -->
             <ng-container *ngIf="currentUser; else loginLinks">
-              <a routerLink="/wallet" class="btn btn-outline-primary me-2" routerLinkActive="active">
-                <i class="fas fa-wallet me-1"></i>Wallet
-              </a>
-        
+              
+        <!-- wishlist  -->
        <div class="position-relative d-inline-block  me-3">
-  <!-- Badge Positioned Above -->
-  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger z-1">
-    45
-  </span>
 
-  <!-- Button -->
-  <a href="#" class="btn btn-outline-primary">
+  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger z-1">
+    {{wishlistCount}}
+  </span>
+  <a routerLink="/wishlist" routerLinkActive="active" class="btn btn-outline-primary">
     <i class="fas fa-heart"></i>
   </a>
 </div>
+        <!-- User Dropdown -->
               <div class="dropdown">
                 <button class="btn btn-outline-primary rounded-pill px-4 py-2 shadow-sm d-flex align-items-center gap-2"
                         type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -143,36 +128,85 @@ import { FormsModule } from "@angular/forms"
   styles: [`
     .dropdown-menu.show {
       display: block !important;
-    }
+    }import { WishListService } from './../../../core/services/wish-list.service';
+
   `]
 })
 export class NavbarComponent implements OnInit, AfterViewInit {
   @ViewChild('dropdownBtn', { static: false }) dropdownBtn?: ElementRef;
-
+  @ViewChild('navbarCollapse', { static: false }) navbarCollapseRef?: ElementRef;
+  private navbarCollapseInstance?: Collapse;
   currentUser: IUser | null = null;
   isAdmin: boolean = false;
   showAdminDropdown = false;
   showUserDropdown = false;
   navSearchTerm = "";
+  wishlistCount:number=0
 
   constructor(
     private authService: AuthService,
+    private wishListService:WishListService,
     private router: Router
   ) { }
 
   ngOnInit(): void {
+    this.wishListService.wishlistCount$.subscribe(count => {
+      this.wishlistCount = count;
+    });
+
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
       this.isAdmin = this.checkIfAdmin(user);
+      if (user) {
+        this.loadWishlistCount();
+      }
     });
+
+    this.router.events.subscribe(() => {
+  if (this.navbarCollapseInstance) {
+    this.navbarCollapseInstance.hide();
+  }
+});
   }
 
   ngAfterViewInit(): void {
     if (this.dropdownBtn) {
       new Dropdown(this.dropdownBtn.nativeElement);
+      
+    }
+
+      if(this.navbarCollapseRef) {
+      this.navbarCollapseInstance = new Collapse(this.navbarCollapseRef.nativeElement, {
+        toggle: false
+      });
     }
   }
+  
+  loadWishlistCount() {
+    
+    this.wishListService.getCountOfProducts().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.wishListService.updateCount(response.data); 
+        }
+      },
+      error: (err) => {
+        console.log(err.error?.message);
+      }
+    })
+  }
 
+
+  goToDashboard(): void {
+    const user = this.authService.getCurrentUser();
+    const roles = user?.roles; // نوعها: string[] | undefined
+
+    if (roles?.includes('Admin')) {
+      this.router.navigate(['/admin']);
+    } else {
+      this.router.navigate(['/dashboard']);
+    }
+  }
   goToProfile(): void {
     const user = this.authService.getCurrentUser();
     const roles = user?.roles; // نوعها: string[] | undefined
@@ -198,6 +232,18 @@ export class NavbarComponent implements OnInit, AfterViewInit {
     event.preventDefault();
     this.showAdminDropdown = !this.showAdminDropdown;
     this.showUserDropdown = false;
+  }
+
+  toggleNavbar(): void {
+    if (this.navbarCollapseInstance) {
+      const el = this.navbarCollapseRef?.nativeElement;
+      const isShown = el?.classList.contains('show');
+      if (isShown) {
+        this.navbarCollapseInstance.hide();
+      } else {
+        this.navbarCollapseInstance.show();
+      }
+    }
   }
 
   toggleUserDropdown(event: Event): void {

@@ -15,6 +15,30 @@ bootstrapApplication(AppComponent, {
     provideHttpClient(withInterceptors([authInterceptor])),
     importProvidersFrom(ReactiveFormsModule),
     provideAnimations(), // Add animations provider for ngx-toastr
-    provideToastr(), // Add Toastr provider for standalone components
+    provideToastr({
+      timeOut: 5000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+      progressBar: true,
+      closeButton: true,
+      enableHtml: true,
+      toastClass: 'ngx-toastr-custom',
+      titleClass: 'toast-title-custom',
+      messageClass: 'toast-message-custom',
+      easing: 'ease-in-out',
+      easeTime: 300,
+      tapToDismiss: true,
+      newestOnTop: true,
+      maxOpened: 5,
+      autoDismiss: true,
+      resetTimeoutOnDuplicate: true,
+      includeTitleDuplicates: false,
+      iconClasses: {
+        error: 'toast-error-icon',
+        info: 'toast-info-icon',
+        success: 'toast-success-icon',
+        warning: 'toast-warning-icon'
+      }
+    }), // Add Toastr provider with custom configuration
   ],
 }).catch((err) => console.error(err))

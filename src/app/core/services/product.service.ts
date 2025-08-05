@@ -25,17 +25,17 @@ export class ProductService {
   getProductsByUser(userId: number): Observable<ApiResponse<IProduct[]>> {
     return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/user/${userId}`)
   }
+  
   getApprovedProductsByUser(userId: number): Observable<ApiResponse<IProduct[]>> {
     return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/approved/user/${userId}`)
   }
+  
   getProductsByCategory(categoryId: number): Observable<ApiResponse<IProduct[]>> {
     return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/category/${categoryId}`)
   }
 
   // CRUD operations (require authentication)
-  // createProduct(product: CreateProductRequest): Observable<ApiResponse<boolean>> {
-  //   return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/add`, product)
-  // }
+  
 
   createProductWithImages(formData: FormData): Observable<ApiResponse<boolean>> {
     return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/add`, formData)
@@ -48,12 +48,15 @@ export class ProductService {
   deleteProduct(id: number): Observable<ApiResponse<boolean>> {
     return this.http.delete<ApiResponse<boolean>>(`${this.API_URL}/${id}`)
   }
+  
   createImage(productId:number,image: FormData): Observable<ApiResponse<boolean>> {
     return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/${productId}/images`,image)
   }
+  
   setImageAsMain(id: number): Observable<ApiResponse<boolean>> {
     return this.http.put<ApiResponse<boolean>>(`${this.API_URL}/image/${id}/set-main`, {})
   }
+  
   deleteImage(id: number): Observable<ApiResponse<boolean>> {
     return this.http.delete<ApiResponse<boolean>>(`${this.API_URL}/image/${id}`)
   }
@@ -62,7 +65,6 @@ export class ProductService {
   // Admin methods
   getAllProducts(): Observable<ApiResponse<IProduct[]>> {
     return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/all`)
-    return this.http.get<ApiResponse<IProduct[]>>(`${this.API_URL}/all`)
   }
 
   getNotApprovedProducts(): Observable<ApiResponse<IProduct[]>> {
@@ -70,7 +72,6 @@ export class ProductService {
   }
 
   approveProduct(id: number): Observable<ApiResponse<boolean>> {
-    return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/approve/${id}`, {})
     return this.http.post<ApiResponse<boolean>>(`${this.API_URL}/approve/${id}`, {})
   }
 

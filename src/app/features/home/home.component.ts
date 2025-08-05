@@ -3,11 +3,12 @@ import { CommonModule } from "@angular/common"
 import { RouterModule } from "@angular/router"
 import  { ProductService } from "../../core/services/product.service"
 import  { IProduct } from "../../core/models/product.model"
+import { ProductListComponent } from "../../shared/components/product-list/product-list.component"
 
 @Component({
   selector: "app-home",
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule,ProductListComponent],
   template: `
     <!-- Hero Section -->
     <section class="hero-section">
@@ -21,9 +22,10 @@ import  { IProduct } from "../../core/models/product.model"
                 <a routerLink="/products" class="btn btn-primary btn-lg me-3">
                   <i class="fas fa-shopping-bag me-2"></i>Shop Now
                 </a>
-                <a routerLink="/register" class="btn btn-outline-primary btn-lg">
+                <a routerLink="/register" class="btn btn-outline-primary btn-lg me-3">
                   <i class="fas fa-user-plus me-2"></i>Join Community
                 </a>
+               
               </div>
               <div class="hero-stats mt-5">
                 <div class="row">
@@ -49,11 +51,11 @@ import  { IProduct } from "../../core/models/product.model"
               </div>
             </div>
           </div>
-          <div class="col-lg-6">
-            <div class="hero-image">
-              <img src="/placeholder.svg?height=500&width=600" alt="Children's Products" class="img-fluid rounded-4 shadow-lg">
-            </div>
-          </div>
+                     <div class="col-lg-6">
+             <div class="hero-image">
+               <img src="https://via.placeholder.com/600x500/4F46E5/FFFFFF?text=Bikya+Products" alt="Children's Products" class="img-fluid rounded-4 shadow-lg">
+             </div>
+           </div>
         </div>
       </div>
     </section>
@@ -118,26 +120,9 @@ import  { IProduct } from "../../core/models/product.model"
 
         <div class="row" *ngIf="!isLoadingProducts">
           <div class="col-lg-3 col-md-6 mb-4" *ngFor="let product of featuredProducts">
-            <div class="product-card">
-              <div class="product-image">
-                <img [src]="getMainImage(product)" alt="{{product.title}}" class="img-fluid">
-                <div class="product-overlay">
-                  <button class="btn btn-primary btn-sm" [routerLink]="['/products', product.id]">Quick View</button>
-                </div>
-              </div>
-              <div class="product-info">
-                <h6 class="product-title">{{product.title}}</h6>
-                <div class="product-rating">
-                  <i class="fas fa-star" *ngFor="let star of getStarArray(5)"></i>
-                  <span class="rating-count">({{getRandomRating()}})</span>
-                </div>
-                <div class="product-price">
-                  <span class="current-price">\${{product.price | number:'1.2-2'}}</span>
-                  <span class="original-price">\${{getOriginalPrice(product.price) | number:'1.2-2'}}</span>
-                </div>
-                <button class="btn btn-primary btn-sm w-100 mt-2">Add to Cart</button>
-              </div>
-            </div>
+          
+
+              <app-product-list  [product]="product" [role]="'user'" ></app-product-list>
           </div>
         </div>
 

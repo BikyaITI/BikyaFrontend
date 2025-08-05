@@ -24,6 +24,9 @@ export interface RegisterRequest {
   password: string
   confirmPassword: string
   fullName: string
+  phoneNumber: string
+  userType: string
+  adminRegistrationCode?: string
 }
 
 // export interface AuthResponse {

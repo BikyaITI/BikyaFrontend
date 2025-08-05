@@ -45,19 +45,19 @@ import { environment } from "../../../environments/environment"
                       <p class="stat-label">Orders</p>
                     </div>
                   </div>
-                  <div class="col-4">
+                  <!-- <div class="col-4">
                     <div class="stat-item">
                       <h3 class="stat-number">\${{stats.walletBalance}}</h3>
                       <p class="stat-label">Wallet</p>
                     </div>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>
           </div>
           <div class="col-lg-6">
             <div class="hero-image">
-              <img src="/placeholder.svg?height=500&width=600" alt="Dashboard" class="img-fluid rounded-4 shadow-lg">
+              <img src="#" alt="Dashboard" class="img-fluid rounded-4 shadow-lg">
             </div>
           </div>
         </div>
@@ -284,9 +284,16 @@ export class DashboardComponent implements OnInit {
     this.productService.getProductsByUser(this.currentUser.id).subscribe({
       next: (response) => {
         if (response.success) {
-          this.recentProducts = response.data.slice(0, 5)
-          this.stats.totalProducts = response.data.length
+          this.recentProducts = response.data?.slice(0, 5) || []
+          this.stats.totalProducts = response.data?.length || 0
+        } else {
+          this.recentProducts = []
+          this.stats.totalProducts = 0
         }
+      },
+      error: (error) => {
+        this.recentProducts = []
+        this.stats.totalProducts = 0
       },
     })
 
@@ -294,10 +301,19 @@ export class DashboardComponent implements OnInit {
     this.orderService.getMyOrders(this.currentUser.id).subscribe({
       next: (response) => {
         if (response.success) {
-          this.recentOrders = response.data.slice(0, 5)
-          this.stats.totalOrders = response.data.length
-          this.stats.pendingOrders = response.data.filter((o) => o.status === "Pending").length
+          this.recentOrders = response.data?.slice(0, 5) || []
+          this.stats.totalOrders = response.data?.length || 0
+          this.stats.pendingOrders = response.data?.filter((o) => o.status === "Pending").length || 0
+        } else {
+          this.recentOrders = []
+          this.stats.totalOrders = 0
+          this.stats.pendingOrders = 0
         }
+      },
+      error: (error) => {
+        this.recentOrders = []
+        this.stats.totalOrders = 0
+        this.stats.pendingOrders = 0
       },
     })
 

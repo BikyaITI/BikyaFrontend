@@ -11,6 +11,7 @@ import { ProductListComponent } from '../../../shared/components/product-list/pr
 
 @Component({
   selector: 'app-all-product',
+  standalone: true,
   imports: [CommonModule, RouterModule, FormsModule, ProductListComponent],
   templateUrl: './all-product.component.html',
   styleUrl: './all-product.component.scss'
@@ -53,12 +54,17 @@ export class AllProductComponent implements OnInit {
     this.productService.getApprovedProducts().subscribe({
       next: (response) => {
         if (response.success) {
-          this.products = response.data
+          this.products = response.data || []
           this.applyFilters()
+        } else {
+          this.products = []
+          this.filteredProducts = []
         }
         this.isLoading = false
       },
-      error: () => {
+      error: (error) => {
+        this.products = []
+        this.filteredProducts = []
         this.isLoading = false
       },
     })
@@ -68,92 +74,127 @@ export class AllProductComponent implements OnInit {
     this.categoryService.getAll().subscribe({
       next: (response) => {
         if (response.success) {
-          this.categories = response.data
+          this.categories = response.data || []
+        } else {
+          this.categories = []
         }
+      },
+      error: (error) => {
+        this.categories = []
       },
     })
   }
 
   onCategoryChange(event: any): void {
     const categoryId = Number.parseInt(event.target.value)
+    if (isNaN(categoryId)) {
+      return
+    }
     if (event.target.checked) {
       this.selectedCategoryIds.push(categoryId)
     } else {
       this.selectedCategoryIds = this.selectedCategoryIds.filter((id) => id !== categoryId)
     }
-    // this.applyFilters()
   }
 
   onConditionChange(event: any): void {
     const condition = event.target.value
+    if (!condition) {
+      return
+    }
     if (event.target.checked) {
       this.selectedConditions.push(condition)
     } else {
       this.selectedConditions = this.selectedConditions.filter((c) => c !== condition)
     }
-    console.log(this.selectedConditions)
-    // this.applyFilters()
   }
 
   onMinPriceChange(event: any): void {
-    this.minPrice = Number.parseInt(event.target.value)
-    // this.applyFilters()
+    const value = event.target.value
+    this.minPrice = value ? Number.parseInt(value) : null
+    if (value && isNaN(this.minPrice!)) {
+      this.minPrice = null
+    }
   }
+
   onMaxPriceChange(event: any): void {
-    this.maxPrice = Number.parseInt(event.target.value)
-    // this.applyFilters()
+    const value = event.target.value
+    this.maxPrice = value ? Number.parseInt(value) : null
+    if (value && isNaN(this.maxPrice!)) {
+      this.maxPrice = null
+    }
   }
 
   onPriceRangeChange(event: any): void {
-    this.maxPrice = Number.parseInt(event.target.value)
-    // this.applyFilters()
+    const value = event.target.value
+    this.maxPrice = value ? Number.parseInt(value) : null
+    if (value && isNaN(this.maxPrice!)) {
+      this.maxPrice = null
+    }
   }
 
   onSearchInput(): void {
     // Debounce search
-    setTimeout(() => this.applyFilters(), 300)
+    setTimeout(() => {
+      if (this.products.length > 0) {
+        this.applyFilters()
+      }
+    }, 300)
   }
 
   searchProducts(): void {
-    this.applyFilters()
+    if (this.products.length > 0) {
+      this.applyFilters()
+    }
   }
 
   onSortChange(): void {
-    this.applyFilters()
+    if (this.products.length > 0) {
+      this.applyFilters()
+    }
   }
 
   applyFilters(): void {
+    if (this.products.length === 0) {
+      this.filteredProducts = []
+      this.totalPages = 1
+      this.currentPage = 1
+      return
+    }
+    
     let filtered = [...this.products]
 
     // Search filter
     if (this.searchTerm) {
       const term = this.searchTerm.toLowerCase()
       filtered = filtered.filter(
-        (product) => product.title.toLowerCase().includes(term) || product.description.toLowerCase().includes(term),
+        (product) => 
+          (product.title && product.title.toLowerCase().includes(term)) || 
+          (product.description && product.description.toLowerCase().includes(term)),
       )
     }
 
     // Category filter
     if (this.selectedCategoryIds.length > 0) {
-      filtered = filtered.filter((product) => this.selectedCategoryIds.includes(product.categoryId))
+      filtered = filtered.filter((product) => product.categoryId && this.selectedCategoryIds.includes(product.categoryId))
     }
 
     // Condition filter
     if (this.selectedConditions.length > 0) {
-      filtered = filtered.filter((product) => this.selectedConditions.includes(product.condition))
+      filtered = filtered.filter((product) => product.condition && this.selectedConditions.includes(product.condition))
     }
 
     // Price filter
     if (this.minPrice !== null) {
-      filtered = filtered.filter((product) => product.price >= this.minPrice!)
+      filtered = filtered.filter((product) => product.price && product.price >= this.minPrice!)
     }
     if (this.maxPrice !== null) {
-      filtered = filtered.filter((product) => product.price <= this.maxPrice!)
+      filtered = filtered.filter((product) => product.price && product.price <= this.maxPrice!)
     }
 
     // Exchange filter
     if (this.exchangeOnly) {
-      filtered = filtered.filter((product) => product.isForExchange)
+      filtered = filtered.filter((product) => product.isForExchange === true)
     }
 
     // Sort
@@ -167,15 +208,19 @@ export class AllProductComponent implements OnInit {
   sortProducts(products: IProduct[]): IProduct[] {
     switch (this.sortBy) {
       case "price-low":
-        return products.sort((a, b) => a.price - b.price)
+        return products.sort((a, b) => (a.price || 0) - (b.price || 0))
       case "price-high":
-        return products.sort((a, b) => b.price - a.price)
+        return products.sort((a, b) => (b.price || 0) - (a.price || 0))
       case "newest":
-        return products.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        return products.sort((a, b) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return dateB - dateA;
+        })
       case "name-low":
-        return products.sort((a, b) => a.title.localeCompare(b.title))
+        return products.sort((a, b) => (a.title || '').localeCompare(b.title || ''))
        case "name-high":
-        return products.sort((a, b) => b.title.localeCompare(a.title))
+        return products.sort((a, b) => (b.title || '').localeCompare(a.title || ''))
       default:
         return products
     }
@@ -197,9 +242,17 @@ export class AllProductComponent implements OnInit {
     this.applyFilters()
   }
 
+  onExchangeChange(event: any): void {
+    if (event && event.target) {
+      this.exchangeOnly = event.target.checked
+    }
+  }
 
 
   getPageNumbers(): number[] {
+    if (this.totalPages <= 0) {
+      return []
+    }
     const pages = []
     for (let i = 1; i <= this.totalPages; i++) {
       pages.push(i)
@@ -208,14 +261,22 @@ export class AllProductComponent implements OnInit {
   }
 
   goToPage(page: number): void {
+    if (this.totalPages <= 0) {
+      return
+    }
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page
     }
   }
 
   pagedProducts(): IProduct[] {
-  const start = (this.currentPage - 1) * this.itemsPerPage;
-  return this.filteredProducts.slice(start, start + this.itemsPerPage);
+    if (this.filteredProducts.length === 0) {
+      return []
+    }
+    
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.filteredProducts.slice(start, end);
   }
   
 }

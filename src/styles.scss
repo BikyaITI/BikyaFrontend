@@ -660,3 +660,98 @@ input:focus, textarea:focus, select:focus {
     font-size: 1.3rem;
   }
 }
+
+// Custom Toastr Styles for Arabic Messages
+.ngx-toastr-custom {
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+  border: none !important;
+  padding: 16px 20px !important;
+  min-width: 320px !important;
+  max-width: 400px !important;
+  direction: rtl !important;
+  text-align: right !important;
+  
+  &.toast-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    color: white !important;
+    border-left: 4px solid #047857 !important;
+  }
+  
+  &.toast-error {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+    color: white !important;
+    border-left: 4px solid #b91c1c !important;
+  }
+  
+  &.toast-info {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    color: white !important;
+    border-left: 4px solid #1d4ed8 !important;
+  }
+  
+  &.toast-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+    color: white !important;
+    border-left: 4px solid #b45309 !important;
+  }
+}
+
+.toast-title-custom {
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  margin-bottom: 4px !important;
+}
+
+.toast-message-custom {
+  font-size: 0.875rem !important;
+  line-height: 1.4 !important;
+  opacity: 0.95 !important;
+}
+
+.toast-success-icon::before {
+  content: '✅' !important;
+  font-size: 1.2rem !important;
+}
+
+.toast-error-icon::before {
+  content: '❌' !important;
+  font-size: 1.2rem !important;
+}
+
+.toast-info-icon::before {
+  content: 'ℹ️' !important;
+  font-size: 1.2rem !important;
+}
+
+.toast-warning-icon::before {
+  content: '⚠️' !important;
+  font-size: 1.2rem !important;
+}
+
+// Toastr Progress Bar
+.toast-progress {
+  background: rgba(255, 255, 255, 0.3) !important;
+  height: 3px !important;
+}
+
+// Toastr Close Button
+.toast-close-button {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-size: 1.2rem !important;
+  font-weight: bold !important;
+  
+  &:hover {
+    color: white !important;
+  }
+}
+
+// Responsive Toastr
+@media (max-width: 768px) {
+  .ngx-toastr-custom {
+    min-width: 280px !important;
+    max-width: 90vw !important;
+    margin: 8px !important;
+  }
+}

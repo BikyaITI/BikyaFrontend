@@ -12,7 +12,7 @@ import { environment } from "../../../../environments/environment"
 @Component({
   selector: 'app-edit-product',
   imports: [CommonModule, ReactiveFormsModule],
-
+  standalone: true,
   templateUrl: './edit-product.component.html',
   styleUrl: './edit-product.component.scss'
 })

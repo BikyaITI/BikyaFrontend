@@ -14,8 +14,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                    req.url.includes('/register') || 
                    req.url.includes('/forgot-password') ||
                    req.url.includes('/reset-password') ||
-                   req.url.includes('/verify-email') ||
-                   req.url.includes('/approved') // Public product endpoints
+                   req.url.includes('/verify-email') 
+                  //  req.url.includes('/approved') // Public product endpoints
 
   if (token && !skipAuth) {
     const authReq = req.clone({

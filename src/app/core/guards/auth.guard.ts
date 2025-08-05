@@ -1,68 +1,35 @@
-import { Injectable } from "@angular/core"
-import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from "@angular/router"
-import { AuthService } from "../services/auth.service"
-import { Observable, of } from "rxjs"
-import { map, catchError } from "rxjs/operators"
-import { jwtDecode } from 'jwt-decode'
+import { Injectable } from '@angular/core';
+import { CanActivate, Router, ActivatedRouteSnapshot } from '@angular/router';
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-  ) {}
+  constructor(private router: Router) {}
 
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
-    const token = this.authService.getToken()
-    
+  canActivate(route: ActivatedRouteSnapshot): boolean {
+    const token = localStorage.getItem('token');
+    const userRoles = localStorage.getItem('userRoles');
+
     if (!token) {
-      this.router.navigate(["/login"], { queryParams: { returnUrl: state.url } })
-      return false
+      this.router.navigate(['/login']);
+      return false;
     }
 
-    // Check if token is expired
-    try {
-      const decoded: any = jwtDecode(token)
-      const currentTime = Date.now() / 1000
+    // إذا كان المستخدم موظف توصيل، توجيه للوحة تحكم التوصيل
+    if (userRoles && userRoles.includes('Delivery')) {
+      const currentPath = route.routeConfig?.path || '';
       
-      if (decoded.exp < currentTime) {
-        // Token expired, try to refresh
-        const refreshToken = localStorage.getItem('refreshToken')
-        if (refreshToken) {
-          return this.authService.refreshToken(refreshToken).pipe(
-            map(response => {
-              if (response.success) {
-                return true
-              } else {
-                this.authService.logout()
-                this.router.navigate(["/login"], { queryParams: { returnUrl: state.url } })
-                return false
-              }
-            }),
-            catchError(() => {
-              this.authService.logout()
-              this.router.navigate(["/login"], { queryParams: { returnUrl: state.url } })
-              return of(false)
-            })
-          )
-        } else {
-          this.authService.logout()
-          this.router.navigate(["/login"], { queryParams: { returnUrl: state.url } })
-          return false
-        }
+      // إذا كان في صفحة توصيل، السماح
+      if (currentPath.startsWith('delivery/') || currentPath === 'delivery') {
+        return true;
+      } else {
+        // إذا حاول الوصول لأي صفحة أخرى، توجيه للوحة تحكم التوصيل
+        this.router.navigate(['/delivery/dashboard']);
+        return false;
       }
-    } catch (error) {
-      // Invalid token
-      this.authService.logout()
-      this.router.navigate(["/login"], { queryParams: { returnUrl: state.url } })
-      return false
     }
 
-    return true
+    return true;
   }
 }

@@ -30,7 +30,10 @@
           </button>
           <button
             class="btn btn-outline-primary btn-sm"
-            (click)="addToWishlist(product()!)"
+            (click)="ToggleWishlist(product()!)"
+            [class.active]="product()!.isInWishlist"
+            [disabled]="!currentUser"
+            title="add to wishlist"
           >
             <i class="fas fa-heart"></i>
           </button>
@@ -71,7 +74,7 @@
         <div
           class="btn-group w-100"
           role="group"
-          *ngIf="role() === 'own-product'"
+            *ngIf="role() === 'own-product'"
         >
           <a
             [routerLink]="['/products', product()!.id]"

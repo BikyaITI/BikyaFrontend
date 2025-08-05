@@ -50,10 +50,25 @@ export class LoginComponent {
           if (response.success && data && data.userId) {
             // Redirect based on role
             const roles: string[] = data.roles || [];
+            console.log('User roles:', roles); // Debug: print user roles
+            
             if (roles.includes('Admin')) {
-              this.router.navigate(['/dashboard']);
+              console.log('Redirecting to admin dashboard...'); // Debug
+              this.router.navigate(['/admin']).then(() => {
+                console.log('Navigation to admin completed'); // Debug
+              }).catch(err => {
+                console.error('Navigation error:', err); // Debug
+              });
+            } else if (roles.includes('Delivery')) {
+              console.log('Redirecting to delivery dashboard...'); // Debug
+              this.router.navigate(['/delivery/dashboard']).then(() => {
+                console.log('Navigation to delivery completed'); // Debug
+              }).catch(err => {
+                console.error('Navigation error:', err); // Debug
+              });
             } else {
-              this.router.navigate(['/home']);
+              console.log('Redirecting to user dashboard...'); // Debug
+              this.router.navigate(['/dashboard']);
             }
           } else if (!response.success) {
             // Check for unverified email error
@@ -71,6 +86,7 @@ export class LoginComponent {
           }
         },
         error: (error) => {
+          console.error('Login error:', error); // Debug: print error details
           this.isLoading = false;
           this.successMessage = ''; // ✅ امسحي أي رسالة نجاح فورا
 
@@ -85,13 +101,8 @@ export class LoginComponent {
             this.errorMessage = backendMsg || 'Login failed. Please try again.';
           }
         }
-
-
-
-
       });
     }
-
   }
 
 
