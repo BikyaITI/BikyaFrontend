@@ -69,7 +69,7 @@ export class OrderListComponent implements OnInit {
         return this.getPendingOrders();
       case 'shipped':
         return this.getShippedOrders();
-      case 'delivered':
+      case 'completed':
         return this.getDeliveredOrders();
       default:
         return this.allOrders;
@@ -77,28 +77,45 @@ export class OrderListComponent implements OnInit {
   }
 
   getPendingOrders(): Order[] {
-    return this.allOrders.filter((order) => order.status === 'Pending');
+    return this.allOrders.filter((order) => order.status === OrderStatus.Pending);
   }
 
   getShippedOrders(): Order[] {
-    return this.allOrders.filter((order) => order.status === 'Shipped');
+    return this.allOrders.filter((order) => order.status === OrderStatus.Shipped);
   }
 
   getDeliveredOrders(): Order[] {
-    return this.allOrders.filter((order) => order.status === 'Delivered');
+    return this.allOrders.filter((order) => order.status === OrderStatus.Completed);
+  }
+
+  getStatusText(status: OrderStatus): string {
+    switch (status) {
+      case OrderStatus.Pending:
+        return 'Pending';
+      case OrderStatus.Paid:
+        return 'Paid';
+      case OrderStatus.Shipped:
+        return 'Shipped';
+      case OrderStatus.Completed:
+        return 'Completed';
+      case OrderStatus.Cancelled:
+        return 'Cancelled';
+      default:
+        return 'Unknown';
+    }
   }
 
   getOrderStatusClass(status: OrderStatus): string {
     switch (status) {
-      case 'Pending':
+      case OrderStatus.Pending:
         return 'bg-warning text-dark';
-      case 'Confirmed':
+      case OrderStatus.Paid:
         return 'bg-info';
-      case 'Shipped':
+      case OrderStatus.Shipped:
         return 'bg-primary';
-      case 'Delivered':
+      case OrderStatus.Completed:
         return 'bg-success';
-      case 'Cancelled':
+      case OrderStatus.Cancelled:
         return 'bg-danger';
       default:
         return 'bg-secondary';

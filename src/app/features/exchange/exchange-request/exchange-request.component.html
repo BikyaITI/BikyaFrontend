@@ -1,0 +1,134 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card shadow-lg border-0">
+        <div class="card-header bg-gradient-primary text-white text-center py-4">
+          <h3 class="mb-0">
+            <i class="fas fa-exchange-alt me-2"></i>
+            طلب تبادل منتج
+          </h3>
+        </div>
+        
+        <div class="card-body p-4">
+          <!-- Loading State -->
+          <div *ngIf="isLoading" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+              <span class="visually-hidden">جاري التحميل...</span>
+            </div>
+            <p class="mt-3 text-muted">جاري معالجة طلبك...</p>
+          </div>
+
+          <!-- Main Content -->
+          <div *ngIf="!isLoading">
+            <!-- Requested Product Section -->
+            <div class="mb-5" *ngIf="requestedProduct">
+              <h5 class="text-primary mb-3">
+                <i class="fas fa-gift me-2"></i>
+                المنتج المطلوب
+              </h5>
+              <div class="product-card p-4 border rounded-3 bg-light">
+                <div class="row align-items-center">
+                  <div class="col-md-3 text-center">
+                    <div class="product-image-container">
+                      <img 
+                        [src]="getMainImageUrl(requestedProduct)" 
+                        [alt]="requestedProduct.title"
+                        class="product-image"
+                        (error)="onImageError($event)"
+                        onerror="this.src='assets/images/placeholder-product.svg'"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-9">
+                    <h6 class="fw-bold text-dark mb-2">{{ requestedProduct.title }}</h6>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <p class="text-success fw-bold mb-1">
+                          <i class="fas fa-tag me-1"></i>
+                          {{ requestedProduct.price | currency:'EGP':'symbol':'1.2-2' }}
+                        </p>
+                        <p class="text-muted mb-1 small">
+                          <i class="fas fa-info-circle me-1"></i>
+                          {{ requestedProduct.description || 'لا يوجد وصف' }}
+                        </p>
+                      </div>
+                      <div class="col-md-6">
+                        <p class="text-muted mb-1 small">
+                          <i class="fas fa-star me-1"></i>
+                          <strong>الحالة:</strong> 
+                          <span class="badge bg-info">{{ requestedProduct.condition }}</span>
+                        </p>
+                        <p class="text-muted mb-0 small">
+                          <i class="fas fa-folder me-1"></i>
+                          <strong>الفئة:</strong> {{ requestedProduct.categoryName }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Exchange Form -->
+            <form (ngSubmit)="submitRequest()" class="exchange-form">
+              <!-- Product Selection -->
+              <div class="mb-4">
+                <label for="productSelect" class="form-label fw-bold">
+                  <i class="fas fa-handshake me-2"></i>
+                  اختر منتجك للتبادل
+                </label>
+                <select
+                  id="productSelect"
+                  class="form-select form-select-lg"
+                  [(ngModel)]="selectedProductId"
+                  name="selectedProduct"
+                  required>
+                  <option [ngValue]="null" disabled>اختر منتج للتبادل</option>
+                  <option *ngFor="let product of myProducts" [value]="product.id">
+                    {{ product.title }} - {{ product.price | currency:'EGP':'symbol':'1.2-2' }} ({{ product.condition }})
+                  </option>
+                </select>
+                <div class="form-text text-muted">
+                  <i class="fas fa-info-circle me-1"></i>
+                  سيتم عرض المنتجات المتاحة للتبادل والمعتمدة فقط
+                </div>
+              </div>
+
+              <!-- Message Section -->
+              <div class="mb-4">
+                <label for="message" class="form-label fw-bold">
+                  <i class="fas fa-comment me-2"></i>
+                  رسالة إضافية (اختياري)
+                </label>
+                <textarea
+                  id="message"
+                  class="form-control"
+                  [(ngModel)]="message"
+                  name="message"
+                  rows="4"
+                  placeholder="اكتب رسالتك هنا... مثل سبب اهتمامك بالتبادل أو أي تفاصيل إضافية">
+                </textarea>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="d-flex justify-content-between align-items-center pt-3">
+                <button type="button" class="btn btn-outline-secondary btn-lg" routerLink="/products">
+                  <i class="fas fa-arrow-right me-2"></i>
+                  رجوع
+                </button>
+                <button 
+                  type="submit" 
+                  class="btn btn-primary btn-lg px-4" 
+                  [disabled]="!selectedProductId || isSubmitting">
+                  <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+                  <i class="fas fa-paper-plane me-2" *ngIf="!isSubmitting"></i>
+                  {{ isSubmitting ? 'جاري الإرسال...' : 'إرسال طلب التبادل' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

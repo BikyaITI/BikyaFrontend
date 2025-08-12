@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of, forkJoin } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { tap } from 'rxjs/operators';
+import { tap, switchMap, map } from 'rxjs/operators';
 
 export interface DeliveryOrderDto {
   id: number;
@@ -21,6 +21,28 @@ export interface DeliveryOrderDto {
   buyerName: string;
   buyerEmail: string;
   buyerPhone: string;
+  
+  // Exchange Order Linking
+  isSwapOrder: boolean;
+  relatedOrderId?: number;
+  exchangeInfo: string;
+
+  // Optional secondary party (for swap orders)
+  otherOrderId?: number;
+  otherRecipientName?: string;
+  otherAddress?: string;
+  otherCity?: string;
+  otherPostalCode?: string;
+  otherPhoneNumber?: string;
+  otherBuyerName?: string;
+  otherBuyerEmail?: string;
+  otherBuyerPhone?: string;
+
+  // Compact party info for dashboard swap cards
+  party1Name?: string;      // recipient of primary order
+  party1Product?: string;   // product shipped in primary order
+  party2Name?: string;      // recipient of related order
+  party2Product?: string;   // product shipped in related order
 }
 
 export interface UpdateOrderStatusDto {
@@ -72,13 +94,84 @@ export class DeliveryService {
   getOrdersForDelivery(): Observable<ApiResponse<DeliveryOrderDto[]>> {
     const headers = this.getAuthHeaders();
     console.log('DeliveryService: Fetching orders for delivery from:', `${this.baseUrl}/api/delivery/orders`);
-    return this.http.get<ApiResponse<DeliveryOrderDto[]>>(`${this.baseUrl}/api/delivery/orders`, { headers });
+    return this.http.get<ApiResponse<DeliveryOrderDto[]>>(`${this.baseUrl}/api/delivery/orders`, { headers }).pipe(
+      switchMap((resp) => {
+        if (!resp?.success || !Array.isArray(resp.data) || resp.data.length === 0) {
+          return of(resp);
+        }
+
+        // For swap orders, fetch both orders' detail to fill party names/products
+        const swapItems = resp.data.filter(o => o.isSwapOrder && !!o.relatedOrderId);
+        if (swapItems.length === 0) return of(resp);
+
+        const detailCalls = swapItems.map(item =>
+          forkJoin({
+            a: this.http.get<ApiResponse<DeliveryOrderDto>>(`${this.baseUrl}/api/delivery/orders/${item.id}`, { headers }),
+            b: this.http.get<ApiResponse<DeliveryOrderDto>>(`${this.baseUrl}/api/delivery/orders/${item.relatedOrderId}`, { headers })
+          }).pipe(
+            map(({ a, b }) => ({
+              id: item.id,
+              a: a?.data, b: b?.data
+            }))
+          )
+        );
+
+        return forkJoin(detailCalls).pipe(
+          map(details => {
+            for (const d of details) {
+              const idx = resp.data.findIndex(x => x.id === d.id);
+              if (idx >= 0) {
+                const a = d.a, b = d.b;
+                if (a) {
+                  resp.data[idx].party1Name = a.recipientName || a.buyerName;
+                  resp.data[idx].party1Product = a.productName;
+                }
+                if (b) {
+                  resp.data[idx].party2Name = b.recipientName || b.buyerName;
+                  resp.data[idx].party2Product = b.productName;
+                }
+              }
+            }
+            return resp;
+          })
+        );
+      })
+    );
   }
 
   getOrderById(orderId: number): Observable<ApiResponse<DeliveryOrderDto>> {
     const headers = this.getAuthHeaders();
     console.log(`DeliveryService: Fetching order ${orderId} from ${this.baseUrl}/api/delivery/orders/${orderId}`);
-    return this.http.get<ApiResponse<DeliveryOrderDto>>(`${this.baseUrl}/api/delivery/orders/${orderId}`, { headers });
+    return this.http.get<ApiResponse<DeliveryOrderDto>>(`${this.baseUrl}/api/delivery/orders/${orderId}`, { headers }).pipe(
+      switchMap((primary) => {
+        // If not swap or no related order, return as-is
+        if (!primary?.success || !primary.data?.isSwapOrder || !primary.data.relatedOrderId) {
+          return of(primary);
+        }
+
+        const relatedId = primary.data.relatedOrderId;
+        return this.http.get<ApiResponse<DeliveryOrderDto>>(`${this.baseUrl}/api/delivery/orders/${relatedId}`, { headers }).pipe(
+          map((secondary) => {
+            if (secondary?.success && secondary.data) {
+              const merged: DeliveryOrderDto = {
+                ...primary.data,
+                otherOrderId: secondary.data.id,
+                otherRecipientName: secondary.data.recipientName,
+                otherAddress: secondary.data.address,
+                otherCity: secondary.data.city,
+                otherPostalCode: secondary.data.postalCode,
+                otherPhoneNumber: secondary.data.phoneNumber,
+                otherBuyerName: secondary.data.buyerName,
+                otherBuyerEmail: secondary.data.buyerEmail,
+                otherBuyerPhone: secondary.data.buyerPhone,
+              };
+              return { ...primary, data: merged } as ApiResponse<DeliveryOrderDto>;
+            }
+            return primary;
+          })
+        );
+      })
+    );
   }
 
   getOrderStatusSummary(orderId: number): Observable<ApiResponse<OrderStatusSummary>> {

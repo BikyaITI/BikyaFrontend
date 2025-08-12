@@ -275,6 +275,13 @@ export class ProductDetailComponent implements OnInit {
       return "user"
   }
 
+  onExchangeClick() {
+    if (!this.product) return;
+    
+    // Navigate to exchange request page with the product ID
+    this.router.navigate(['/exchange/request', this.product.id]);
+  }
+
   validateImage(file: File): boolean {
     const maxSize = 5 * 1024 * 1024;
     const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];

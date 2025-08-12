@@ -1,11 +1,11 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from "@angular/core"
-import { CommonModule } from "@angular/common"
-import { RouterModule, Router } from "@angular/router"
-import { AuthService } from "../../../core/services/auth.service"
-import { IUser } from "../../../core/models/user.model"
-import { Dropdown } from "bootstrap"
-import { FormsModule } from "@angular/forms"
-import { WishListService } from "../../../core/services/wish-list.service"
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { RouterModule, Router } from "@angular/router";
+import { AuthService } from "../../../core/services/auth.service";
+import { IUser } from "../../../core/models/user.model";
+import { Dropdown } from "bootstrap";
+import { FormsModule } from "@angular/forms";
+import { WishListService } from "../../../core/services/wish-list.service";
 import { Collapse } from 'bootstrap';
 
 @Component({

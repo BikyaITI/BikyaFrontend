@@ -53,18 +53,36 @@
           <th scope="col">Total</th>
           <th scope="col">Status</th>
           <th scope="col">Created</th>
+          <th scope="col">Type</th>
           <th scope="col">Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let order of orders">
-          <td>{{ order.id }}</td>
-          <td>{{ order.productTitle || 'N/A' }}</td>
+        <tr *ngFor="let order of orders" [ngClass]="{'table-success': order.isSwapOrder}">
+          <td>
+            <span class="order-id">{{ order.id }}</span>
+            <span *ngIf="order.relatedOrderId" class="badge bg-info ms-1">
+              مرتبط مع #{{ order.relatedOrderId }}
+            </span>
+          </td>
+          <td>
+            <div class="product-info">
+              <span class="product-title">{{ order.productTitle || 'N/A' }}</span>
+              <span *ngIf="order.isSwapOrder" class="badge bg-success ms-2">
+                <i class="fas fa-exchange-alt"></i> تبادل
+              </span>
+            </div>
+          </td>
           <td>{{ order.buyerName || 'N/A' }}</td>
           <td>{{ order.sellerName || 'N/A' }}</td>
-          <td>{{ order.totalAmount | number:'1.2-2' }}</td>
+          <td>
+            <span class="amount" [ngClass]="{'text-success': order.isSwapOrder}">
+              {{ order.totalAmount | number:'1.2-2' }}
+            </span>
+          </td>
           <td>
             <select class="form-select form-select-sm"
+                    [ngClass]="{'border-success': order.isSwapOrder}"
                     [ngModel]="getStatusStringFromEnum(order.status)"
                     (ngModelChange)="onStatusChange(order, $event)">
               <option [ngValue]="'Pending'">Pending</option>
@@ -76,31 +94,33 @@
           </td>
           <td>{{ order.createdAt ? (order.createdAt | date:'short') : 'N/A' }}</td>
           <td>
-            <div class="btn-group" role="group" [attr.aria-label]="'Actions for order ' + order.id">
-              <button class="btn btn-danger btn-sm me-1" 
-                      [disabled]="isCancelling[order.id] || order.status === 'Cancelled'" 
-                      (click)="confirmCancelOrder(order)"
-                      title="Cancel order"
-                      [attr.aria-label]="'Cancel order ' + order.id">
-                <span *ngIf="isCancelling[order.id]" class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-                <i class="fas fa-times" *ngIf="!isCancelling[order.id]" aria-hidden="true"></i> Cancel
+            <span *ngIf="order.isSwapOrder" class="badge bg-success">
+              <i class="fas fa-exchange-alt"></i> تبادل
+            </span>
+            <span *ngIf="!order.isSwapOrder" class="badge bg-primary">
+              <i class="fas fa-shopping-cart"></i> عادي
+            </span>
+          </td>
+          <td>
+            <div class="btn-group" role="group">
+              <button 
+                type="button" 
+                class="btn btn-sm btn-outline-danger"
+                [disabled]="isCancelling[order.id]"
+                (click)="cancelOrder(order.id)"
+                title="Cancel Order">
+                <i class="fas fa-times" *ngIf="!isCancelling[order.id]"></i>
+                <span class="spinner-border spinner-border-sm" *ngIf="isCancelling[order.id]"></span>
               </button>
               
-              <button class="btn btn-success btn-sm me-1" 
-                      [disabled]="isProcessing[order.id] || order.status === 'Delivered' || order.status === 'Completed'" 
-                      (click)="confirmCompleteOrder(order)"
-                      title="Mark as completed"
-                      [attr.aria-label]="'Complete order ' + order.id">
-                <span *ngIf="isProcessing[order.id]" class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-                <i class="fas fa-check" *ngIf="!isProcessing[order.id]" aria-hidden="true"></i> Complete
-              </button>
-              
-              <button class="btn btn-info btn-sm" 
-                      [disabled]="isProcessing[order.id]" 
-                      (click)="viewOrderDetails(order)"
-                      title="View order details"
-                      [attr.aria-label]="'View details for order ' + order.id">
-                <i class="fas fa-eye" aria-hidden="true"></i> Details
+              <button 
+                type="button" 
+                class="btn btn-sm btn-outline-success"
+                [disabled]="isProcessing[order.id]"
+                (click)="completeOrder(order.id)"
+                title="Complete Order">
+                <i class="fas fa-check" *ngIf="!isProcessing[order.id]"></i>
+                <span class="spinner-border spinner-border-sm" *ngIf="isProcessing[order.id]"></span>
               </button>
             </div>
           </td>

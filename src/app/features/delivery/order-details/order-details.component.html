@@ -81,12 +81,12 @@
       </div>
 
       <div class="info-grid">
-        <!-- Customer Info -->
+        <!-- Shipping Details - Customer 1 (this order) -->
         <div class="info-card">
-          <h3>معلومات العميل</h3>
+          <h3>معلومات الشحن - العميل 1</h3>
           <div class="info-list">
             <div class="info-item">
-              <div class="label">الاسم</div>
+              <div class="label">اسم العميل</div>
               <div class="value">{{ order.buyerName || 'غير متوفر' }}</div>
             </div>
             <div class="info-item">
@@ -94,16 +94,9 @@
               <div class="value">{{ order.buyerEmail || 'غير متوفر' }}</div>
             </div>
             <div class="info-item">
-              <div class="label">رقم الهاتف</div>
+              <div class="label">هاتف العميل</div>
               <div class="value">{{ order.buyerPhone || 'غير متوفر' }}</div>
             </div>
-          </div>
-        </div>
-
-        <!-- Delivery Info -->
-        <div class="info-card">
-          <h3>معلومات التوصيل</h3>
-          <div class="info-list">
             <div class="info-item">
               <div class="label">اسم المستلم</div>
               <div class="value">{{ order.recipientName || 'غير متوفر' }}</div>
@@ -117,8 +110,43 @@
               <div class="value">{{ order.city || 'غير متوفر' }}</div>
             </div>
             <div class="info-item">
-              <div class="label">رقم الهاتف</div>
+              <div class="label">هاتف المستلم</div>
               <div class="value">{{ order.phoneNumber || 'غير متوفر' }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shipping Details - Customer 2 (related swap order) -->
+        <div class="info-card" *ngIf="order.isSwapOrder && order.otherOrderId">
+          <h3>معلومات الشحن - العميل 2</h3>
+          <div class="info-list">
+            <div class="info-item">
+              <div class="label">اسم العميل</div>
+              <div class="value">{{ order.otherBuyerName || 'غير متوفر' }}</div>
+            </div>
+            <div class="info-item">
+              <div class="label">البريد الإلكتروني</div>
+              <div class="value">{{ order.otherBuyerEmail || 'غير متوفر' }}</div>
+            </div>
+            <div class="info-item">
+              <div class="label">هاتف العميل</div>
+              <div class="value">{{ order.otherBuyerPhone || 'غير متوفر' }}</div>
+            </div>
+            <div class="info-item">
+              <div class="label">اسم المستلم</div>
+              <div class="value">{{ order.otherRecipientName || 'غير متوفر' }}</div>
+            </div>
+            <div class="info-item">
+              <div class="label">العنوان</div>
+              <div class="value">{{ order.otherAddress || 'غير متوفر' }}</div>
+            </div>
+            <div class="info-item">
+              <div class="label">المدينة</div>
+              <div class="value">{{ order.otherCity || 'غير متوفر' }}</div>
+            </div>
+            <div class="info-item">
+              <div class="label">هاتف المستلم</div>
+              <div class="value">{{ order.otherPhoneNumber || 'غير متوفر' }}</div>
             </div>
           </div>
         </div>

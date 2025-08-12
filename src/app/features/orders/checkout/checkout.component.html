@@ -145,6 +145,7 @@
               type="submit"
               class="btn btn-primary"
               [disabled]="checkoutForm.invalid || isLoading"
+              [attr.aria-disabled]="isLoading ? true : null"
             >
               <i class="bi bi-credit-card"></i> Proceed to Payment
             </button>
@@ -159,6 +160,7 @@
         <div *ngIf="product" class="d-flex align-items-center mb-3">
           <img
             [src]="getProductImage()"
+            (error)="onImageError($event)"
             class="rounded me-3"
             style="width: 80px; height: 80px; object-fit: cover"
             [alt]="product.title || 'Product'"

@@ -139,11 +139,11 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
     switch (status) {
       case 'pending':
         return 'badge bg-warning text-dark';
-      case 'confirmed':
+      case 'paid':
         return 'badge bg-info';
       case 'shipped':
         return 'badge bg-primary';
-      case 'delivered':
+      case 'completed':
         return 'badge bg-success';
       case 'cancelled':
         return 'badge bg-danger';
@@ -284,7 +284,7 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
     // Use updateOrderStatus instead of completeOrder
     const updateRequest = {
       orderId: id,
-      newStatus: OrderStatus.Delivered
+      newStatus: OrderStatus.Completed
     };
     this.orderService.updateOrderStatus(updateRequest).subscribe({
       next: () => {
