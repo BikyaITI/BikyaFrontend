@@ -7,6 +7,7 @@ import { AuthService } from "../../../core/services/auth.service"
 import { Order, OrderStatus } from "../../../core/models/order.model"
 import { IUser } from "../../../core/models/user.model"
 import { FormsModule } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-admin-orders',
@@ -25,7 +26,8 @@ export class AdminOrdersComponent implements OnInit {
   constructor(
     private orderService: OrderService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -68,38 +70,67 @@ export class AdminOrdersComponent implements OnInit {
     switch (this.activeTab) {
       case 'pending':
         return this.getPendingOrders();
+      case 'paid':
+        return this.getPaidOrders();
       case 'shipped':
         return this.getShippedOrders();
-      case 'delivered':
+      case 'completed':
         return this.getDeliveredOrders();
+      case 'cancelled':
+        return this.getCancelledOrders();
       default:
         return this.allOrders;
     }
   }
 
   getPendingOrders(): Order[] {
-    return this.allOrders.filter((order) => order.status === 'Pending');
+    return this.allOrders.filter((order) => order.status === OrderStatus.Pending);
+  }
+
+  getPaidOrders(): Order[] {
+    return this.allOrders.filter((order) => order.status === OrderStatus.Paid);
   }
 
   getShippedOrders(): Order[] {
-    return this.allOrders.filter((order) => order.status === 'Shipped');
+    return this.allOrders.filter((order) => order.status === OrderStatus.Shipped);
   }
 
   getDeliveredOrders(): Order[] {
-    return this.allOrders.filter((order) => order.status === 'Delivered');
+    return this.allOrders.filter((order) => order.status === OrderStatus.Completed);
+  }
+
+  getCancelledOrders(): Order[] {
+    return this.allOrders.filter((order) => order.status === OrderStatus.Cancelled);
+  }
+
+  getStatusText(status: OrderStatus): string {
+    switch (status) {
+      case OrderStatus.Pending:
+        return 'Pending';
+      case OrderStatus.Paid:
+        return 'Paid';
+      case OrderStatus.Shipped:
+        return 'Shipped';
+      case OrderStatus.Completed:
+        return 'Completed';
+      case OrderStatus.Cancelled:
+        return 'Cancelled';
+      default:
+        return 'Unknown';
+    }
   }
 
   getOrderStatusClass(status: OrderStatus): string {
     switch (status) {
-      case 'Pending':
+      case OrderStatus.Pending:
         return 'bg-warning text-dark';
-      case 'Confirmed':
+      case OrderStatus.Paid:
         return 'bg-info';
-      case 'Shipped':
+      case OrderStatus.Shipped:
         return 'bg-primary';
-      case 'Delivered':
+      case OrderStatus.Completed:
         return 'bg-success';
-      case 'Cancelled':
+      case OrderStatus.Cancelled:
         return 'bg-danger';
       default:
         return 'bg-secondary';
@@ -123,18 +154,22 @@ export class AdminOrdersComponent implements OnInit {
     }
   }
 
-  updateOrderStatus(order: Order, newStatus: string): void {
-    const status: OrderStatus = newStatus as OrderStatus;
-    const request = { orderId: order.id, status };
-    this.orderService.updateOrderStatus(request).subscribe({
+  updateOrderStatus(orderId: number, newStatus: OrderStatus) {
+    this.orderService.updateOrderStatus({
+      orderId: orderId,
+      newStatus: newStatus
+    }).subscribe({
       next: (response) => {
         if (response.success) {
+          this.toastr.success('Order status updated successfully');
           this.loadOrders();
+        } else {
+          this.toastr.error('Failed to update order status');
         }
       },
       error: (error) => {
-        console.error('Failed to update order status:', error);
-        alert('Failed to update order status');
+        console.error('Error updating order status:', error);
+        this.toastr.error('Failed to update order status');
       }
     });
   }

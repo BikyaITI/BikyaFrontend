@@ -188,6 +188,34 @@ export const routes: Routes = [
     loadComponent: () => import("./features/delivery/order-details/order-details.component").then((m) => m.OrderDetailsComponent),
     canActivate: [DeliveryGuard],
   },
+  // Exchange Routes
+  {
+    path: "exchange",
+    children: [
+      {
+        path: "",
+        loadComponent: () => import("./features/exchange/exchange-list/exchange-list.component").then((m) => m.ExchangeListComponent),
+        canActivate: [AuthGuard, DeliveryRestrictionGuard],
+      },
+      {
+        path: "request/:id",
+        loadComponent: () => import("./features/exchange/exchange-request/exchange-request.component").then((m) => m.ExchangeRequestComponent),
+        canActivate: [AuthGuard, DeliveryRestrictionGuard],
+      },
+      {
+        path: "received",
+        loadComponent: () => import("./features/exchange/exchange-list/exchange-list.component").then((m) => m.ExchangeListComponent),
+        canActivate: [AuthGuard, DeliveryRestrictionGuard],
+        data: { tab: 'received' }
+      },
+      {
+        path: "sent",
+        loadComponent: () => import("./features/exchange/exchange-list/exchange-list.component").then((m) => m.ExchangeListComponent),
+        canActivate: [AuthGuard, DeliveryRestrictionGuard],
+        data: { tab: 'sent' }
+      }
+    ]
+  },
   {
     path: "**",
     redirectTo: "",

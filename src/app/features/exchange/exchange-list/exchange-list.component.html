@@ -1,0 +1,253 @@
+<div class="container py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white border-bottom-0">
+          <ul class="nav nav-tabs card-header-tabs" id="exchangeTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="received-tab"
+                role="tab"
+                [attr.aria-selected]="activeTab === 'received'"
+                aria-controls="received-panel"
+                [class.active]="activeTab === 'received'"
+                (click)="setActiveTab('received')"
+                type="button">
+                الطلبات الواردة
+                <span class="badge bg-primary ms-1">{{receivedRequests.length}}</span>
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="sent-tab"
+                role="tab"
+                [attr.aria-selected]="activeTab === 'sent'"
+                aria-controls="sent-panel"
+                [class.active]="activeTab === 'sent'"
+                (click)="setActiveTab('sent')"
+                type="button">
+                الطلبات المرسلة
+                <span class="badge bg-secondary ms-1">{{sentRequests.length}}</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-body">
+          <!-- Loading State -->
+          <div *ngIf="isLoading" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">جاري التحميل...</span>
+            </div>
+            <p class="mt-2">جاري تحميل طلبات التبادل...</p>
+          </div>
+
+          <!-- Received Requests Tab -->
+          <div
+            *ngIf="!isLoading && activeTab === 'received'"
+            id="received-panel"
+            role="tabpanel"
+            aria-labelledby="received-tab"
+            class="tab-pane fade show active">
+
+            <div *ngIf="receivedRequests.length === 0" class="text-center py-5">
+              <i class="bi bi-inbox fs-1 text-muted"></i>
+              <p class="mt-3 text-muted">لا توجد طلبات تبادل واردة</p>
+            </div>
+
+            <div *ngFor="let request of receivedRequests" class="card mb-3">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h5 class="card-title">طلب تبادل #{{request.id}}</h5>
+                    <p class="text-muted mb-2">
+                      <i class="bi bi-arrow-left-circle me-1"></i>
+                      {{request.requester?.userName || 'مستخدم'}} يرغب في تبادل منتجه معك
+                    </p>
+                    <span class="badge" [ngClass]="getStatusBadgeClass(request.status)">
+                      {{getStatusText(request.status)}}
+                    </span>
+                  </div>
+                  <div class="text-end">
+                    <small class="text-muted">{{request.createdAt | date:'short'}}</small>
+                  </div>
+                </div>
+
+                <!-- Modern split cards for both products -->
+                <div class="row mt-3 g-3">
+                  <!-- Your product -->
+                  <div class="col-md-6">
+                    <div class="product-card shadow-sm rounded-3 p-3 h-100">
+                      <div class="d-flex align-items-center gap-3">
+                        <img [src]="getMainImageUrl(request.requestedProduct)" class="rounded" alt="{{request.requestedProduct?.title || 'Product'}}" style="width:80px;height:80px;object-fit:cover;">
+                        <div class="flex-grow-1">
+                          <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-1 text-dark">منتجك</h6>
+                            <span class="badge bg-secondary" *ngIf="request.requestedProduct?.condition">{{request.requestedProduct?.condition}}</span>
+                          </div>
+                          <div class="text-muted small">{{request.requestedProduct?.title || '—'}}</div>
+                          <div class="fw-semibold text-primary mt-1" *ngIf="request.requestedProduct?.price">{{request.requestedProduct?.price | currency:'EGP':'symbol':'1.2-2'}}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Offered product -->
+                  <div class="col-md-6">
+                    <div class="product-card shadow-sm rounded-3 p-3 h-100">
+                      <div class="d-flex align-items-center gap-3">
+                        <img [src]="getMainImageUrl(request.offeredProduct)" class="rounded" alt="{{request.offeredProduct?.title || 'Product'}}" style="width:80px;height:80px;object-fit:cover;">
+                        <div class="flex-grow-1">
+                          <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-1 text-dark">المنتج المقدم</h6>
+                            <span class="badge bg-secondary" *ngIf="request.offeredProduct?.condition">{{request.offeredProduct?.condition}}</span>
+                          </div>
+                          <div class="text-muted small">{{request.offeredProduct?.title || '—'}}</div>
+                          <div class="fw-semibold text-primary mt-1" *ngIf="request.offeredProduct?.price">{{request.offeredProduct?.price | currency:'EGP':'symbol':'1.2-2'}}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div *ngIf="request.message" class="mt-3 p-3 bg-light rounded">
+                  <p class="mb-0"><strong>رسالة:</strong> {{request.message}}</p>
+                </div>
+
+                <div *ngIf="request.status === 'Pending'" class="mt-3 d-flex gap-2">
+                  <button class="btn btn-success btn-sm" (click)="approveRequest(request)">
+                    <i class="bi bi-check-circle me-1"></i> قبول
+                  </button>
+                  <button class="btn btn-outline-danger btn-sm" (click)="rejectRequest(request)">
+                    <i class="bi bi-x-circle me-1"></i> رفض
+                  </button>
+                </div>
+                
+                <!-- After approval: show pay shipping buttons for each side -->
+                <div *ngIf="request.status === 'Accepted'" class="mt-3 d-flex flex-column gap-2">
+                  <!-- If you are the owner of the requestedProduct (receiver of offered product), go with orderForOfferedProductId -->
+                  <a *ngIf="request.status === 'Accepted' && currentUserId === request.requestedProduct?.userId && request.orderForOfferedProductId"
+                     class="btn btn-primary btn-sm"
+                     [routerLink]="['/checkout']"
+                     [queryParams]="{ orderId: request.orderForOfferedProductId }">
+                    <i class="bi bi-bag-check me-1"></i>
+                    إتمام بيانات الشحن لطلب التبادل
+                  </a>
+
+                  <!-- If you are the owner of the offeredProduct (sender), use orderForRequestedProductId -->
+                
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sent Requests Tab -->
+          <div
+            *ngIf="!isLoading && activeTab === 'sent'"
+            id="sent-panel"
+            role="tabpanel"
+            aria-labelledby="sent-tab"
+            class="tab-pane fade show active">
+
+            <div *ngIf="sentRequests.length === 0" class="text-center py-5">
+              <i class="bi bi-send fs-1 text-muted"></i>
+              <p class="mt-3 text-muted">لم تقم بإرسال أي طلبات تبادل بعد</p>
+              <a routerLink="/products" class="btn btn-primary mt-2">تصفح المنتجات</a>
+            </div>
+
+            <div *ngFor="let request of sentRequests" class="card mb-3">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h5 class="card-title">طلب تبادل #{{request.id}}</h5>
+                    <p class="text-muted mb-2">
+                      <i class="bi bi-arrow-right-circle me-1"></i>
+                      قمت بإرسال طلب تبادل إلى {{request.owner?.userName || 'مستخدم'}}
+                    </p>
+                    <span class="badge" [ngClass]="getStatusBadgeClass(request.status)">
+                      {{getStatusText(request.status)}}
+                    </span>
+                  </div>
+                  <div class="text-end">
+                    <small class="text-muted">{{request.createdAt | date:'short'}}</small>
+                  </div>
+                </div>
+
+                <div class="row mt-3">
+                  <div class="col-md-6">
+                    <div class="card bg-light">
+                      <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">المنتج المطلوب</h6>
+                        <div class="d-flex">
+                          <img
+                            [src]="getMainImageUrl(request.requestedProduct)"
+                            class="img-thumbnail me-2"
+                             alt="صورة {{request.requestedProduct?.title || 'منتج'}}"
+                            style="width: 60px; height: 60px; object-fit: cover;">
+                          <div>
+                             <h6 class="mb-1">{{request.requestedProduct?.title || '—'}}</h6>
+                            <p class="mb-0 text-muted">
+                               {{request.requestedProduct?.price | currency:'EGP':'symbol':'1.2-2'}}
+                            </p>
+                             <small class="text-muted">{{request.requestedProduct?.condition}}</small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6 mt-2 mt-md-0">
+                    <div class="card bg-light">
+                      <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">منتجك</h6>
+                        <div class="d-flex">
+                          <img
+                            [src]="getMainImageUrl(request.offeredProduct)"
+                            class="img-thumbnail me-2"
+                             alt="صورة {{request.offeredProduct?.title || 'منتج'}}"
+                            style="width: 60px; height: 60px; object-fit: cover;">
+                          <div>
+                             <h6 class="mb-1">{{request.offeredProduct?.title || '—'}}</h6>
+                            <p class="mb-0 text-muted">
+                               {{request.offeredProduct?.price | currency:'EGP':'symbol':'1.2-2'}}
+                            </p>
+                             <small class="text-muted">{{request.offeredProduct?.condition}}</small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div *ngIf="request.message" class="mt-3 p-3 bg-light rounded">
+                  <p class="mb-0"><strong>رسالتك:</strong> {{request.message}}</p>
+                </div>
+
+                <!-- After approval in sent tab: show pay shipping buttons for the sender (offered product owner) -->
+                <div *ngIf="request.status === 'Accepted'" class="mt-3 d-flex flex-column gap-2">
+                  <!-- Sender is owner of offeredProduct: go to checkout with existing order id (orderForRequestedProductId) -->
+                   <a *ngIf="request.status === 'Accepted' && currentUserId === request.offeredProduct?.userId && request.orderForRequestedProductId"
+                     class="btn btn-primary btn-sm"
+                     [routerLink]="['/checkout']"
+                     [queryParams]="{ orderId: request.orderForRequestedProductId }">
+                    <i class="bi bi-bag-check me-1"></i>
+                    إتمام الطلب عبر صفحة Checkout
+                  </a>
+                  <!-- Receiver of offered product (owner of requestedProduct) -->
+            
+                </div>
+
+                <div *ngIf="request.status === 'Rejected' && request.responseMessage" class="mt-2">
+                  <div class="alert alert-warning mb-0">
+                    <strong>سبب الرفض:</strong> {{request.responseMessage || 'لم يتم تحديد سبب'}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

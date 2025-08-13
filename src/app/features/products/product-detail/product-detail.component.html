@@ -139,7 +139,11 @@
               </button>
             </div>
             <div class="col-md-6">
-              <button class="btn btn-outline-primary btn-lg w-100" [disabled]="!product.isForExchange">
+              <button
+                class="btn btn-outline-primary btn-lg w-100"
+                [disabled]="!product.isForExchange"
+                (click)="onExchangeClick()"
+              >
                 <i class="bi bi-arrow-left-right"></i> Propose Exchange
               </button>
             </div>

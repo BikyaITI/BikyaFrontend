@@ -141,6 +141,10 @@ export class DeliveryDashboardComponent implements OnInit {
     });
   }
 
+  getSwapOrders(): DeliveryOrderDto[] {
+    return this.orders.filter(order => order.isSwapOrder);
+  }
+
   getStatusBadgeClass(status: string | number): string {
     const statusStr = status.toString();
     

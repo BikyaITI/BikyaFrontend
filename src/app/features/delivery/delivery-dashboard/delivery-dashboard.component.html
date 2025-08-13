@@ -81,6 +81,18 @@
               <p class="stat-value">{{ getOrdersByStatus('Completed').length + getOrdersByStatus('3').length }}</p>
             </div>
           </div>
+
+          <div class="stat-card swap-orders">
+            <div class="stat-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M16 17.01V10h-2v7.01h-3L15 21l4-3.99h-3zM9 3L5 6.99h3V14h2V6.99h3L9 3z"/>
+              </svg>
+            </div>
+            <div class="stat-content">
+              <h3 class="stat-title">طلبات التبادل</h3>
+              <p class="stat-value">{{ getSwapOrders().length }}</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -122,11 +134,27 @@
 
         <!-- Orders Grid -->
         <div *ngIf="!isLoading && orders.length > 0" class="orders-grid">
-          <div *ngFor="let order of orders" class="order-card">
+          <div *ngFor="let order of orders" class="order-card" [ngClass]="{'exchange-order': order.isSwapOrder}">
+            <!-- Exchange Order Header -->
+            <div *ngIf="order.isSwapOrder" class="exchange-header">
+              <div class="exchange-badge">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M16 17.01V10h-2v7.01h-3L15 21l4-3.99h-3zM9 3L5 6.99h3V14h2V6.99h3L9 3z"/>
+                </svg>
+                طلب تبادل
+              </div>
+              <div class="exchange-info" *ngIf="order.exchangeInfo">
+                {{ order.exchangeInfo }}
+              </div>
+            </div>
+
             <div class="order-header">
               <div class="order-id">
                 <span class="order-number">طلب رقم #{{ order.id }}</span>
                 <span class="order-date">{{ order.createdAt | date:'short' }}</span>
+                <span *ngIf="order.relatedOrderId" class="related-order">
+                  مرتبط مع طلب #{{ order.relatedOrderId }}
+                </span>
               </div>
               <div class="order-status">
                 <span class="status-badge" [ngClass]="getStatusBadgeClass(order.status)">
@@ -142,32 +170,67 @@
             <div class="order-content">
               <div class="product-info">
                 <div class="product-image">
-                  <img *ngIf="order.productImage" [src]="order.productImage" [alt]="order.productName">
-                  <div *ngIf="!order.productImage" class="product-placeholder">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                    </svg>
-                  </div>
+                  <img 
+                    [src]="order.productImage || 'assets/images/placeholder-product.svg'" 
+                    [alt]="order.productName"
+                  />
                 </div>
                 <div class="product-details">
-                  <h3 class="product-name">{{ order.productName }}</h3>
-                  <p class="product-price">{{ order.totalAmount | currency:'EGP' }}</p>
+                  <h4 class="product-name">{{ order.productName }}</h4>
+                  <p class="product-description" *ngIf="order.isSwapOrder">
+                    <strong>تبادل منتجات:</strong> هذا الطلب جزء من عملية تبادل
+                  </p>
+                  <div class="customer-info">
+                    <p><strong>المشتري:</strong> {{ order.buyerName || 'غير محدد' }}</p>
+                  </div>
                 </div>
               </div>
 
-              <div class="customer-info">
-                <div class="info-row">
-                  <span class="info-label">العميل:</span>
-                  <span class="info-value">{{ order.buyerName }}</span>
+              <div class="order-details">
+                <div class="detail-row">
+                  <span class="detail-label">المبلغ الإجمالي:</span>
+                  <span class="detail-value amount">{{ order.totalAmount | currency:'EGP':'symbol':'1.2-2' }}</span>
                 </div>
-                <div class="info-row">
-                  <span class="info-label">الهاتف:</span>
-                  <span class="info-value">{{ order.buyerPhone }}</span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">العنوان:</span>
-                  <span class="info-value">{{ order.address }}, {{ order.city }}</span>
-                </div>
+
+                <!-- Swap (exchange): show two parties names + their respective products only -->
+                <ng-container *ngIf="order.isSwapOrder; else normalOrderDetails">
+                  <div class="detail-row">
+                    <span class="detail-label">العميل 1:</span>
+                    <span class="detail-value">{{ order.party1Name || order.recipientName || order.buyerName || 'غير محدد' }}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">المنتج (1):</span>
+                    <span class="detail-value">{{ order.party1Product || order.productName || 'غير محدد' }}</span>
+                  </div>
+                  <div class="detail-row" *ngIf="order.party2Name || order.otherOrderId">
+                    <span class="detail-label">العميل 2:</span>
+                    <span class="detail-value">{{ order.party2Name || 'غير محدد' }}</span>
+                  </div>
+                  <div class="detail-row" *ngIf="order.party2Product || order.otherOrderId">
+                    <span class="detail-label">المنتج (2):</span>
+                    <span class="detail-value">{{ order.party2Product || 'غير محدد' }}</span>
+                  </div>
+                </ng-container>
+
+                <!-- Normal orders: keep full address details unchanged -->
+                <ng-template #normalOrderDetails>
+                  <div class="detail-row">
+                    <span class="detail-label">اسم المستلم:</span>
+                    <span class="detail-value">{{ order.recipientName || order.buyerName || 'غير محدد' }}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">العنوان:</span>
+                    <span class="detail-value">{{ order.address || (order.recipientName ? '—' : 'غير محدد') }}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">المدينة:</span>
+                    <span class="detail-value">{{ order.city || (order.recipientName ? '—' : 'غير محدد') }}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">رقم الهاتف:</span>
+                    <span class="detail-value">{{ order.phoneNumber || order.buyerPhone || 'غير محدد' }}</span>
+                  </div>
+                </ng-template>
               </div>
             </div>
 

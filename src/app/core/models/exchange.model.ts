@@ -9,16 +9,20 @@ export interface ExchangeRequest {
   offeredProductId: number
   status: ExchangeStatus
   message: string
+  responseMessage?: string
   createdAt: Date
-  requestedProduct: IProduct
-  offeredProduct: IProduct
-  requester: IUser
-  owner: IUser
+  requestedProduct?: IProduct
+  offeredProduct?: IProduct
+  requester?: IUser
+  owner?: IUser
+  // Newly added optional order ids returned after approval
+  orderForOfferedProductId?: number
+  orderForRequestedProductId?: number
 }
 
 export enum ExchangeStatus {
   Pending = "Pending",
-  Approved = "Approved",
+  Accepted = "Accepted",
   Rejected = "Rejected",
 }
 

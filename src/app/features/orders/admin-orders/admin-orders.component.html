@@ -128,13 +128,13 @@
                   <select
                     class="form-select mt-2"
                     [(ngModel)]="order.status"
-                    (ngModelChange)="updateOrderStatus(order, $event)"
+                    (ngModelChange)="updateOrderStatus(order.id, $event)"
                   >
                     <option value="" disabled>Change Status</option>
                     <option value="Pending">Pending</option>
-                    <option value="Confirmed">Confirmed</option>
+                    <option value="Paid">Paid</option>
                     <option value="Shipped">Shipped</option>
-                    <option value="Delivered">Delivered</option>
+                    <option value="Completed">Completed</option>
                     <option value="Cancelled">Cancelled</option>
                   </select>
                 </div>
