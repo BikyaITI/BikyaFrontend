@@ -1,6 +1,7 @@
 /**
  * Utility functions for handling images in the application
  */
+import { environment } from '../../../environments/environment';
 
 export const ImageUtils = {
   /**
@@ -42,6 +43,9 @@ export const ImageUtils = {
     if (!url) return this.getPlaceholderImage();
     if (url.startsWith('http')) return url;
     if (url.startsWith('data:')) return url;
-    return url; // Assuming the API returns full URLs
+    // Prefix API base URL when backend returns relative paths like "/Images/..."
+    const base = environment.apiUrl?.replace(/\/$/, '') || '';
+    const path = url.startsWith('/') ? url : `/${url}`;
+    return `${base}${path}`;
   }
 };

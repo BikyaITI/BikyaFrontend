@@ -31,17 +31,35 @@ import { Collapse } from 'bootstrap';
         <div  #navbarCollapse class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto ">
             <li class="nav-item">
-              <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">   <i class="fas fa-home me-2 pl-2"></i>Home</a>
+              <a class="nav-link d-flex align-items-center gap-2" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+              </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" routerLink="/products" routerLinkActive="active"> <i class="fas fa-shopping-bag me-2"></i>Products</a>
+              <a class="nav-link d-flex align-items-center gap-2" routerLink="/products" routerLinkActive="active">
+                <i class="fas fa-shopping-bag"></i>
+                <span>Products</span>
+              </a>
             </li>
              <li class="nav-item">
-              <a class="nav-link" routerLink="/allcategories" routerLinkActive="active">   <i class="fas fa-th-large me-2"></i>Categories</a>
+              <a class="nav-link d-flex align-items-center gap-2" routerLink="/allcategories" routerLinkActive="active">
+                <i class="fas fa-th-large"></i>
+                <span>Categories</span>
+              </a>
             </li>
             <li class="nav-item" *ngIf="currentUser">
-              <a class="nav-link" routerLink="/dashboard" routerLinkActive="active"
-              (click)="goToDashboard()"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+              <a class="nav-link d-flex align-items-center gap-2" routerLink="/dashboard" routerLinkActive="active"
+              (click)="goToDashboard()">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item" *ngIf="currentUser">
+              <a class="nav-link d-flex align-items-center gap-2" routerLink="/exchange" routerLinkActive="active">
+                <i class="bi bi-arrow-left-right"></i>
+                <span>Exchange</span>
+              </a>
             </li>
           </ul>
   <!-- Right Side Actions -->
@@ -128,8 +146,7 @@ import { Collapse } from 'bootstrap';
   styles: [`
     .dropdown-menu.show {
       display: block !important;
-    }import { WishListService } from './../../../core/services/wish-list.service';
-
+    }
   `]
 })
 export class NavbarComponent implements OnInit, AfterViewInit {

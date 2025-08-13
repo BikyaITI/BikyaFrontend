@@ -8,6 +8,7 @@ import { ProductService } from '../../../core/services/product.service';
 import { ApiResponse } from '../../../core/models/api-response.model';
 import { IProduct } from '../../../core/models/product.model';
 import { first } from 'rxjs/operators';
+import { ImageUtils } from '../../../core/utils/image.utils';
 
 @Component({
   selector: 'app-exchange-list',
@@ -135,7 +136,8 @@ export class ExchangeListComponent implements OnInit {
       return 'assets/images/placeholder-product.svg';
     }
     const mainImage = product.images.find((img: any) => img.isMain);
-    return mainImage?.imageUrl || product.images[0]?.imageUrl || 'assets/images/placeholder-product.svg';
+    const url = mainImage?.imageUrl || product.images[0]?.imageUrl;
+    return ImageUtils.getImageUrl(url);
   }
 
   async approveRequest(request: ExchangeRequest): Promise<void> {
