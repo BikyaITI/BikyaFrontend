@@ -15,11 +15,15 @@ import { IReview } from '../../core/models/ireview';
   styleUrl: './review.component.scss'
 })
 export class ReviewComponent  {
- sellerId = input<number | undefined>();
+  sellerId = input<number | undefined>();
 
   reviews: IReview[] = [];
+  paginatedReviews: IReview[] = [];
   isLoading = false;
   errorMessage = '';
+
+  currentPage: number = 1;
+  itemsPerPage: number = 1; // كل مرة نعرض ريفيو واحد بس (السلايدر)
 
   constructor(private reviewService: ReviewService) {
     effect(() => {
@@ -35,6 +39,8 @@ export class ReviewComponent  {
     this.reviewService.getReviewsBySellerId(sellerId).subscribe({
       next: (res) => {
         this.reviews = res.data || [];
+        this.currentPage = 1;          
+        this.paginateReviews();        
         this.isLoading = false;
       },
       error: () => {
@@ -42,6 +48,30 @@ export class ReviewComponent  {
         this.isLoading = false;
       }
     });
+  }
+  
+  get totalPages(): number {
+    return Math.ceil(this.reviews.length / this.itemsPerPage);
+  }
+
+  prevR() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.paginateReviews();
+    }
+  }
+
+  nextR() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.paginateReviews();
+    }
+  }
+
+  paginateReviews() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedReviews = this.reviews.slice(startIndex, endIndex);
   }
 }
 

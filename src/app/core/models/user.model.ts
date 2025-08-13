@@ -1,3 +1,6 @@
+import { IReview } from "./ireview"
+import { IProduct } from "./product.model"
+
 export interface IUser {
   id: number
   userName: string
@@ -56,9 +59,29 @@ export interface IChangePasswordRequest {
   ConfirmNewPassword: string
 }
 
-export interface IUserStats {
+export interface UserStats {
   totalProducts: number;
   totalOrders: number;
   totalSales: number;
+  avrageReating: number;  
 }
 
+export interface ApiResponse<T> {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: T | null;
+  errors: string[] | null;
+  timestamp?: string;
+  path?: string | null;
+}
+
+export interface PublicUserProfile {
+  fullName: string | "Bikya User";
+  profileImageUrl?: string;
+  productCount?: number;
+  salesCount?: number;
+  averageRating?: number;
+  reviews?: IReview[];
+  productsForSale?: IProduct[];
+}

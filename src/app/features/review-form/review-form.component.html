@@ -1,9 +1,26 @@
-<div class="card shadow-sm p-4 rounded-4 border-0 w-50">
+<div *ngIf="!reviewSubmitted" class="card shadow-sm p-4 rounded-4 border-0 ">
   <h4 class="mb-4 text-muted">
-     Leave a Review
+    Leave a Review
   </h4>
 
   <form [formGroup]="reviewForm" (ngSubmit)="submitReview()">
+
+    <!-- hidden fields -->
+    <input type="hidden" formControlName="reviewerId">
+    <input type="hidden" formControlName="sellerId">
+    <input type="hidden" formControlName="orderId">
+
+    <!-- Order ID (manual input) -->
+    <div class="mb-3">
+      <label for="orderId" class="form-label fw-semibold">Order ID</label>
+      <input type="number" id="orderId" class="form-control rounded-3 shadow-sm" formControlName="orderId"
+        placeholder="Enter your order number" />
+      <div *ngIf="reviewForm.get('orderId')?.touched && reviewForm.get('orderId')?.invalid"
+        class="form-text text-danger">
+        Please enter a valid order number.
+      </div>
+    </div>
+
     <!-- ⭐ Rating -->
     <div class="mb-3">
       <label for="rating" class="form-label fw-semibold">⭐ Rating</label>
@@ -19,14 +36,10 @@
     <!-- 💬 Comment -->
     <div class="mb-3">
       <label for="comment" class="form-label fw-semibold">💬 Comment</label>
-      <textarea
-        class="form-control rounded-3 shadow-sm"
-        id="comment"
-        rows="4"
-        formControlName="comment"
-        placeholder="Share your experience..."
-      ></textarea>
-      <div *ngIf="reviewForm.get('comment')?.touched && reviewForm.get('comment')?.invalid" class="form-text text-danger">
+      <textarea class="form-control rounded-3 shadow-sm" id="comment" rows="4" formControlName="comment"
+        placeholder="Share your experience..."></textarea>
+      <div *ngIf="reviewForm.get('comment')?.touched && reviewForm.get('comment')?.invalid"
+        class="form-text text-danger">
         Comment is required and should not exceed 500 characters.
       </div>
     </div>
@@ -39,4 +52,8 @@
       </button>
     </div>
   </form>
+</div>
+
+<div *ngIf="reviewSubmitted" class="alert alert-success p-4 rounded-4">
+  Thank you for your review!
 </div>

@@ -399,4 +399,8 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
+  isMyProduct(): boolean | null {
+  return this.currentUser && this.product && this.product.userId === this.currentUser.id;
+}
+
 }

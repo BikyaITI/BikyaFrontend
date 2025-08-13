@@ -8,7 +8,7 @@ import { IProduct } from "../../core/models/product.model"
 import { ReviewService } from "../../core/services/review.service"
 import { Router } from "@angular/router"
 import { ReviewComponent } from "../review/review.component"
-import { IUser, IUserStats, IUpdateProfileRequest, IChangePasswordRequest } from "../../core/models/user.model"
+import { IUser, UserStats, IUpdateProfileRequest, IChangePasswordRequest } from "../../core/models/user.model"
 import { filter, take } from 'rxjs/operators';
 import { ToastrService } from "ngx-toastr"
 
@@ -45,12 +45,18 @@ export class ProfileComponent implements OnInit {
   deactiveSuccessMessage =""
   deactiveErrorMessage =""
   
-  userStats: IUserStats = {
+  userStats: UserStats = {
   totalProducts: 0,
   totalOrders: 0,
-  totalSales: 0
+  totalSales: 0,
+  avrageReating: 0
 };
-
+ stats = {
+    totalProducts: 0,
+    totalOrders: 0,
+    pendingOrders: 0,
+    walletBalance: 247.85,
+  }
 
   constructor(
     private fb: FormBuilder,
@@ -76,24 +82,46 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
   this.authService.currentUser$
     .pipe(
-      filter((user): user is IUser => user !== null), // ⛔ تجاهل null
-      take(1) // ✅ خد أول قيمة حقيقية فقط
+      filter((user): user is IUser => user !== null),
+      take(1)
     )
     .subscribe((user) => {
       this.currentUser = user;
+
       this.profileForm.patchValue({
         fullName: user.fullName,
         email: user.email,
-        phone:user.phone
-        
+        phone: user.phone,
       });
-     this.previewUrl = user?.profileImageUrl || null;
-      console.log(`User ID: ${user.id}`);
+
+      this.previewUrl = user.profileImageUrl || null; // هنا نحدث المتغير مباشرة
+
       this.cdr.detectChanges();
+
       this.loadUserStats();
-      this.loadAverageRating();
+
+      this.authService.getProfile().subscribe({
+        next: (profile) => {
+          this.currentUser = { ...this.currentUser, ...profile.data };
+
+          this.profileForm.patchValue({
+            fullName: this.currentUser.fullName,
+            email: this.currentUser.email,
+            phone: this.currentUser.phone,
+          });
+
+          this.previewUrl = this.currentUser.profileImageUrl || null; // تحديث المتغير
+
+          console.log(`Updated Current User Image URL: ${this.previewUrl}`);
+          this.cdr.detectChanges();  // تأكد من تحديث العرض
+        },
+        error: (err) => {
+          console.error('Failed to load user profile:', err);
+        },
+      });
     });
-  }
+}
+
 
  // ✅ التحقق من تطابق كلمة السر
   passwordMatchValidator(form: AbstractControl): ValidationErrors | null {
@@ -225,28 +253,11 @@ loadUserStats(): void {
     },
     error: (err) => {
       console.error('Error loading user stats', err);
-      this.userStats = { totalProducts: 0, totalOrders: 0, totalSales: 0 };
+      this.userStats = { totalProducts: 0, totalOrders: 0, totalSales: 0, avrageReating:0 };
     }
   });
 }
 
-
-loadAverageRating(): void {
-  if (!this.currentUser) {
-    console.error('User not loaded');
-    return;
-  }
-
-  this.reviewService.getAverageRating(this.currentUser.id).subscribe({
-    next: (res) => {
-      this.averageRating = res.data ?? 0; // لو مفيش داتا، خليه 0
-    },
-    error: (err) => {
-      console.error('Failed to load rating', err);
-      this.averageRating = 0;
-    }
-  });
-}
  onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {

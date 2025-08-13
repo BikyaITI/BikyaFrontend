@@ -41,7 +41,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api-response.model';
-import { IChangePasswordRequest, IUpdateProfileRequest, IUser, IUserStats } from '../models/user.model';
+import { IChangePasswordRequest, IUpdateProfileRequest, IUser, PublicUserProfile, UserStats } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -81,6 +81,10 @@ export class UserService {
     return this.http.get<ApiResponse<IUser>>(`${this.baseUrl}/status`);
   }
 
+   getUserStats(userId: number): Observable<ApiResponse<UserStats>> {
+    const url = `${this.baseUrl}/${userId}/stats`;
+    return this.http.get<ApiResponse<UserStats>>(url);
+  }
   // Logout current user
   logout(): Observable<ApiResponse<any>> {
     return this.http.post<ApiResponse<any>>(`${this.baseUrl}/logout`, {});
@@ -110,17 +114,13 @@ export class UserService {
     return this.deactivateAccount();
   }
 
-  // This method would need to be implemented based on available data
-  getUserStats(userId: number): Observable<ApiResponse<IUserStats>> {
-    // This endpoint doesn't exist in the backend, so we'll need to calculate stats from other endpoints
-    // For now, return a placeholder implementation
-    return this.http.get<ApiResponse<IUserStats>>(`${this.baseUrl}/stats/${userId}`);
-  }
    uploadProfileImage(file: File) {
     const formData = new FormData();
     formData.append('imageFile', file);
 
-    return this.http.post<ApiResponse<string>>(`${this.baseUrl}/upload-profile-image`,formData
-);
+    return this.http.post<ApiResponse<string>>(`${this.baseUrl}/upload-profile-image`,formData);
+  }
+    getPublicProfile(userId: number): Observable<ApiResponse<PublicUserProfile>> {
+    return this.http.get<ApiResponse<PublicUserProfile>>(`${this.baseUrl}/public-profile/${userId}`);
   }
 }

@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { ReviewService } from '../../core/services/review.service';
 import { ToastrService } from 'ngx-toastr';
 import { ICreateReview } from '../../core/models/ireview';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-review-form',
@@ -12,45 +13,61 @@ import { ICreateReview } from '../../core/models/ireview';
   styleUrl: './review-form.component.scss'
 })
 export class ReviewFormComponent {
-
-
-   @Input() sellerId!: number;
+  @Input() sellerId!: number;
   @Input() orderId!: number;
 
   reviewForm: FormGroup;
   isSubmitting = false;
+  reviewSubmitted = false;
 
   constructor(
     private fb: FormBuilder,
     private reviewService: ReviewService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private authService: AuthService // نفترض إنك بتجيبي بيانات اليوزر من هنا
   ) {
     this.reviewForm = this.fb.group({
       rating: [null, Validators.required],
       comment: ['', [Validators.required, Validators.maxLength(500)]],
+       orderId: [null, [Validators.required, Validators.min(1)]],
     });
   }
 
-  submitReview() {
-    if (this.reviewForm.invalid || !this.sellerId || !this.orderId) return;
+ submitReview() {
+  if (this.reviewForm.invalid || !this.sellerId || !this.orderId) return;
+  this.isSubmitting = true;
+  const currentUser = this.authService.getCurrentUser();
 
-    const payload: ICreateReview = {
-      ...this.reviewForm.value,
-      sellerId: this.sellerId,
-      orderId: this.orderId,
-    };
-
-    this.isSubmitting = true;
-
-    this.reviewService.createReview(payload).subscribe({
-      next: () => {
-        this.toastr.success('Review submitted successfully!');
-        this.reviewForm.reset();
-      },
-      error: () => this.toastr.error('Failed to submit review'),
-      complete: () => (this.isSubmitting = false),
-    });
+  if (!currentUser) {
+    this.toastr.error('You must be logged in to submit a review.');
+    return;
   }
+
+  const payload: ICreateReview = {
+    rating: this.reviewForm.value.rating,
+    comment: this.reviewForm.value.comment,
+    reviewerId: currentUser.id,
+    sellerId: this.sellerId,
+    orderId: this.reviewForm.value.orderId || this.orderId
+  };
+
+  this.isSubmitting = true;
+
+  this.reviewService.createReview(payload).subscribe({
+    next: () => {
+      this.toastr.success('Review submitted successfully!');
+      this.reviewForm.reset();
+      this.reviewSubmitted = true;
+    },
+    error: () => {
+    this.toastr.error('Failed to submit review');
+     this.isSubmitting = false;
+    }
+    ,
+    complete: () => (this.isSubmitting = false),
+  });
+}
+
 }
 
 

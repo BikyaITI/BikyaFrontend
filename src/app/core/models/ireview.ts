@@ -8,8 +8,8 @@ export interface IReview {
   reviewerId: number;
   sellerId: number;
   orderId: number;
-  reviewer: IApplicationUser;
-  seller: IApplicationUser;
+  buyerName: IApplicationUser;
+  sellsellerName: IApplicationUser;
 }
 
 // create-review.dto.ts

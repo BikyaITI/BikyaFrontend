@@ -167,6 +167,10 @@ export const routes: Routes = [
     loadComponent: () => import("./features/profile/change-password/change-password.component").then(m => m.ChangePasswordComponent),
     canActivate: [AuthGuard, DeliveryRestrictionGuard],
   },
+   {
+    path: "users/:userId",
+    loadComponent: () => import("./features/public-profile/public-profile.component").then((m) => m.PublicProfileComponent),
+  },
   // Admin Routes (Admin Only)
   {
     path: "admin",

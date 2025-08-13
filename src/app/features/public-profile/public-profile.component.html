@@ -1,57 +1,123 @@
-<div *ngIf="loading()" class="text-center my-5">
-    <div class="spinner-border text-primary"></div>
-</div>
-
-<div *ngIf="!loading() && profile()" class="container my-5">
-    <div class="row">
-        <!-- 🧍‍♂️ Left Side: User Information -->
-        <div class="col-md-4 text-center border-end">
-            <img [src]="profile()?.profileImageUrl || 'assets/default-profile.png'"
-                class="img-fluid rounded-circle mb-3 shadow" width="150" />
-            <h4 class="fw-bold">{{ profile()?.fullName }}</h4>
-
-            <div class="mt-4 text-start px-4">
-                <p><strong>Number of Products:</strong> {{ profile()?.productCount }}</p>
-                <p><strong>Number of Sales:</strong> {{ profile()?.salesCount }}</p>
-                <p>
-                    <strong>Average Rating:</strong>
-                    <span class="text-warning">
-                        <ng-container *ngFor="let star of [].constructor(5); let i = index">
-                            <i class="bi"
-                                [ngClass]="i < (profile()?.averageRating || 0) ? 'bi-star-fill' : 'bi-star'"></i>
-                        </ng-container>
-                    </span>
-                    <span class="ms-1">({{ profile()?.averageRating?.toFixed(1) || '0.0' }})</span>
-                </p>
-            </div>
+<div class="container mt-4">
+  <div class="row">
+    <!-- Sidebar (User Info) -->
+    <div class="col-md-4">
+      <div class="card shadow-sm text-center">
+        <div class="card-body">
+          <img [src]="profile.profileImageUrl || '/user.png'"
+               class="rounded-circle mb-3"
+               style="width: 120px; height: 120px; object-fit: cover;" />
+          <h4>{{ profile.fullName }}</h4>
+          <p class="text-muted">Seller Profile</p>
+          <div class="d-grid gap-2">
+            <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#reviewModal">
+              <i class="bi bi-star-fill"></i> Add Review
+            </button>
+          </div>
         </div>
+      </div>
 
-        <!-- 📦 Right Side: Products and Reviews -->
-        <div class="col-md-8">
-            <!-- 🛒 Products -->
-            <div>
-                <h5 class="mb-3">Available Products</h5>
-                <div class="row">
-                    <div class="col-lg-4 col-md-6 mb-4" *ngFor="let product of profile()?.productsForSale">
-                        <app-product-item [product]="product"></app-product-item>
-                    </div>
-                </div>
-                <div *ngIf="profile()?.productsForSale?.length === 0" class="text-muted text-center">
-                    No products available at the moment.
-                </div>
-            </div>
-
-            <!-- 💬 Reviews -->
-            <div class="mt-5">
-                <h5 class="mb-3">Reviews</h5>
-                <!-- <ng-container *ngIf="profile() as data">
-                    <app-review [reviews]="data.reviews ?? []"></app-review>
-                </ng-container> -->
-
-                <div *ngIf="profile()?.reviews?.length === 0" class="text-muted text-center">
-                    No reviews yet.
-                </div>
-            </div>
+      <!-- Stats -->
+      <div class="card shadow-sm mt-3">
+        <div class="card-header">
+          <h6 class="mb-0"><i class="bi bi-graph-up"></i> Seller Stats</h6>
         </div>
+        <div class="card-body text-center">
+          <div class="row">
+            <div class="col-6">
+              <h5 class="text-primary mb-0">{{ profile.productCount }}</h5>
+              <small>Products</small>
+            </div>
+            <div class="col-6">
+              <h5 class="text-warning mb-0">{{ profile.averageRating || 0 }}</h5>
+              <small>Average Rating</small>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- Main Content -->
+    <div class="col-md-8">
+      <!-- Products Section -->
+      <div class="card shadow-sm mb-3" *ngIf="profile?.productsForSale?.length">
+        <div class="card-header">
+          <h5><i class="bi bi-box"></i> Products for Sale</h5>
+        </div>
+ 
+       <div class="card-body">
+
+  <!-- لو مفيش منتجات -->
+  <div *ngIf="(profile?.productsForSale?.length ?? 0) === 0 && !loading" 
+       class="text-center text-muted py-4">
+    No products to show
+  </div>
+
+  <!-- لو فيه منتجات -->
+  <div *ngIf="(profile?.productsForSale?.length ?? 0) > 0">
+    <div class="row">
+
+      <div class="col-lg-4 col-md-6 mb-4"
+           *ngFor="let product of profile?.productsForSale 
+                      | slice:(currentPage * itemsPerPage):((currentPage + 1) * itemsPerPage)">
+        <app-product-list [product]="product" [role]="'user'"></app-product-list>
+      </div>
+
+    </div>
+
+    <!-- أزرار التنقل -->
+    <div class="d-flex justify-content-between mt-3">
+      <button class="btn btn-outline-primary" 
+              (click)="prevP()" 
+              [disabled]="currentPage === 0">
+        ‹ Prev
+      </button>
+      <button class="btn btn-outline-primary"
+              (click)="nextP()"
+              [disabled]="(currentPage + 1) * itemsPerPage >= (profile?.productsForSale?.length ?? 0)">
+        Next ›
+      </button>
+    </div>
+  </div>
+
+</div> 
+
+      <!-- Reviews Section -->
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h5><i class="bi bi-star-fill text-warning"></i> Reviews</h5>
+        </div>
+        <div class="card-body">
+          <app-review [sellerId]="userId"></app-review>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- Modal: Add Review -->
+ <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reviewModalLabel">Add Review</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- هنا تحطي component الفورم بتاعك -->
+        <app-review-form [sellerId]="userId" [orderId]="userId"></app-review-form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+

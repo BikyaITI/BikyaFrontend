@@ -1,28 +1,51 @@
-<div *ngIf="isLoading" class="text-center py-4">
+<!-- Loading Spinner -->
+<div *ngIf="isLoading" class="text-center py-4 w-75">
   <div class="spinner-border text-primary" role="status"></div>
 </div>
 
-<div *ngIf="!isLoading && reviews.length > 0; else noReviews">
-  <div class="row g-3">
-    <div class="col-md-6" *ngFor="let review of reviews">
-      <div class="card shadow-sm h-100">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <strong>{{ review.reviewer.fullName }}</strong>
-            <span class="text-warning">
-              <ng-container *ngFor="let star of [].constructor(review.rating)">
-                <i class="bi bi-star-fill"></i>
-              </ng-container>
-            </span>
-          </div>
-          <p class="mb-1">{{ review.comment }}</p>
-          <small class="text-muted">{{ review.createdAt | date: 'short' }}</small>
+<!-- عرض الريفيوهات كسلايدر -->
+<div *ngIf="!isLoading && paginatedReviews.length > 0">
+  <div class="card custom-shadow mb-4">
+    <div class="card-body">
+      <div class="d-flex align-items-center mb-2">
+        <img 
+          [src]="paginatedReviews[0].buyerName?.profileImageUrl || 'user.png'" 
+          alt="User avatar" 
+          class="rounded-circle me-2"
+          width="40" height="40">
+        <div class="flex-grow-1 d-flex justify-content-between align-items-center">
+          <strong>{{ paginatedReviews[0].buyerName }}</strong>
+          <span class="text-warning">
+            <ng-container *ngFor="let star of [].constructor(paginatedReviews[0].rating)">
+              <i class="bi bi-star-fill"></i>
+            </ng-container>
+          </span>
         </div>
+      </div>
+      <div class="text-start">
+        <p class="mb-1">{{ paginatedReviews[0].comment }}</p>
+        <small class="text-muted">{{ paginatedReviews[0].createdAt | date: 'short' }}</small>
       </div>
     </div>
   </div>
+
+  <!-- أزرار التنقل -->
+  <div class="d-flex justify-content-between mt-3  mx-auto">
+  <button class="btn btn-outline-primary" 
+          (click)="prevR()" 
+          [disabled]="currentPage === 1">
+    ‹ Prev
+  </button>
+  <button class="btn btn-outline-primary"
+          (click)="nextR()"
+          [disabled]="currentPage === totalPages">
+    Next ›
+  </button>
 </div>
 
-<ng-template #noReviews>
+</div>
+
+<!-- لا يوجد تقييمات -->
+<div *ngIf="!isLoading && reviews.length === 0" class="text-center py-4">
   <p class="text-muted">No reviews found.</p>
-</ng-template>
+</div>

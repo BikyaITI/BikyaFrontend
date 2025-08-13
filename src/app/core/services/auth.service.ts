@@ -45,6 +45,7 @@ export class AuthService {
             FullName: decoded?.fullName || decoded?.name || '',
             fullName: decoded?.fullName || decoded?.name || '',
             phone : decoded?.phone || '',
+            profileImageUrl: decoded?.profileImageUrl || null,
             isActive: true,
             createdAt: new Date(decoded?.iat * 1000),
             roles: decoded?.role ? [decoded.role] : decoded?.roles || []

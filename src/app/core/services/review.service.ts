@@ -10,7 +10,7 @@ import { IReview, ICreateReview, IUpdateReview } from '../models/ireview';
   providedIn: 'root'
 })
 export class ReviewService {
- private baseUrl = `${environment.apiUrl}/api/Reviews`; 
+ private baseUrl = `${environment.apiUrl}/api/Review/Reviews`; 
 
   constructor(private http: HttpClient) {}
 // Get all reviews for a seller

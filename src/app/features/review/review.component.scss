@@ -1,6 +1,37 @@
 .review-card {
-  background-color: #f4f4f4;
+  background-color: #d9d8cf;
   padding: 1rem;
   margin-bottom: 1rem;
   border-radius: 8px;
+}
+// .card.custom-shadow {
+//   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+// }
+.card.custom-shadow {
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+
+
+/* =======================
+   أزرار التنقل
+======================= */
+.d-flex button {
+  border-radius: 50px;
+  padding: 0.4rem 1.2rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  min-width: 90px;
+  transition: all 0.3s ease;
+}
+
+.d-flex button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.d-flex button:disabled {
+  background-color: #ccc !important;
+  color: #666 !important;
+  border: none;
+  cursor: not-allowed;
 }
