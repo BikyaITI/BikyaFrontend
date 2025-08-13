@@ -19,6 +19,7 @@ import { ProductService } from '../../../core/services/product.service';
 })
 export class CheckoutComponent implements OnInit {
   readonly SWAP_SHIPPING_FEE = 50;
+  readonly REGULAR_SHIPPING_FEE = 50; // رسوم الشحن للطلبات العادية
   isSwapOrder = false;
   orderId: number | null = null;
   getProductImage(): string {
@@ -158,12 +159,15 @@ export class CheckoutComponent implements OnInit {
   calculateTotal(): void {
     if (this.isSwapOrder) {
       this.totalAmount = this.SWAP_SHIPPING_FEE;
+      console.log('Swap order total:', this.totalAmount);
       return;
     }
-    this.totalAmount = this.product?.price && this.orderRequest.quantity
+    // للطلبات العادية: سعر المنتج × الكمية + رسوم الشحن
+    const subtotal = this.product?.price && this.orderRequest.quantity
       ? this.product.price * this.orderRequest.quantity
       : 0;
-    console.log('Total calculated:', this.totalAmount); // Debugging
+    this.totalAmount = subtotal + this.REGULAR_SHIPPING_FEE;
+    console.log('Regular order - Subtotal:', subtotal, 'Shipping fee:', this.REGULAR_SHIPPING_FEE, 'Total:', this.totalAmount);
   }
 
   onSubmit(): void {

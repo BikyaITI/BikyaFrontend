@@ -161,7 +161,14 @@ export class AdminOrdersComponent implements OnInit {
     }).subscribe({
       next: (response) => {
         if (response.success) {
-          this.toastr.success('Order status updated successfully');
+          let successMsg = 'Order status updated successfully';
+          
+          // إذا كان طلب تبادل وتم إكماله، أضف رسالة إضافية
+          if (newStatus === OrderStatus.Completed) {
+            successMsg += ' (Related order also updated if it\'s a swap order)';
+          }
+          
+          this.toastr.success(successMsg);
           this.loadOrders();
         } else {
           this.toastr.error('Failed to update order status');
