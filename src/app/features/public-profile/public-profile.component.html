@@ -4,13 +4,19 @@
     <div class="col-md-4">
       <div class="card shadow-sm text-center">
         <div class="card-body">
-          <img [src]="profile.profileImageUrl || '/user.png'"
-               class="rounded-circle mb-3"
-               style="width: 120px; height: 120px; object-fit: cover;" />
+          <img
+            [src]="profile.profileImageUrl || '/user.png'"
+            class="rounded-circle mb-3"
+            style="width: 120px; height: 120px; object-fit: cover"
+          />
           <h4>{{ profile.fullName }}</h4>
           <p class="text-muted">Seller Profile</p>
           <div class="d-grid gap-2">
-            <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#reviewModal">
+            <button
+              class="btn btn-outline-warning"
+              data-bs-toggle="modal"
+              data-bs-target="#reviewModal"
+            >
               <i class="bi bi-star-fill"></i> Add Review
             </button>
           </div>
@@ -29,7 +35,9 @@
               <small>Products</small>
             </div>
             <div class="col-6">
-              <h5 class="text-warning mb-0">{{ profile.averageRating || 0 }}</h5>
+              <h5 class="text-warning mb-0">
+                {{ profile.averageRating || 0 }}
+              </h5>
               <small>Average Rating</small>
             </div>
           </div>
@@ -44,80 +52,98 @@
         <div class="card-header">
           <h5><i class="bi bi-box"></i> Products for Sale</h5>
         </div>
- 
-       <div class="card-body">
 
-  <!-- لو مفيش منتجات -->
-  <div *ngIf="(profile?.productsForSale?.length ?? 0) === 0 && !loading" 
-       class="text-center text-muted py-4">
-    No products to show
-  </div>
-
-  <!-- لو فيه منتجات -->
-  <div *ngIf="(profile?.productsForSale?.length ?? 0) > 0">
-    <div class="row">
-
-      <div class="col-lg-4 col-md-6 mb-4"
-           *ngFor="let product of profile?.productsForSale 
-                      | slice:(currentPage * itemsPerPage):((currentPage + 1) * itemsPerPage)">
-        <app-product-list [product]="product" [role]="'user'"></app-product-list>
-      </div>
-
-    </div>
-
-    <!-- أزرار التنقل -->
-    <div class="d-flex justify-content-between mt-3">
-      <button class="btn btn-outline-primary" 
-              (click)="prevP()" 
-              [disabled]="currentPage === 0">
-        ‹ Prev
-      </button>
-      <button class="btn btn-outline-primary"
-              (click)="nextP()"
-              [disabled]="(currentPage + 1) * itemsPerPage >= (profile?.productsForSale?.length ?? 0)">
-        Next ›
-      </button>
-    </div>
-  </div>
-
-</div> 
-
-      <!-- Reviews Section -->
-      <div class="card shadow-sm">
-        <div class="card-header">
-          <h5><i class="bi bi-star-fill text-warning"></i> Reviews</h5>
-        </div>
         <div class="card-body">
-          <app-review [sellerId]="userId"></app-review>
+          <!-- لو مفيش منتجات -->
+          <div
+            *ngIf="(profile?.productsForSale?.length ?? 0) === 0 && !loading"
+            class="text-center text-muted py-4"
+          >
+            No products to show
+          </div>
+
+          <!-- لو فيه منتجات -->
+          <div *ngIf="(profile?.productsForSale?.length ?? 0) > 0">
+            <div class="row">
+              <div
+                class="col-lg-4 col-md-6 mb-4"
+                *ngFor="
+                  let product of profile?.productsForSale
+                    | slice
+                      : currentPage * itemsPerPage
+                      : (currentPage + 1) * itemsPerPage
+                "
+              >
+                <app-product-list
+                  [product]="product"
+                  [role]="'user'"
+                ></app-product-list>
+              </div>
+            </div>
+
+            <!-- أزرار التنقل -->
+            <div class="d-flex justify-content-between mt-3">
+              <button
+                class="btn btn-outline-primary"
+                (click)="prevP()"
+                [disabled]="currentPage === 0"
+              >
+                ‹ Prev
+              </button>
+              <button
+                class="btn btn-outline-primary"
+                (click)="nextP()"
+                [disabled]="
+                  (currentPage + 1) * itemsPerPage >=
+                  (profile.productsForSale?.length ?? 0)
+                "
+              >
+                Next ›
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="card shadow-sm">
+          <div class="card-header">
+            <h5><i class="bi bi-star-fill text-warning"></i> Reviews</h5>
+          </div>
+          <div class="card-body">
+            <app-review [sellerId]="userId"></app-review>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Review -->
+  <div
+    class="modal fade"
+    id="reviewModal"
+    tabindex="-1"
+    aria-labelledby="reviewModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="reviewModalLabel">Add Review</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <!-- هنا تحطي component الفورم بتاعك -->
+          <app-review-form
+            [sellerId]="userId"
+            [orderId]="userId"
+          ></app-review-form>
         </div>
       </div>
     </div>
   </div>
 </div>
-
-<!-- Modal: Add Review -->
- <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="reviewModalLabel">Add Review</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <!-- هنا تحطي component الفورم بتاعك -->
-        <app-review-form [sellerId]="userId" [orderId]="userId"></app-review-form>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-
-
-
-
-
-
-
-

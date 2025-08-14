@@ -5,11 +5,15 @@
   </p>
   <div *ngIf="!isSwapOrder" class="alert alert-info" role="alert">
     <i class="bi bi-info-circle me-2"></i>
-    <strong>Shipping Fee:</strong> A fixed shipping fee of {{ REGULAR_SHIPPING_FEE | currency:'EGP':'symbol':'1.2-2' }} will be added to your order.
+    <strong>Shipping Fee:</strong> A fixed shipping fee of
+    {{ REGULAR_SHIPPING_FEE | currency : "EGP" : "symbol" : "1.2-2" }} will be
+    added to your order.
   </div>
   <div *ngIf="isSwapOrder" class="alert alert-warning" role="alert">
     <i class="bi bi-arrow-repeat me-2"></i>
-    <strong>Exchange Order:</strong> This is an exchange order. Only shipping fee of {{ SWAP_SHIPPING_FEE | currency:'EGP':'symbol':'1.2-2' }} will be charged.
+    <strong>Exchange Order:</strong> This is an exchange order. Only shipping
+    fee of {{ SWAP_SHIPPING_FEE | currency : "EGP" : "symbol" : "1.2-2" }} will
+    be charged.
   </div>
 
   <!-- Error Message -->
@@ -145,16 +149,21 @@
               Quantity must be at least 1
             </div>
             <small class="text-muted" *ngIf="!isSwapOrder">
-              Price per item: {{ product?.price | currency:'EGP':'symbol':'1.2-2' }}
+              Price per item:
+              {{ product.price | currency : "EGP" : "symbol" : "1.2-2" }}
             </small>
           </div>
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <h5 class="text-primary mb-0">
-                Total: {{ totalAmount | currency:'EGP':'symbol':'1.2-2' }}
+                Total: {{ totalAmount | currency : "EGP" : "symbol" : "1.2-2" }}
               </h5>
               <small class="text-muted" *ngIf="!isSwapOrder">
-                Includes {{ REGULAR_SHIPPING_FEE | currency:'EGP':'symbol':'1.2-2' }} shipping fee
+                Includes
+                {{
+                  REGULAR_SHIPPING_FEE | currency : "EGP" : "symbol" : "1.2-2"
+                }}
+                shipping fee
               </small>
               <small class="text-muted" *ngIf="isSwapOrder">
                 Exchange order - shipping fee only
@@ -190,30 +199,37 @@
               Sold by: {{ product.userName || "Unknown Seller" }}
             </p>
             <p class="text-primary mb-0">
-              {{ product.price ? (product.price | currency:'EGP':'symbol':'1.2-2') : "0.00" }}
+              {{
+                product.price
+                  ? (product.price | currency : "EGP" : "symbol" : "1.2-2")
+                  : "0.00"
+              }}
             </p>
           </div>
         </div>
         <hr />
         <div class="d-flex justify-content-between">
           <span>Subtotal</span>
-          <span
-            >{{
-              product && product.price && orderRequest.quantity
-                ? (product.price * orderRequest.quantity | currency:'EGP':'symbol':'1.2-2')
-                : "0.00"
-            }}</span
-          >
+          <span>{{
+            product && product.price && orderRequest.quantity
+              ? (product.price * orderRequest.quantity
+                | currency : "EGP" : "symbol" : "1.2-2")
+              : "0.00"
+          }}</span>
         </div>
         <div class="d-flex justify-content-between mt-2">
           <span>Shipping Fee</span>
-          <span>{{ isSwapOrder ? SWAP_SHIPPING_FEE : REGULAR_SHIPPING_FEE | currency:'EGP':'symbol':'1.2-2' }}</span>
+          <span>{{
+            isSwapOrder
+              ? SWAP_SHIPPING_FEE
+              : (REGULAR_SHIPPING_FEE | currency : "EGP" : "symbol" : "1.2-2")
+          }}</span>
         </div>
         <div class="d-flex justify-content-between mt-2">
           <strong>Total</strong>
-          <strong class="text-primary"
-            >{{ totalAmount | currency:'EGP':'symbol':'1.2-2' }}</strong
-          >
+          <strong class="text-primary">{{
+            totalAmount | currency : "EGP" : "symbol" : "1.2-2"
+          }}</strong>
         </div>
       </div>
     </div>

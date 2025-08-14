@@ -17,6 +17,7 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class OrderListComponent implements OnInit {
   allOrders: Order[] = [];
+  filteredOrders: Order[] = []; // أضفنا array جديدة للعرض
   activeTab = 'all';
   isLoading = true;
   currentUser: IUser | null = null;
@@ -26,11 +27,10 @@ export class OrderListComponent implements OnInit {
     private orderService: OrderService,
     private authService: AuthService,
     private router: Router,
-    private toastr: ToastrService // Inject ToastrService for notifications
+    private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
-    // Subscribe to current user and load orders if user exists
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
       if (user) {
@@ -44,11 +44,13 @@ export class OrderListComponent implements OnInit {
 
     this.isLoading = true;
 
-    // Fetch orders for the current user
     this.orderService.getMyOrders(this.currentUser.id).subscribe({
       next: (response) => {
         if (response.success) {
           this.allOrders = response.data;
+          console.log('Loaded orders:', this.allOrders);
+          console.log('Completed orders:', this.allOrders.filter(order => order.status === OrderStatus.Completed));
+          this.filterOrdersByTab(); // فلتر الأوردارات حسب التب الحالي
         }
         this.isLoading = false;
       },
@@ -61,19 +63,27 @@ export class OrderListComponent implements OnInit {
 
   setActiveTab(tab: string): void {
     this.activeTab = tab;
+    this.filteredOrders = []; // نفضي اللي موجود قبل ما نعرض الجديد
+    this.filterOrdersByTab(); // فلتر الأوردارات حسب التب الجديد
   }
 
-  getFilteredOrders(): Order[] {
+  filterOrdersByTab(): void {
+    this.filteredOrders = []; // نفضي الـ array عشان يمسح اللي موجود
     switch (this.activeTab) {
       case 'pending':
-        return this.getPendingOrders();
+        this.filteredOrders = this.getPendingOrders();
+        break;
       case 'shipped':
-        return this.getShippedOrders();
+        this.filteredOrders = this.getShippedOrders();
+        break;
       case 'completed':
-        return this.getDeliveredOrders();
+        this.filteredOrders = this.getCompletedOrders();
+        break;
       default:
-        return this.allOrders;
+        this.filteredOrders = this.allOrders;
+        break;
     }
+    console.log(`Filtered orders for tab ${this.activeTab}:`, this.filteredOrders); // للتشخيص
   }
 
   getPendingOrders(): Order[] {
@@ -84,7 +94,7 @@ export class OrderListComponent implements OnInit {
     return this.allOrders.filter((order) => order.status === OrderStatus.Shipped);
   }
 
-  getDeliveredOrders(): Order[] {
+  getCompletedOrders(): Order[] {
     return this.allOrders.filter((order) => order.status === OrderStatus.Completed);
   }
 
@@ -129,7 +139,6 @@ export class OrderListComponent implements OnInit {
 
   viewOrderDetails(order: Order): void {
     this.isLoading = true;
-    // Fetch order details by ID
     this.orderService.getOrderById(order.id).subscribe({
       next: (res: any) => {
         this.isLoading = false;
@@ -162,12 +171,11 @@ export class OrderListComponent implements OnInit {
   }
 
   cancelOrder(order: Order): void {
-    // Confirm order cancellation
     if (confirm('Are you sure you want to cancel this order?')) {
       this.orderService.cancelOrder(order.id).subscribe({
         next: (response) => {
           if (response.success) {
-            this.loadOrders(); // Reload orders after cancellation
+            this.loadOrders();
             this.toastr.success('Order cancelled successfully');
           }
         },
@@ -180,5 +188,14 @@ export class OrderListComponent implements OnInit {
 
   payForOrder(order: Order): void {
     this.router.navigate(['/payment', order.id, order.totalAmount]);
+  }
+
+  leaveReview(order: Order): void {
+    console.log('Attempting to leave review for order:', order);
+    if (!order.seller?.id || !order.id) {
+      this.toastr.error('Invalid order or seller information');
+      return;
+    }
+    this.router.navigate(['/review', order.seller.id, order.id]);
   }
 }
