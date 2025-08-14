@@ -3,30 +3,31 @@ import { ActivatedRoute } from '@angular/router';
 import { CategoryService } from '../../core/services/category.service';
 import { CommonModule } from '@angular/common';
 import { IProduct } from '../../core/models/product.model';
+import { ProductService } from '../../core/services/product.service';
+import { ProductListComponent } from "../../shared/components/product-list/product-list.component";
 
 @Component({
   selector: 'app-category-details',
-  imports: [CommonModule],
-  templateUrl: './category-details.component.html',
+  imports: [CommonModule, ProductListComponent],
+templateUrl: './category-details.component.html',
   styleUrl: './category-details.component.scss'
 })
 export class CategoryDetailsComponent implements OnInit {
-  categoryName = '';
   products: IProduct[] = [];
   isLoading = true;
   errorMessage = '';
 
   constructor(
     private route: ActivatedRoute,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private productService: ProductService
   ) { }
 
   ngOnInit(): void {
     const id = +this.route.snapshot.paramMap.get('id')!;
-    this.categoryService.getByIdWithProducts(id).subscribe({
+    this.productService.getProductsByCategory(id).subscribe({
       next: (res) => {
-        this.categoryName = res.data.category.name;
-        this.products = res.data.products;
+        this.products = res.data;
 
         this.isLoading = false;
       },

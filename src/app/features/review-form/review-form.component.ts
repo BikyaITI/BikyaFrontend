@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ReviewService } from '../../core/services/review.service';
 import { ToastrService } from 'ngx-toastr';
 import { ICreateReview } from '../../core/models/ireview';
 import { AuthService } from '../../core/services/auth.service';
+import { Order, OrederReview } from '../../core/models/order.model';
 
 @Component({
   selector: 'app-review-form',
@@ -13,8 +14,9 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrl: './review-form.component.scss'
 })
 export class ReviewFormComponent {
-  @Input() sellerId!: number;
-  @Input() orderId!: number;
+ 
+  @Input() order!: OrederReview;
+  @Output() reviewDone = new EventEmitter<void>();
 
   reviewForm: FormGroup;
   isSubmitting = false;
@@ -27,14 +29,15 @@ export class ReviewFormComponent {
     private authService: AuthService // نفترض إنك بتجيبي بيانات اليوزر من هنا
   ) {
     this.reviewForm = this.fb.group({
+      
       rating: [null, Validators.required],
       comment: ['', [Validators.required, Validators.maxLength(500)]],
-       orderId: [null, [Validators.required, Validators.min(1)]],
+      
     });
   }
 
  submitReview() {
-  if (this.reviewForm.invalid || !this.sellerId || !this.orderId) return;
+  if (this.reviewForm.invalid || !this.order.sellerId || !this.order.id) return;
   this.isSubmitting = true;
   const currentUser = this.authService.getCurrentUser();
 
@@ -47,8 +50,8 @@ export class ReviewFormComponent {
     rating: this.reviewForm.value.rating,
     comment: this.reviewForm.value.comment,
     reviewerId: currentUser.id,
-    sellerId: this.sellerId,
-    orderId: this.reviewForm.value.orderId || this.orderId
+    sellerId: this.order.sellerId,
+    orderId:  this.order.id
   };
 
   this.isSubmitting = true;
@@ -58,10 +61,12 @@ export class ReviewFormComponent {
       this.toastr.success('Review submitted successfully!');
       this.reviewForm.reset();
       this.reviewSubmitted = true;
+      this.reviewDone.emit();
     },
     error: () => {
     this.toastr.error('Failed to submit review');
-     this.isSubmitting = false;
+      this.isSubmitting = false;
+  
     }
     ,
     complete: () => (this.isSubmitting = false),

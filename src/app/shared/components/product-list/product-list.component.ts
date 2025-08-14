@@ -1,6 +1,6 @@
 import { Component, EventEmitter, input, Output, OnInit } from '@angular/core';
 import { IProduct } from '../../../core/models/product.model';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import{environment} from '../../../../environments/environment';
 import { ProductService } from '../../../core/services/product.service';
@@ -20,9 +20,9 @@ export class ProductListComponent implements OnInit {
   role = input<string>();
   currentUser:IUser|null=null
   @Output() deleteClicked = new EventEmitter<void>();
+  @Output() notify = new EventEmitter<{ type: 'success' | 'error', message: string }>();
 
-
-  constructor(private productService: ProductService, private wishListService: WishListService,private authService:AuthService) {
+  constructor(private productService: ProductService, private wishListService: WishListService, private authService: AuthService, private router: Router,) {
 
     }
 
@@ -62,14 +62,25 @@ getMainImage(product: IProduct): string {
     }
     
   }
+      
 
-  buy(product: IProduct): void {
-    // Implement add to cart logic
+  buyNow(product: IProduct): void {
+    if (product.userId === this.currentUser?.id) {
+      this.notify.emit({ type: 'error', message: 'You cannot buy your own product.' });
+console.log("You cannot buy your own product.");
+      return;
+}
+console.log("buy now clicked")
+    // this.router.navigate(['/checkout']), { queryParams: { productId: product.id } };
+    this.router.navigate(['/checkout'], { queryParams: { productId: product.id } });
   }
 
   ToggleWishlist(product: IProduct): void {
     // Prevent adding own product to wishlist
-    if (this.currentUser?.id === product.userId) return;
+    if (this.currentUser?.id === product.userId) {
+      this.notify.emit({ type: 'error', message: 'You cannot add your own product to wishlist.' });
+      return;
+    }
     console.log("inside toggle")
     const action$ = product.isInWishlist
       ? this.wishListService.removefromWishlist(product.id)
@@ -89,5 +100,8 @@ getMainImage(product: IProduct): string {
    
   
 
- 
+  isMyProduct(): boolean | null {
+    console.log("isMyProduct called", this.currentUser?.id, this.product()!.id);
+    return this.currentUser && this.product && this.product()!.userId === this.currentUser?.id;
+  }
 }

@@ -117,9 +117,9 @@
           <div class="row">
             <div class="col-6">
               <strong>Category:</strong>
-              <span class="badge bg-light text-dark ms-2">{{
-                product.categoryName
-                }}</span>
+              <span class="badge bg-light text-dark ms-2">
+                 <a [routerLink]="['/category', product.categoryId]">  {{ product.categoryName }}</a>
+                </span>
             </div>
             <div class="col-6">
               <strong>Condition:</strong>

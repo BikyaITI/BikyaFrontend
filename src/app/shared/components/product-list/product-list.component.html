@@ -42,10 +42,13 @@
       <div class="product-info">
         <div class="d-flex justify-content-between mb-1">
           <span class="text-muted small">
-            <i class="fas fa-user"></i> {{ product()!.userName }}
+            <i class="fas fa-user"></i> 
+         <a [routerLink]="isMyProduct() ? '/profile' : ['/users', product()!.userId]">  {{ product()!.userName }}</a>
+            
           </span>
           <span class="text-muted small me-2">
-            <i class="fas fa-tag"></i> {{ product()!.categoryName }}
+            <i class="fas fa-tag"></i> 
+          <a [routerLink]="['/category', product()!.categoryId]">  {{ product()!.categoryName }}</a>
           </span>
         </div>
         <h4 class="product-title mb-0 flex-grow-1">{{ product()!.title }}</h4>
@@ -61,10 +64,13 @@
         </div>
 
         <!-- user action -->
+           <!-- [routerLink]="['/checkout']" [queryParams]="{ productId: product()!.id }" -->
         <button
           *ngIf="role() === 'user'"
           class="btn btn-primary btn-sm w-100 mt-2"
-        [routerLink]="['/checkout']" [queryParams]="{ productId: product()!.id }"
+          (click)="buyNow(product()!)"
+          [disabled]="!currentUser"
+         
         >
           <i class="bi bi-cart-plus"></i> Buy Now
         </button>

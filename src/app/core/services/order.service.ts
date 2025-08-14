@@ -63,6 +63,9 @@ export class OrderService {
   getOrdersByUser(userId: number): Observable<ApiResponse<Order[]>> {
     return this.http.get<ApiResponse<Order[]>>(`${this.API_URL}/user/${userId}`)
   }
+  getOrdersForReview(): Observable<ApiResponse<Order[]>> {
+    return this.http.get<ApiResponse<Order[]>>(`${this.API_URL}/ordersForReview`)
+  }
 
   // Get orders by buyer ID
   getOrdersByBuyer(buyerId: number): Observable<ApiResponse<Order[]>> {

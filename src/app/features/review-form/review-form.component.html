@@ -6,21 +6,35 @@
   <form [formGroup]="reviewForm" (ngSubmit)="submitReview()">
 
     <!-- hidden fields -->
-    <input type="hidden" formControlName="reviewerId">
-    <input type="hidden" formControlName="sellerId">
-    <input type="hidden" formControlName="orderId">
+  
 
-    <!-- Order ID (manual input) -->
-    <div class="mb-3">
-      <label for="orderId" class="form-label fw-semibold">Order ID</label>
-      <input type="number" id="orderId" class="form-control rounded-3 shadow-sm" formControlName="orderId"
-        placeholder="Enter your order number" />
-      <div *ngIf="reviewForm.get('orderId')?.touched && reviewForm.get('orderId')?.invalid"
-        class="form-text text-danger">
-        Please enter a valid order number.
-      </div>
+  <p class="text-muted mb-4">
+    You recently completed an order for 
+    <span class="fw-bold text-primary">{{ order.productTitle }}</span> 
+    from 
+    <span class="fw-bold text-success">
+      {{ order.sellerName }}
+    </span>.  
+    Share your experience to help others!
+  </p>
+
+  <!-- Optional: Visual separation -->
+  <div class="d-flex align-items-center gap-4 mb-3">
+    
+    <!-- Product -->
+    <div class="p-3 bg-light rounded-4 flex-fill text-center border">
+      <div class="small text-muted mb-1"> <i class="fas fa-shopping-bag"></i> Product</div>
+      <div class="fw-bold fs-6">{{ order.productTitle }}</div>
     </div>
 
+    <!-- Seller -->
+    <div class="p-3 bg-light rounded-4 flex-fill text-center border">
+      <div class="small text-muted mb-1"><i class="fas fa-user me-1"></i> Seller</div>
+      <div class="fw-bold fs-6 text-success">
+       {{ order.sellerName }}
+      </div>
+    </div>
+  </div>
     <!-- ⭐ Rating -->
     <div class="mb-3">
       <label for="rating" class="form-label fw-semibold">⭐ Rating</label>

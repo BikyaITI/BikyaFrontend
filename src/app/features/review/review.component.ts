@@ -4,7 +4,7 @@ import { ReviewService } from '../../core/services/review.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, DatePipe } from '@angular/common';
 
-import { Modal } from 'bootstrap';
+
 import { ToastrService } from 'ngx-toastr';
 import { IReview } from '../../core/models/ireview';
 

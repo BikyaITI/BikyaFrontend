@@ -12,7 +12,7 @@
    
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4" *ngIf="!isLoading && categories.length">
     <div class="col" *ngFor="let category of categories">
-      <a [routerLink]="['/categories', category.id]" class="text-decoration-none text-dark">
+      <a [routerLink]="['/category', category.id]" class="text-decoration-none text-dark">
       <div class="card category-card text-center h-100 shadow-sm">
         <div class="image-wrapper">
           <img 

@@ -5,21 +5,27 @@ import  { AuthService } from "../../core/services/auth.service"
 import  { ProductService } from "../../core/services/product.service"
 import  { OrderService } from "../../core/services/order.service"
 import  { IProduct} from "../../core/models/product.model"
-import  { Order } from "../../core/models/order.model"
+import  { Order, OrederReview } from "../../core/models/order.model"
 import { CategoryService } from "../../core/services/category.service"
 import { IUser } from "../../core/models/user.model"
 import { environment } from "../../../environments/environment"
+import { ReviewFormComponent } from "../review-form/review-form.component"
 
 @Component({
   selector: "app-dashboard",
   standalone: true,
-  imports: [CommonModule, RouterModule],
-  template: `
+  imports: [CommonModule, RouterModule, ReviewFormComponent],
+template: `
     <!-- Hero Section -->
     <section class="hero-section">
       <div class="container">
-        <div class="row align-items-center min-vh-75">
+        <div class="row align-items-center min-vh-75 ">
+                <div *ngIf="ordersNeedingReview.length > 0" class="alert alert-info">
+  You have {{ ordersNeedingReview.length }} orders waiting for your review.
+  <a  class="cursor-pointer" (click)="openModal(ordersNeedingReview[0])">Leave a review now</a>.
+</div>
           <div class="col-lg-6">
+      
             <div class="hero-content">
               <h1 class="display-4 fw-bold mb-4">Welcome back, {{currentUser?.fullName}}!</h1>
               <p class="lead mb-4">Here's what's happening with your account today. Manage your products, track orders, and explore new opportunities.</p>
@@ -223,6 +229,21 @@ import { environment } from "../../../environments/environment"
           </div>
         </div>
       </div>
+      <!-- Modal: Add Review -->
+ <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reviewModalLabel">Add Review</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- هنا تحطي component الفورم بتاعك -->
+        <app-review-form    *ngIf="selectedOrder" [order]="selectedOrder"  (reviewDone)="onReviewDone()"></app-review-form>
+      </div>
+    </div>
+  </div>
+</div>
     </section>
   `,
   styles: [
@@ -253,6 +274,8 @@ export class DashboardComponent implements OnInit {
   recentProducts: IProduct[] = []
   recentOrders: Order[] = []
   recentActivity: any[] = []
+  ordersNeedingReview: OrederReview[] = []
+  selectedOrder: OrederReview | undefined  = {} as OrederReview
 
   stats = {
     totalProducts: 0,
@@ -273,6 +296,7 @@ export class DashboardComponent implements OnInit {
       this.currentUser = user
       if (user) {
         this.loadDashboardData()
+        this.loadOrdersNeedingReview()
       }
     })
   }
@@ -339,6 +363,40 @@ export class DashboardComponent implements OnInit {
       },
     ]
   }
+  loadOrdersNeedingReview(): void { 
+    this.orderService.getOrdersForReview().subscribe({
+      next: (response:any) => {
+        if (response.success) {
+          this.ordersNeedingReview = [...response.data];
+        } 
+      },
+      error: (err:any) => {
+        console.error("Failed to load orders needing review", err);
+      },
+    })
+  }
+
+  openModal(order:OrederReview): void { 
+    // Set to undefined first to force destroy
+    this.selectedOrder = undefined;
+
+    // Delay a tick so Angular destroys the component
+    setTimeout(() => {
+      this.selectedOrder = order;
+      const modal = new (window as any).bootstrap.Modal(document.getElementById("reviewModal"));
+      modal.show();
+    });
+  }
+
+
+  // ngAfterViewInit() {
+  //   const modalEl = document.getElementById('reviewModal');
+  //   if (modalEl) {
+  //     modalEl.addEventListener('hidden.bs.modal', () => {
+  //       this.loadOrdersNeedingReview(); // Always refresh when modal closes
+  //     });
+  //   }
+  // }
 
 getMainImage(product: IProduct): string {
     const mainImage = product.images?.find((img) => img.isMain)
@@ -370,4 +428,11 @@ getMainImage(product: IProduct): string {
         return "bg-secondary"
     }
   }
+  onReviewDone() {
+    this.loadOrdersNeedingReview();
+   console.log("Review done,",this.ordersNeedingReview);
+  }
 }
+// dashboard: 1 Blocked aria - hidden on an element because its descendant retained focus.The focus must not be hidden from assistive technology users.Avoid using aria-hidden on a focused element or its ancestor.Consider using the inert attribute instead, which will also prevent focus.For more details, see the aria-hidden section of the WAI - ARIA specification at https://w3c.github.io/aria/#aria-hidden.
+// Element with focus: <button.btn-close >
+//   Ancestor with aria - hidden: <div.modal fade#reviewModal > 

@@ -50,3 +50,16 @@ export interface UpdateOrderStatusRequest {
   orderId: number;
   status: OrderStatus;
 }
+
+export interface OrederReview{
+id: number;
+productId: number;
+  productTitle: string;
+  buyerId: number;
+  buyerName: string;
+  sellerId: number;
+  sellerName: string;
+  status: OrderStatus;
+  createdAt: Date;
+  isSwapOrder?: boolean;
+}
