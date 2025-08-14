@@ -78,7 +78,7 @@ export const routes: Routes = [
     loadComponent: () => import("./features/profile/profile.component").then((m) => m.ProfileComponent),
     canActivate: [AuthGuard, DeliveryRestrictionGuard],
   },
-   {
+  {
     path: "payment/:orderId/:amount",
     loadComponent: () => import("./features/payment/payment.component").then((m) => m.PaymentComponent),
     canActivate: [AuthGuard, DeliveryRestrictionGuard],
@@ -142,6 +142,13 @@ export const routes: Routes = [
     loadComponent: () => import("./features/auth/verify-email/verify-email.component").then((m) => m.VerifyEmailComponent),
     canActivate: [DeliveryRestrictionGuard],
   },
+
+  {
+    path: "review/:sellerId/:orderId",
+    loadComponent: () => import("./features/review/review.component").then((m) => m.ReviewComponent),
+    canActivate: [DeliveryRestrictionGuard],
+  },
+
   {
     path: "forgot-password",
     loadComponent: () => import("./features/auth/forgot-password/forgot-password.component").then(m => m.ForgotPasswordComponent),
@@ -167,7 +174,7 @@ export const routes: Routes = [
     loadComponent: () => import("./features/profile/change-password/change-password.component").then(m => m.ChangePasswordComponent),
     canActivate: [AuthGuard, DeliveryRestrictionGuard],
   },
-   {
+  {
     path: "users/:userId",
     loadComponent: () => import("./features/public-profile/public-profile.component").then((m) => m.PublicProfileComponent),
   },

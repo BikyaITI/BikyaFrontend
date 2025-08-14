@@ -320,7 +320,12 @@ export class DeliveryDashboardComponent implements OnInit {
           console.log('✅ Order status updated successfully');
           
           const newStatusText = this.getStatusText(this.updateOrderStatusData.status);
-          const successMsg = `تم تحديث حالة الطلب #${this.selectedOrder?.id} إلى "${newStatusText}" بنجاح`;
+          let successMsg = `تم تحديث حالة الطلب #${this.selectedOrder?.id} إلى "${newStatusText}" بنجاح`;
+          
+          // إذا كان طلب تبادل وتم إكماله، أضف رسالة إضافية
+          if (this.selectedOrder?.isSwapOrder && this.updateOrderStatusData.status === 'Completed') {
+            successMsg += ' (تم تحديث الطلب المرتبط أيضاً)';
+          }
           
           this.successMessage = successMsg;
           this.toastr.success(successMsg, 'تم التحديث بنجاح');

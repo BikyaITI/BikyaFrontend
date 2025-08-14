@@ -202,7 +202,14 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
       next: (res: any) => {
         if (res.success) {
           order.status = newStatus;
-          this.toastr.success('Order status updated successfully');
+          let successMsg = 'Order status updated successfully';
+          
+          // إذا كان طلب تبادل وتم إكماله، أضف رسالة إضافية
+          if (order.isSwapOrder && newStatus === 'Completed') {
+            successMsg += ' (Related order also updated)';
+          }
+          
+          this.toastr.success(successMsg);
         } else {
           this.toastr.error('Failed to update order status');
         }
@@ -289,7 +296,7 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
     this.orderService.updateOrderStatus(updateRequest).subscribe({
       next: () => {
         this.isProcessing[id] = false;
-        this.toastr.success('Order completed successfully');
+        this.toastr.success('Order completed successfully (Related order also updated if it\'s a swap order)');
         this.loadOrders();
       },
       error: (err: any) => {

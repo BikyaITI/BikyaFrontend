@@ -32,17 +32,17 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   recentOrders: any[] = []
   isLoading = false;
   private refreshSubscription?: Subscription;
-  
+
   // Modal control
   showModal = false;
   currentChartType: 'users' | 'products' | 'categories' | 'orders' = 'users';
-  
+
   categoryService = inject(CategoryService)
   productService = inject(ProductService)
   orderService = inject(OrderService)
   adminUserService = inject(AdminUserService)
   toastr = inject(ToastrService)
-  
+
   products: IProduct[] = [];
 
   // تحسين إعدادات الشارت للطلبات
@@ -92,7 +92,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         displayColors: false,
         padding: 12,
         callbacks: {
-          label: function(context: any) {
+          label: function (context: any) {
             return `Orders: ${context.parsed.y}`;
           }
         }
@@ -120,7 +120,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           font: {
             size: 11
           },
-          callback: function(value: any) {
+          callback: function (value: any) {
             return Math.floor(Number(value));
           }
         }
@@ -191,7 +191,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         displayColors: false,
         padding: 12,
         callbacks: {
-          label: function(context: any) {
+          label: function (context: any) {
             return `Users: ${context.parsed.y}`;
           }
         }
@@ -220,7 +220,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           font: {
             size: 11
           },
-          callback: function(value: any) {
+          callback: function (value: any) {
             return Math.floor(Number(value));
           }
         }
@@ -287,7 +287,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         displayColors: false,
         padding: 12,
         callbacks: {
-          label: function(context: any) {
+          label: function (context: any) {
             return `Products: ${context.parsed.y}`;
           }
         }
@@ -316,7 +316,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           font: {
             size: 11
           },
-          callback: function(value: any) {
+          callback: function (value: any) {
             return Math.floor(Number(value));
           }
         }
@@ -383,7 +383,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         displayColors: false,
         padding: 12,
         callbacks: {
-          label: function(context: any) {
+          label: function (context: any) {
             return `Categories: ${context.parsed.y}`;
           }
         }
@@ -412,7 +412,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           font: {
             size: 11
           },
-          callback: function(value: any) {
+          callback: function (value: any) {
             return Math.floor(Number(value));
           }
         }
@@ -425,7 +425,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     console.log('AdminDashboardComponent: Initializing...'); // Debug
     this.loadDashboardData()
-    
+
     // Auto-refresh dashboard data every 30 seconds
     this.refreshSubscription = interval(30000).subscribe(() => {
       this.loadDashboardData();
@@ -510,7 +510,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   loadDashboardData(): void {
     this.isLoading = true;
-    
+
     // Load all data in parallel
     Promise.all([
       this.loadAllCategories(),
@@ -536,7 +536,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
             } else {
               this.categories = [];
             }
-            
+
             this.stats.totalCategories = this.categories.length;
 
             // تحليل التصنيفات حسب عدد المنتجات
@@ -655,7 +655,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   // تحليل التصنيفات حسب عدد المنتجات
   analyzeCategoriesByProductCount(categories: any[]): { labels: string[], data: number[] } {
     const categoryStats: { [key: string]: number } = {};
-    
+
     categories.forEach(category => {
       const categoryName = category.name || 'Unknown';
       const productCount = category.products?.length || 0;
@@ -671,7 +671,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   // تحليل المنتجات حسب التصنيف
   analyzeProductsByCategory(products: any[]): { labels: string[], data: number[] } {
     const categoryCount: { [key: string]: number } = {};
-    
+
     products.forEach(product => {
       const categoryName = product.category?.name || product.categoryName || 'Unknown';
       categoryCount[categoryName] = (categoryCount[categoryName] || 0) + 1;
@@ -686,7 +686,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   // تحليل الطلبات حسب الحالة
   analyzeOrdersByStatus(orders: any[]): { labels: string[], data: number[] } {
     const statusCount: { [key: string]: number } = {};
-    
+
     orders.forEach(order => {
       const status = order.status || 'Unknown';
       statusCount[status] = (statusCount[status] || 0) + 1;
@@ -705,7 +705,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       'Inactive': 0,
       'Banned': 0
     };
-    
+
     users.forEach(user => {
       if (user.isDeleted) {
         activityCount['Banned']++;
@@ -730,7 +730,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           this.recentProducts = res.data?.slice(0, 5).map((product: any) => {
             // The API returns product with user object containing FullName
             let userName = 'Unknown';
-            
+
             // Check if user object exists and has FullName
             if (product.user && product.user.FullName) {
               userName = product.user.FullName;
@@ -743,7 +743,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
             } else if (product.ownerName) {
               userName = product.ownerName;
             }
-            
+
             return {
               id: product.id,
               title: product.title,

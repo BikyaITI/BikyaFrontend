@@ -14,22 +14,28 @@ import { IReview } from '../../core/models/ireview';
   templateUrl: './review.component.html',
   styleUrl: './review.component.scss'
 })
-export class ReviewComponent  {
-  sellerId = input<number | undefined>();
-
+export class ReviewComponent {
+  sellerId: number | undefined;
+  orderId: number | undefined;
   reviews: IReview[] = [];
   paginatedReviews: IReview[] = [];
   isLoading = false;
   errorMessage = '';
-
   currentPage: number = 1;
-  itemsPerPage: number = 1; // كل مرة نعرض ريفيو واحد بس (السلايدر)
+  itemsPerPage: number = 1;
 
-  constructor(private reviewService: ReviewService) {
-    effect(() => {
-      const sid = this.sellerId();
-      if (sid) {
-        this.loadReviewsForSeller(sid);
+  constructor(
+    private reviewService: ReviewService,
+    private route: ActivatedRoute,
+    private toastr: ToastrService
+  ) { }
+
+  ngOnInit(): void {
+    this.route.paramMap.subscribe(params => {
+      this.sellerId = Number(params.get('sellerId'));
+      this.orderId = Number(params.get('orderId'));
+      if (this.sellerId) {
+        this.loadReviewsForSeller(this.sellerId);
       }
     });
   }
@@ -39,17 +45,18 @@ export class ReviewComponent  {
     this.reviewService.getReviewsBySellerId(sellerId).subscribe({
       next: (res) => {
         this.reviews = res.data || [];
-        this.currentPage = 1;          
-        this.paginateReviews();        
+        this.currentPage = 1;
+        this.paginateReviews();
         this.isLoading = false;
       },
       error: () => {
         this.errorMessage = 'Failed to load reviews.';
         this.isLoading = false;
+        this.toastr.error('Failed to load reviews.');
       }
     });
   }
-  
+
   get totalPages(): number {
     return Math.ceil(this.reviews.length / this.itemsPerPage);
   }
@@ -74,7 +81,6 @@ export class ReviewComponent  {
     this.paginatedReviews = this.reviews.slice(startIndex, endIndex);
   }
 }
-
 
 
 //   reviews: IReview[] = [];

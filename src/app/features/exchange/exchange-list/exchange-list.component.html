@@ -125,19 +125,15 @@
                   </button>
                 </div>
                 
-                <!-- After approval: show pay shipping buttons for each side -->
+                <!-- After approval: show pay shipping button (receiver side) -->
                 <div *ngIf="request.status === 'Accepted'" class="mt-3 d-flex flex-column gap-2">
-                  <!-- If you are the owner of the requestedProduct (receiver of offered product), go with orderForOfferedProductId -->
-                  <a *ngIf="request.status === 'Accepted' && currentUserId === request.requestedProduct?.userId && request.orderForOfferedProductId"
+                  <a *ngIf="request.orderForOfferedProductId"
                      class="btn btn-primary btn-sm"
                      [routerLink]="['/checkout']"
                      [queryParams]="{ orderId: request.orderForOfferedProductId }">
                     <i class="bi bi-bag-check me-1"></i>
                     إتمام بيانات الشحن لطلب التبادل
                   </a>
-
-                  <!-- If you are the owner of the offeredProduct (sender), use orderForRequestedProductId -->
-                
                 </div>
               </div>
             </div>
@@ -224,18 +220,15 @@
                   <p class="mb-0"><strong>رسالتك:</strong> {{request.message}}</p>
                 </div>
 
-                <!-- After approval in sent tab: show pay shipping buttons for the sender (offered product owner) -->
+                <!-- After approval in sent tab: show pay shipping (sender side) -->
                 <div *ngIf="request.status === 'Accepted'" class="mt-3 d-flex flex-column gap-2">
-                  <!-- Sender is owner of offeredProduct: go to checkout with existing order id (orderForRequestedProductId) -->
-                   <a *ngIf="request.status === 'Accepted' && currentUserId === request.offeredProduct?.userId && request.orderForRequestedProductId"
+                  <a *ngIf="request.orderForRequestedProductId"
                      class="btn btn-primary btn-sm"
                      [routerLink]="['/checkout']"
                      [queryParams]="{ orderId: request.orderForRequestedProductId }">
                     <i class="bi bi-bag-check me-1"></i>
                     إتمام الطلب عبر صفحة Checkout
                   </a>
-                  <!-- Receiver of offered product (owner of requestedProduct) -->
-            
                 </div>
 
                 <div *ngIf="request.status === 'Rejected' && request.responseMessage" class="mt-2">
