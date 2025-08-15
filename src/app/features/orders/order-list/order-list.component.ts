@@ -17,11 +17,15 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class OrderListComponent implements OnInit {
   allOrders: Order[] = [];
-  filteredOrders: Order[] = []; // أضفنا array جديدة للعرض
+  pendingOrders: Order[] = [];
+  shippedOrders: Order[] = [];
+  completedOrders: Order[] = [];
+  filteredOrders: Order[] = [];
   activeTab = 'all';
   isLoading = true;
   currentUser: IUser | null = null;
   selectedOrder: Order | null = null;
+  OrderStatus = OrderStatus;
 
   constructor(
     private orderService: OrderService,
@@ -47,10 +51,27 @@ export class OrderListComponent implements OnInit {
     this.orderService.getMyOrders(this.currentUser.id).subscribe({
       next: (response) => {
         if (response.success) {
-          this.allOrders = response.data;
+          this.allOrders = response.data.map((order: any) => ({
+            ...order,
+            product: order.product || { title: order.productTitle || 'Unknown Product' },
+            buyer: order.buyer || { fullName: order.buyerName || 'Unknown Buyer' },
+            seller: order.seller || { fullName: order.sellerName || 'Unknown Seller' },
+            status: order.status || 'Unknown',
+          }));
+          this.pendingOrders = this.allOrders.filter(
+            (order) => order.status === OrderStatus.Pending || order.status === 'Pending'
+          );
+          this.shippedOrders = this.allOrders.filter(
+            (order) => order.status === OrderStatus.Shipped || order.status === 'Shipped'
+          );
+          this.completedOrders = this.allOrders.filter(
+            (order) => order.status === OrderStatus.Completed || order.status === 'Completed' || order.status === 'completed'
+          );
           console.log('Loaded orders:', this.allOrders);
-          console.log('Completed orders:', this.allOrders.filter(order => order.status === OrderStatus.Completed));
-          this.filterOrdersByTab(); // فلتر الأوردارات حسب التب الحالي
+          console.log('Pending orders:', this.pendingOrders);
+          console.log('Shipped orders:', this.shippedOrders);
+          console.log('Completed orders:', this.completedOrders);
+          this.filterOrdersByTab();
         }
         this.isLoading = false;
       },
@@ -63,81 +84,86 @@ export class OrderListComponent implements OnInit {
 
   setActiveTab(tab: string): void {
     this.activeTab = tab;
-    this.filteredOrders = []; // نفضي اللي موجود قبل ما نعرض الجديد
-    this.filterOrdersByTab(); // فلتر الأوردارات حسب التب الجديد
+    console.log('Switching to tab:', this.activeTab);
+    this.filterOrdersByTab();
   }
 
   filterOrdersByTab(): void {
-    this.filteredOrders = []; // نفضي الـ array عشان يمسح اللي موجود
+    this.filteredOrders = [];
+    this.filteredOrders = this.getFilteredOrders();
+    console.log(`Filtered orders for tab ${this.activeTab}:`, this.filteredOrders);
+  }
+
+  getFilteredOrders(): Order[] {
     switch (this.activeTab) {
       case 'pending':
-        this.filteredOrders = this.getPendingOrders();
-        break;
+        return [...this.pendingOrders];
       case 'shipped':
-        this.filteredOrders = this.getShippedOrders();
-        break;
+        return [...this.shippedOrders];
       case 'completed':
-        this.filteredOrders = this.getCompletedOrders();
-        break;
+        return [...this.completedOrders];
       default:
-        this.filteredOrders = this.allOrders;
-        break;
+        return [...this.allOrders];
     }
-    console.log(`Filtered orders for tab ${this.activeTab}:`, this.filteredOrders); // للتشخيص
   }
 
-  getPendingOrders(): Order[] {
-    return this.allOrders.filter((order) => order.status === OrderStatus.Pending);
-  }
-
-  getShippedOrders(): Order[] {
-    return this.allOrders.filter((order) => order.status === OrderStatus.Shipped);
-  }
-
-  getCompletedOrders(): Order[] {
-    return this.allOrders.filter((order) => order.status === OrderStatus.Completed);
-  }
-
-  getStatusText(status: OrderStatus): string {
+  getStatusText(status: OrderStatus | string): string {
     switch (status) {
       case OrderStatus.Pending:
+      case 'Pending':
         return 'Pending';
       case OrderStatus.Paid:
+      case 'Paid':
         return 'Paid';
       case OrderStatus.Shipped:
+      case 'Shipped':
         return 'Shipped';
       case OrderStatus.Completed:
+      case 'Completed':
+      case 'completed':
         return 'Completed';
       case OrderStatus.Cancelled:
+      case 'Cancelled':
         return 'Cancelled';
       default:
         return 'Unknown';
     }
   }
 
-  getOrderStatusClass(status: OrderStatus): string {
+  getOrderStatusClass(status: OrderStatus | string): string {
     switch (status) {
       case OrderStatus.Pending:
+      case 'Pending':
         return 'bg-warning text-dark';
       case OrderStatus.Paid:
+      case 'Paid':
         return 'bg-info';
       case OrderStatus.Shipped:
+      case 'Shipped':
         return 'bg-primary';
       case OrderStatus.Completed:
+      case 'Completed':
+      case 'completed':
         return 'bg-success';
       case OrderStatus.Cancelled:
+      case 'Cancelled':
         return 'bg-danger';
       default:
         return 'bg-secondary';
     }
   }
 
+  isStatus(status: OrderStatus | string, expected: OrderStatus | string): boolean {
+    return status === expected || status === expected.toString();
+  }
+
   getProductImage(product: any): string {
     const mainImage = product?.images?.find((img: any) => img.isMain);
-    return mainImage?.imageUrl || '/placeholder.svg?height=80&width=80';
+    return mainImage?.imageUrl || 'https://via.placeholder.com/80?text=Product';
   }
 
   viewOrderDetails(order: Order): void {
+    this.selectedOrder = order;
     this.isLoading = true;
     this.orderService.getOrderById(order.id).subscribe({
       next: (res: any) => {
@@ -148,12 +174,12 @@ export class OrderListComponent implements OnInit {
             title: `Order Details - #${details.id}`,
             html: `
               <div class="text-start">
-                <p><strong>Product:</strong> ${details.productTitle}</p>
-                <p><strong>Buyer:</strong> ${details.buyerName}</p>
-                <p><strong>Seller:</strong> ${details.sellerName}</p>
-                <p><strong>Status:</strong> ${details.status}</p>
+                <p><strong>Product:</strong> ${details.productTitle || 'Unknown Product'}</p>
+                <p><strong>Buyer:</strong> ${details.buyerName || 'Unknown Buyer'}</p>
+                <p><strong>Seller:</strong> ${details.sellerName || 'Unknown Seller'}</p>
+                <p><strong>Status:</strong> ${this.getStatusText(details.status || 'Unknown')}</p>
                 <p><strong>Created At:</strong> ${new Date(details.createdAt).toLocaleString()}</p>
-                <p><strong>Total Amount:</strong> ${details.totalAmount}</p>
+                <p><strong>Total Amount:</strong> ${details.totalAmount || 'N/A'}</p>
               </div>
             `,
             icon: 'info',
