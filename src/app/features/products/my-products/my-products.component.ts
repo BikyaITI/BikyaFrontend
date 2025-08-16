@@ -57,10 +57,10 @@ export class MyProductsComponent implements OnInit {
       next: (response) => {
         if (response.success) {
           this.allProducts = response.data
-          this.approvedProducts = this.allProducts.filter((p) => p.isApproved && p.status !== "InProcess")
+          this.approvedProducts = this.allProducts.filter((p) => p.isApproved && p.status === "Available")
           this.pendingProducts = this.allProducts.filter((p) => !p.isApproved)
-          this.inProcessProducts = this.allProducts.filter((p) => p.status === "InProcess")
-          this.soldProducts = this.allProducts.filter((p) => p.status === "Sold" || p.status === "Traded")
+          this.inProcessProducts = this.allProducts.filter((p) => p.status === "InProcess" || p.status === "Trading")
+          this.soldProducts = this.allProducts.filter((p) => p.status === "Sold")
         }
         this.isLoading = false
       },

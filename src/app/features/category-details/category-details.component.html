@@ -11,7 +11,7 @@
 
   <!-- Main Content -->
   <div *ngIf="!isLoading && !errorMessage">
-    <h2 class="mb-4 text-center"> {{ categoryName }}</h2>
+    <h2 class="mb-4 text-center"> {{ products[0].categoryName }}</h2>
 
     <!-- No Products Message -->
     <div *ngIf="products.length === 0" class="alert alert-info text-center">
@@ -20,10 +20,10 @@
 
     <!-- Products Grid -->
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4" *ngIf="products.length > 0">
-      <div class="col" *ngFor="let product of products">
-        <div class="card h-100 shadow-sm border-0">
+       <div class="col-lg-3 col-md-6" *ngFor="let product of products">
+      <!--  <div class="card h-100 shadow-sm border-0">
           <img 
-            [src]="product.images" 
+            [src]="getImageUrl(product.image)" 
             class="card-img-top" 
             [alt]="product.title" 
             style="height: 200px; object-fit: cover;"
@@ -34,7 +34,8 @@
             <p class="text-primary fw-bold mt-auto">{{ product.price | currency }}</p>
           </div>
         </div>
-      </div>
+      </div> -->
+    <app-product-list [product]="product" [role]="'user'" ></app-product-list>
     </div>
   </div>
 </div>

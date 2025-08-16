@@ -49,6 +49,7 @@ itemsPerPage = 3;
       next: (res) => {
         if (res.success && res.data) {
           this.profile = res.data;
+          console.log('Profile loaded:', this.profile);
         } else {
           this.error = res.message || 'Could not load profile.';
         }

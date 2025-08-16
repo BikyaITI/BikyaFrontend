@@ -21,6 +21,8 @@ export class AllProductComponent implements OnInit {
   filteredProducts: IProduct[] = []
   categories: ICategory[] = []
   isLoading = true
+  alertMessage: string | null = null;
+  alertType: 'success' | 'error' = 'success';
 
   searchTerm = ""
   selectedCategoryIds: number[] = []
@@ -278,5 +280,15 @@ export class AllProductComponent implements OnInit {
     const end = start + this.itemsPerPage;
     return this.filteredProducts.slice(start, end);
   }
-  
+  handleNotification(event: { type: 'success' | 'error', message: string }) {
+
+    console.log('Notification received:', event);
+    this.alertMessage = event.message;
+    this.alertType = event.type;
+
+    // Auto-hide after 3s
+    setTimeout(() => {
+      this.alertMessage = null;
+    }, 3000);
+  }
 }

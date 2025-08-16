@@ -8,12 +8,14 @@ export interface Order {
   productId: number;
   quantity: number;
   totalAmount: number;
-  status: OrderStatus;
+  status: OrderStatus | string; // Changed
   createdAt: Date;
   product: IProduct;
   buyer: IUser;
   seller: IUser;
   shippingInfo?: ShippingInfo;
+  isSwapOrder?: boolean;
+  needReview: boolean; // Indicates if the order needs a review
 }
 
 export enum OrderStatus {
@@ -38,15 +40,25 @@ export interface CreateOrderRequest {
   buyerId: number;
   quantity: number;
   shippingInfo: ShippingInfo;
-  // When true, backend will treat order as swap (shipping fee only)
   isSwapOrder?: boolean;
-  // Explicit payment method for backend compatibility
   paymentMethod?: string;
-  // Optional idempotency key so backend can de-duplicate
   idempotencyKey?: string;
 }
 
 export interface UpdateOrderStatusRequest {
   orderId: number;
   status: OrderStatus;
+}
+
+export interface OrederReview{
+id: number;
+productId: number;
+  productTitle: string;
+  buyerId: number;
+  buyerName: string;
+  sellerId: number;
+  sellerName: string;
+  status: OrderStatus;
+  createdAt: Date;
+  isSwapOrder?: boolean;
 }

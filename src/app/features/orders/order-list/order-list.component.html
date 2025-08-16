@@ -27,7 +27,7 @@
         (click)="setActiveTab('pending')"
       >
         <i class="bi bi-clock text-warning"></i>
-        Pending ({{ getPendingOrders().length }})
+        Pending ({{ pendingOrders.length }})
       </button>
     </li>
     <li class="nav-item">
@@ -37,7 +37,7 @@
         (click)="setActiveTab('shipped')"
       >
         <i class="bi bi-truck text-info"></i>
-        Shipped ({{ getShippedOrders().length }})
+        Shipped ({{ shippedOrders.length }})
       </button>
     </li>
     <li class="nav-item">
@@ -47,7 +47,7 @@
         (click)="setActiveTab('completed')"
       >
         <i class="bi bi-check-circle text-success"></i>
-        Completed ({{ getCompletedOrders().length }})
+        Completed ({{ completedOrders.length }})
       </button>
     </li>
   </ul>
@@ -63,7 +63,6 @@
   <div *ngIf="!isLoading">
     <div class="row">
       <div class="col-12" *ngFor="let order of filteredOrders">
-        <!-- غيرنا من getFilteredOrders() إلى filteredOrders -->
         <div class="card mb-4 shadow-sm order-card">
           <div class="card-header bg-light">
             <div class="row align-items-center">
@@ -81,7 +80,7 @@
                   class="badge fs-6"
                   [class]="getOrderStatusClass(order.status)"
                 >
-                  {{ order.status }}
+                  {{ getStatusText(order.status) }}
                 </span>
               </div>
             </div>
@@ -96,21 +95,21 @@
                     [src]="getProductImage(order.product)"
                     class="rounded me-3"
                     style="width: 80px; height: 80px; object-fit: cover"
-                    [alt]="order.product.title"
+                     (error)="onImageError($event)"
                   />
                   <div class="flex-grow-1">
                     <h6 class="mb-1">{{ order.product.title }}</h6>
                     <p class="text-muted mb-1">
                       Sold by: {{ order.seller.fullName }}
                     </p>
-                    <div class="d-flex align-items-center">
+                    <!-- <div class="d-flex align-items-center">
                       <span class="text-primary fw-bold me-3">
                         ${{ order.product.price | number : "1.2-2" }}
                       </span>
                       <span class="text-muted">
                         Qty: {{ order.quantity }}
                       </span>
-                    </div>
+                    </div> -->
                   </div>
                 </div>
               </div>
@@ -132,9 +131,7 @@
                   </button>
 
                   <button
-                    *ngIf="
-                      order.status === 'Pending' || order.status === 'Paid'
-                    "
+                    *ngIf="isStatus(order.status, OrderStatus.Pending)"
                     class="btn btn-success btn-sm"
                     (click)="payForOrder(order)"
                   >
@@ -142,14 +139,14 @@
                   </button>
 
                   <button
-                    *ngIf="order.status === 'Shipped'"
+                    *ngIf="isStatus(order.status, OrderStatus.Shipped)"
                     class="btn btn-outline-info btn-sm"
                   >
                     <i class="bi bi-truck"></i> Track Order
                   </button>
 
                   <button
-                    *ngIf="order.status === 'Pending'"
+                    *ngIf="isStatus(order.status, OrderStatus.Pending)"
                     class="btn btn-outline-danger btn-sm"
                     (click)="cancelOrder(order)"
                   >
@@ -157,9 +154,9 @@
                   </button>
 
                   <button
-                    *ngIf="order.status === 'Completed'"
+                    *ngIf="isStatus(order.status, OrderStatus.Completed)&& order.needReview"
                     class="btn btn-outline-warning btn-sm"
-                    (click)="leaveReview(order)"
+                    (click)="openMadal(order!)"
                   >
                     <i class="bi bi-star"></i> Leave Review
                   </button>
@@ -252,7 +249,7 @@
                       class="badge"
                       [class]="getOrderStatusClass(selectedOrder.status)"
                     >
-                      {{ selectedOrder.status }}
+                      {{ getStatusText(selectedOrder.status) }}
                     </span>
                   </td>
                 </tr>
@@ -294,6 +291,7 @@
                 class="rounded"
                 style="width: 100px; height: 100px; object-fit: cover"
                 [alt]="selectedOrder.product.title"
+                (error)="onImageError($event)"
               />
             </div>
           </div>
@@ -307,6 +305,20 @@
             Close
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reviewModalLabel">Add Review</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- هنا تحطي component الفورم بتاعك -->
+        <app-review-form    *ngIf="selectedOrder" [order]="GetOrederForReview(selectedOrder)" (reviewDone)="onReviewDone()"></app-review-form>
       </div>
     </div>
   </div>

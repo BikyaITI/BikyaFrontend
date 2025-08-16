@@ -140,6 +140,10 @@ export class ExchangeListComponent implements OnInit {
     return ImageUtils.getImageUrl(url);
   }
 
+  onImageError(event: Event) {
+    (event.target as HTMLImageElement).src = 'product.png';
+  }
+
   async approveRequest(request: ExchangeRequest): Promise<void> {
     if (!request || !request.id) {
       this.toastr.warning('طلب تبادل غير صالح', 'خطأ');

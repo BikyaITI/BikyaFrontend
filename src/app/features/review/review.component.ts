@@ -4,7 +4,7 @@ import { ReviewService } from '../../core/services/review.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, DatePipe } from '@angular/common';
 
-import { Modal } from 'bootstrap';
+
 import { ToastrService } from 'ngx-toastr';
 import { IReview } from '../../core/models/ireview';
 
@@ -15,27 +15,21 @@ import { IReview } from '../../core/models/ireview';
   styleUrl: './review.component.scss'
 })
 export class ReviewComponent {
-  sellerId: number | undefined;
-  orderId: number | undefined;
+  sellerId = input<number | undefined>();
+
   reviews: IReview[] = [];
   paginatedReviews: IReview[] = [];
   isLoading = false;
   errorMessage = '';
+
   currentPage: number = 1;
-  itemsPerPage: number = 1;
+  itemsPerPage: number = 1; // كل مرة نعرض ريفيو واحد بس (السلايدر)
 
-  constructor(
-    private reviewService: ReviewService,
-    private route: ActivatedRoute,
-    private toastr: ToastrService
-  ) { }
-
-  ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      this.sellerId = Number(params.get('sellerId'));
-      this.orderId = Number(params.get('orderId'));
-      if (this.sellerId) {
-        this.loadReviewsForSeller(this.sellerId);
+  constructor(private reviewService: ReviewService) {
+    effect(() => {
+      const sid = this.sellerId();
+      if (sid) {
+        this.loadReviewsForSeller(sid);
       }
     });
   }
@@ -52,7 +46,6 @@ export class ReviewComponent {
       error: () => {
         this.errorMessage = 'Failed to load reviews.';
         this.isLoading = false;
-        this.toastr.error('Failed to load reviews.');
       }
     });
   }
@@ -81,84 +74,6 @@ export class ReviewComponent {
     this.paginatedReviews = this.reviews.slice(startIndex, endIndex);
   }
 }
-
-
-//   reviews: IReview[] = [];
-//   editForm!: FormGroup;
-//   currentUserId = 1;
-//   selectedReviewId: number | null = null;
-//   selectedReview: IReview | null = null;
-//   showEditModal = false;
-
-//   @ViewChild('editModal') editModalRef!: ElementRef;
-//   modalInstance!: Modal;
-
-//   constructor(private fb: FormBuilder, private reviewService: ReviewService) { }
-
-//   ngOnInit(): void {
-//     this.loadReviews();
-//     this.editForm = this.fb.group({
-//       rating: [null, [Validators.required, Validators.min(1), Validators.max(5)]],
-//       comment: ['', Validators.required]
-//     });
-//   }
-
-//   loadReviews(): void {
-//     // Use dummy data or API call
-//     this.reviewService.getReviewsBySellerId(2).subscribe(res => {
-//       this.reviews = res.data ?? [];
-//     });
-
-//   }
-
-//   canEditOrDelete(review: IReview): boolean {
-//     return review.reviewerId === this.currentUserId && !!review.orderId;
-//   }
-//   onEdit(review: IReview) {
-//     // Open the edit form (e.g., a modal) and fill it with review data
-//     this.selectedReview = { ...review };
-//     this.showEditModal = true;
-//   }
-
-//   openEditModal(review: IReview): void {
-//     this.selectedReviewId = review.id;
-//     this.editForm.patchValue({
-//       rating: review.rating,
-//       comment: review.comment
-//     });
-
-//     this.modalInstance = new Modal(this.editModalRef.nativeElement);
-//     this.modalInstance.show();
-//   }
-
-//   submitEdit(): void {
-//     if (!this.selectedReviewId) return;
-
-//     const updatedReview = {
-//       ...this.editForm.value,
-//       id: this.selectedReviewId
-//     };
-
-//     this.reviewService.updateReview(updatedReview).subscribe(() => {
-//       const index = this.reviews.findIndex(r => r.id === this.selectedReviewId);
-//       if (index !== -1) {
-//         this.reviews[index] = {
-//           ...this.reviews[index],
-//           ...updatedReview
-//         };
-//       }
-
-//       this.modalInstance.hide();
-//     });
-//   }
-
-//   onDelete(id: number): void {
-//     this.reviewService.deleteReview(id).subscribe(() => {
-//       this.reviews = this.reviews.filter(r => r.id !== id);
-//     });
-//   }
-// }
-
 
 // export class ReviewComponent implements OnInit {
 //  reviews: IReview[] = [];
