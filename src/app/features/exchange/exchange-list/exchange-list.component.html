@@ -81,7 +81,8 @@
                   <div class="col-md-6">
                     <div class="product-card shadow-sm rounded-3 p-3 h-100">
                       <div class="d-flex align-items-center gap-3">
-                        <img [src]="getMainImageUrl(request.requestedProduct)" class="rounded" alt="{{request.requestedProduct?.title || 'Product'}}" style="width:80px;height:80px;object-fit:cover;">
+                        <img [src]="getMainImageUrl(request.requestedProduct)" class="rounded" alt="{{request.requestedProduct?.title || 'Product'}}" style="width:80px;height:80px;object-fit:cover;"
+                        (error)="onImageError($event)">
                         <div class="flex-grow-1">
                           <div class="d-flex justify-content-between align-items-center">
                             <h6 class="mb-1 text-dark">منتجك</h6>
@@ -98,7 +99,7 @@
                   <div class="col-md-6">
                     <div class="product-card shadow-sm rounded-3 p-3 h-100">
                       <div class="d-flex align-items-center gap-3">
-                        <img [src]="getMainImageUrl(request.offeredProduct)" class="rounded" alt="{{request.offeredProduct?.title || 'Product'}}" style="width:80px;height:80px;object-fit:cover;">
+                        <img [src]="getMainImageUrl(request.offeredProduct)" class="rounded" alt="{{request.offeredProduct?.title || 'Product'}}" style="width:80px;height:80px;object-fit:cover;"(error)="onImageError($event)">
                         <div class="flex-grow-1">
                           <div class="d-flex justify-content-between align-items-center">
                             <h6 class="mb-1 text-dark">المنتج المقدم</h6>
@@ -181,7 +182,8 @@
                             [src]="getMainImageUrl(request.requestedProduct)"
                             class="img-thumbnail me-2"
                              alt="صورة {{request.requestedProduct?.title || 'منتج'}}"
-                            style="width: 60px; height: 60px; object-fit: cover;">
+                            style="width: 60px; height: 60px; object-fit: cover;"
+                            (error)="onImageError($event)">
                           <div>
                              <h6 class="mb-1">{{request.requestedProduct?.title || '—'}}</h6>
                             <p class="mb-0 text-muted">
@@ -202,7 +204,7 @@
                             [src]="getMainImageUrl(request.offeredProduct)"
                             class="img-thumbnail me-2"
                              alt="صورة {{request.offeredProduct?.title || 'منتج'}}"
-                            style="width: 60px; height: 60px; object-fit: cover;">
+                            style="width: 60px; height: 60px; object-fit: cover;"(error)="onImageError($event)">
                           <div>
                              <h6 class="mb-1">{{request.offeredProduct?.title || '—'}}</h6>
                             <p class="mb-0 text-muted">

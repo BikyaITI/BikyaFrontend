@@ -3,15 +3,18 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { OrderService } from '../../../core/services/order.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { Order, OrderStatus } from '../../../core/models/order.model';
+import { Order, OrderStatus, OrederReview } from '../../../core/models/order.model';
 import { IUser } from '../../../core/models/user.model';
 import Swal from 'sweetalert2';
 import { ToastrService } from 'ngx-toastr';
+import { environment } from '../../../../environments/environment';
+import { IProduct, IProductImage } from '../../../core/models/product.model';
+import { ReviewFormComponent } from '../../review-form/review-form.component';
 
 @Component({
   selector: 'app-order-list',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ReviewFormComponent],
   templateUrl: './order-list.component.html',
   styleUrls: ['./order-list.component.scss'],
 })
@@ -53,13 +56,18 @@ export class OrderListComponent implements OnInit {
         if (response.success) {
           this.allOrders = response.data.map((order: any) => ({
             ...order,
-            product: order.product || { title: order.productTitle || 'Unknown Product' },
+            product: order.product || {
+              title: order.productTitle || 'Unknown Product',
+              images: order.productImages,
+            },
             buyer: order.buyer || { fullName: order.buyerName || 'Unknown Buyer' },
-            seller: order.seller || { fullName: order.sellerName || 'Unknown Seller' },
+            seller: order.seller || { fullName: order.sellerName || 'Unknown Seller',id: order.sellerId || 0 },
             status: order.status || 'Unknown',
           }));
           this.pendingOrders = this.allOrders.filter(
             (order) => order.status === OrderStatus.Pending || order.status === 'Pending'
+                    || order.status === OrderStatus.Paid || order.status === 'Paid'
+                      
           );
           this.shippedOrders = this.allOrders.filter(
             (order) => order.status === OrderStatus.Shipped || order.status === 'Shipped'
@@ -157,9 +165,16 @@ export class OrderListComponent implements OnInit {
     return status === expected || status === expected.toString();
   }
 
-  getProductImage(product: any): string {
-    const mainImage = product?.images?.find((img: any) => img.isMain);
-    return mainImage?.imageUrl || 'https://via.placeholder.com/80?text=Product';
+  getProductImage(product: IProduct): string {
+
+    const mainImage = product.images?.find((img) => img.isMain)
+    return mainImage && mainImage.imageUrl
+      ? `${environment.apiUrl}${mainImage.imageUrl}`
+      : 'product.png';
+  }
+
+  onImageError(event: Event) {
+    (event.target as HTMLImageElement).src = 'product.png';
   }
 
   viewOrderDetails(order: Order): void {
@@ -215,13 +230,34 @@ export class OrderListComponent implements OnInit {
   payForOrder(order: Order): void {
     this.router.navigate(['/payment', order.id, order.totalAmount]);
   }
-
-  leaveReview(order: Order): void {
+   
+  openMadal(order: Order) {
     console.log('Attempting to leave review for order:', order);
     if (!order.seller?.id || !order.id) {
       this.toastr.error('Invalid order or seller information');
       return;
     }
-    this.router.navigate(['/review', order.seller.id, order.id]);
+    this.selectedOrder = order;
+    const modal = new (window as any).bootstrap.Modal(document.getElementById("reviewModal"));
+    modal.show();
+  }
+  GetOrederForReview(order: Order): OrederReview {
+    console.log('Preparing order for review:', order);
+    return {
+      id: order.id,
+      productId: order.productId || 0,
+      productTitle: order.product?.title,
+      sellerId: order.seller?.id || 0,
+      sellerName: order.seller?.fullName || 'Unknown Seller',
+      buyerId: this.currentUser?.id || 0,
+      buyerName: this.currentUser?.fullName || 'Unknown Buyer',
+      status: OrderStatus.Completed,
+      createdAt: order.createdAt || new Date(),
+      isSwapOrder: order.isSwapOrder
+    }
+  }
+  onReviewDone() {
+    this.selectedOrder!.needReview= false;
   }
 }
+  

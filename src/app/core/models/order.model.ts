@@ -14,6 +14,8 @@ export interface Order {
   buyer: IUser;
   seller: IUser;
   shippingInfo?: ShippingInfo;
+  isSwapOrder?: boolean;
+  needReview: boolean; // Indicates if the order needs a review
 }
 
 export enum OrderStatus {
