@@ -6,13 +6,13 @@
   <div *ngIf="!isSwapOrder" class="alert alert-info" role="alert">
     <i class="bi bi-info-circle me-2"></i>
     <strong>Shipping Fee:</strong> A fixed shipping fee of
-    {{ REGULAR_SHIPPING_FEE | currency : "EGP" : "symbol" : "1.2-2" }} will be
+    {{ REGULAR_SHIPPING_FEE | number:'1.2-2' }} EGP will be
     added to your order.
   </div>
   <div *ngIf="isSwapOrder" class="alert alert-warning" role="alert">
     <i class="bi bi-arrow-repeat me-2"></i>
     <strong>Exchange Order:</strong> This is an exchange order. Only shipping
-    fee of {{ SWAP_SHIPPING_FEE | currency : "EGP" : "symbol" : "1.2-2" }} will
+    fee of {{ SWAP_SHIPPING_FEE | number:'1.2-2' }} EGP will
     be charged.
   </div>
 
@@ -44,17 +44,13 @@
               [(ngModel)]="shippingInfo.recipientName"
               required
               #recipientName="ngModel"
-              [class.is-invalid]="
-                recipientName.invalid && recipientName.touched
-              "
+               (focus)="showTooltip('recipientName')"
+              
+              readonly
             />
-            <div
-              *ngIf="recipientName.invalid && recipientName.touched"
-              class="invalid-feedback"
-            >
-              Recipient Name is required
-            </div>
-          </div>
+       <div class="form-text text-warning" [hidden]="!tooltips.recipientName">
+    To change Recipient Name, please update your profile.
+  </div></div>
           <div class="mb-3">
             <label for="address" class="form-label">Address</label>
             <input
@@ -65,15 +61,13 @@
               [(ngModel)]="shippingInfo.address"
               required
               #address="ngModel"
-              [class.is-invalid]="address.invalid && address.touched"
+              (focus)="showTooltip('address')"
+              readonly
             />
-            <div
-              *ngIf="address.invalid && address.touched"
-              class="invalid-feedback"
-            >
-              Address is required
-            </div>
-          </div>
+            <div class="form-text text-warning" [hidden]="!tooltips.address">
+    To change  Address, please update your profile.
+  </div></div>
+          
           <div class="mb-3">
             <label for="city" class="form-label">City</label>
             <input
@@ -84,11 +78,12 @@
               [(ngModel)]="shippingInfo.city"
               required
               #city="ngModel"
-              [class.is-invalid]="city.invalid && city.touched"
+              (focus)="showTooltip('city')"
+              readonly
             />
-            <div *ngIf="city.invalid && city.touched" class="invalid-feedback">
-              City is required
-            </div>
+            <div class="form-text text-warning" [hidden]="!tooltips.city">
+    To change City, please update your profile.
+  </div>
           </div>
           <div class="mb-3">
             <label for="postalCode" class="form-label">Postal Code</label>
@@ -100,15 +95,13 @@
               [(ngModel)]="shippingInfo.postalCode"
               required
               #postalCode="ngModel"
-              [class.is-invalid]="postalCode.invalid && postalCode.touched"
+             (focus)="showTooltip('postalCode')"
+              readonly
             />
-            <div
-              *ngIf="postalCode.invalid && postalCode.touched"
-              class="invalid-feedback"
-            >
-              Postal Code is required
-            </div>
-          </div>
+          
+         <div class="form-text text-warning" [hidden]="!tooltips.postalCode">
+    To change Postal Code, please update your profile.
+  </div></div>
           <div class="mb-3">
             <label for="phoneNumber" class="form-label">Phone Number</label>
             <input
@@ -119,17 +112,14 @@
               [(ngModel)]="shippingInfo.phoneNumber"
               required
               #phoneNumber="ngModel"
-              [class.is-invalid]="phoneNumber.invalid && phoneNumber.touched"
+           (focus)="showTooltip('phoneNumber')"
+              readonly
             />
-            <div
-              *ngIf="phoneNumber.invalid && phoneNumber.touched"
-              class="invalid-feedback"
-            >
-              Phone Number is required
-            </div>
-          </div>
+         
+          <div class="form-text text-warning" [hidden]="!tooltips.phoneNumber">
+    To change Phone Number, please update your profile.
+  </div></div>
           <div class="mb-3">
-            <label for="quantity" class="form-label">Quantity</label>
             <input
               type="number"
               class="form-control"
@@ -139,30 +129,21 @@
               min="1"
               required
               #quantity="ngModel"
-              [class.is-invalid]="quantity.invalid && quantity.touched"
               (ngModelChange)="calculateTotal()"
+              hidden
             />
-            <div
-              *ngIf="quantity.invalid && quantity.touched"
-              class="invalid-feedback"
-            >
-              Quantity must be at least 1
-            </div>
-            <small class="text-muted" *ngIf="!isSwapOrder">
-              Price per item:
-              {{ product.price | currency : "EGP" : "symbol" : "1.2-2" }}
-            </small>
+       
+           
           </div>
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <h5 class="text-primary mb-0">
-                Total: {{ totalAmount | currency : "EGP" : "symbol" : "1.2-2" }}
+               Total: {{ totalAmount | number:'1.0-0' }} EGP
               </h5>
               <small class="text-muted" *ngIf="!isSwapOrder">
                 Includes
                 {{
-                  REGULAR_SHIPPING_FEE | currency : "EGP" : "symbol" : "1.2-2"
-                }}
+                  REGULAR_SHIPPING_FEE | number:'1.2-2' }} EGP
                 shipping fee
               </small>
               <small class="text-muted" *ngIf="isSwapOrder">
@@ -201,9 +182,9 @@
             <p class="text-primary mb-0">
               {{
                 product.price
-                  ? (product.price | currency : "EGP" : "symbol" : "1.2-2")
+                  ? (product.price | number:'1.0-0' )
                   : "0.00"
-              }}
+              }} EGP
             </p>
           </div>
         </div>
@@ -213,23 +194,22 @@
           <span>{{
             product && product.price && orderRequest.quantity
               ? (product.price * orderRequest.quantity
-                | currency : "EGP" : "symbol" : "1.2-2")
+                | currency | number:'1.0-0')
               : "0.00"
-          }}</span>
+          }} EGP</span>
         </div>
         <div class="d-flex justify-content-between mt-2">
           <span>Shipping Fee</span>
           <span>{{
             isSwapOrder
               ? SWAP_SHIPPING_FEE
-              : (REGULAR_SHIPPING_FEE | currency : "EGP" : "symbol" : "1.2-2")
-          }}</span>
+              : (REGULAR_SHIPPING_FEE | number: "1.2-2")
+          }} EGP</span>
         </div>
         <div class="d-flex justify-content-between mt-2">
           <strong>Total</strong>
           <strong class="text-primary">{{
-            totalAmount | currency : "EGP" : "symbol" : "1.2-2"
-          }}</strong>
+            totalAmount | number:"1.0-0"}} EGP</strong>
         </div>
       </div>
     </div>

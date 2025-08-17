@@ -21,6 +21,7 @@ export class CheckoutComponent implements OnInit {
   readonly SWAP_SHIPPING_FEE = 50;
   readonly REGULAR_SHIPPING_FEE = 50; // رسوم الشحن للطلبات العادية
   isSwapOrder = false;
+  showAddressTooltip = true;
   orderId: number | null = null;
   getProductImage(): string {
     if (!this.product) return 'product.png';
@@ -73,7 +74,13 @@ export class CheckoutComponent implements OnInit {
       this.router.navigate(['/login'], { queryParams: { returnUrl: '/checkout' } });
       return;
     }
-
+  
+      this.shippingInfo.recipientName = this.currentUser.fullName || 'Unknown User';
+      this.shippingInfo.address = this.currentUser.address || '';
+      this.shippingInfo.city = this.currentUser.city || '';
+      this.shippingInfo.postalCode = this.currentUser.postalCode || '';
+      this.shippingInfo.phoneNumber = this.currentUser.phoneNumber || '';
+    
     // Set buyerId and recipientName
     this.orderRequest.buyerId = this.currentUser.id;
     this.shippingInfo.recipientName = this.currentUser.fullName || 'Unknown User';
@@ -288,5 +295,21 @@ export class CheckoutComponent implements OnInit {
       this.shippingInfo.phoneNumber.trim() !== '' &&
       this.orderRequest.quantity >= 1 &&
       !!this.product?.id;
+  }
+
+
+  tooltips = {
+    recipientName: false,
+    address: false,
+    city: false,
+    postalCode: false,
+    phoneNumber: false
+  };
+
+  showTooltip(field: keyof typeof this.tooltips): void {
+    this.tooltips[field] = true;
+    setTimeout(() => {
+      this.tooltips[field] = false;
+    }, 3000); // hide after 3 seconds
   }
 }

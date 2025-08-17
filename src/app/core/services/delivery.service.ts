@@ -3,85 +3,10 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of, forkJoin } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { tap, switchMap, map } from 'rxjs/operators';
+import { UserService } from './user.service';
+import { ApiResponse, IUserAddressInfo } from '../models/user.model';
+import { AvailableTransitions, DeliveryOrderDto, OrderStatusSummary, UpdateDeliveryShippingStatusDto, UpdateOrderStatusDto } from '../models/delivery.model';
 
-export interface DeliveryOrderDto {
-  id: number;
-  productName: string;
-  productImage: string;
-  totalAmount: number;
-  status: string;
-  createdAt: string;
-  paidAt: string;
-  recipientName: string;
-  address: string;
-  city: string;
-  postalCode: string;
-  phoneNumber: string;
-  shippingStatus: string;
-  buyerName: string;
-  buyerEmail: string;
-  buyerPhone: string;
-  
-  // Exchange Order Linking
-  isSwapOrder: boolean;
-  relatedOrderId?: number;
-  exchangeInfo: string;
-
-  // Optional secondary party (for swap orders)
-  otherOrderId?: number;
-  otherRecipientName?: string;
-  otherAddress?: string;
-  otherCity?: string;
-  otherPostalCode?: string;
-  otherPhoneNumber?: string;
-  otherBuyerName?: string;
-  otherBuyerEmail?: string;
-  otherBuyerPhone?: string;
-
-  // Compact party info for dashboard swap cards
-  party1Name?: string;      // recipient of primary order
-  party1Product?: string;   // product shipped in primary order
-  party2Name?: string;      // recipient of related order
-  party2Product?: string;   // product shipped in related order
-}
-
-export interface UpdateOrderStatusDto {
-  status: string;
-  notes?: string;
-}
-
-export interface UpdateDeliveryShippingStatusDto {
-  status: string;
-  notes?: string;
-}
-
-export interface OrderStatusSummary {
-  orderId: number;
-  orderStatus: string;
-  shippingStatus: string;
-  isSynchronized: boolean;
-  lastUpdated: string;
-  nextAllowedTransitions: {
-    orderStatus: string[];
-    shippingStatus: string[];
-  };
-}
-
-export interface AvailableTransitions {
-  orderId: number;
-  currentOrderStatus: string;
-  currentShippingStatus: string;
-  orderStatusTransitions: string[];
-  shippingStatusTransitions: string[];
-  recommendations: string[];
-}
-
-export interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
-  statusCode: number;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -89,7 +14,7 @@ export interface ApiResponse<T> {
 export class DeliveryService {
   private baseUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,private userService:UserService) { }
 
   getOrdersForDelivery(): Observable<ApiResponse<DeliveryOrderDto[]>> {
     const headers = this.getAuthHeaders();
@@ -119,16 +44,16 @@ export class DeliveryService {
         return forkJoin(detailCalls).pipe(
           map(details => {
             for (const d of details) {
-              const idx = resp.data.findIndex(x => x.id === d.id);
+              const idx = resp.data!.findIndex(x => x.id === d.id);
               if (idx >= 0) {
                 const a = d.a, b = d.b;
                 if (a) {
-                  resp.data[idx].party1Name = a.recipientName || a.buyerName;
-                  resp.data[idx].party1Product = a.productName;
+                  resp.data![idx].party1Name = a.buyerInfo.fullName ;
+                  resp.data![idx].party1Product = a.productName;
                 }
                 if (b) {
-                  resp.data[idx].party2Name = b.recipientName || b.buyerName;
-                  resp.data[idx].party2Product = b.productName;
+                  resp.data![idx].party2Name = b.buyerInfo.fullName ;
+                  resp.data![idx].party2Product = b.productName;
                 }
               }
             }
@@ -142,37 +67,33 @@ export class DeliveryService {
   getOrderById(orderId: number): Observable<ApiResponse<DeliveryOrderDto>> {
     const headers = this.getAuthHeaders();
     console.log(`DeliveryService: Fetching order ${orderId} from ${this.baseUrl}/api/delivery/orders/${orderId}`);
-    return this.http.get<ApiResponse<DeliveryOrderDto>>(`${this.baseUrl}/api/delivery/orders/${orderId}`, { headers }).pipe(
-      switchMap((primary) => {
-        // If not swap or no related order, return as-is
-        if (!primary?.success || !primary.data?.isSwapOrder || !primary.data.relatedOrderId) {
-          return of(primary);
+    return this.http.get<ApiResponse<DeliveryOrderDto>>(`${this.baseUrl}/api/delivery/orders/${orderId}`, { headers })
+        
         }
 
-        const relatedId = primary.data.relatedOrderId;
-        return this.http.get<ApiResponse<DeliveryOrderDto>>(`${this.baseUrl}/api/delivery/orders/${relatedId}`, { headers }).pipe(
-          map((secondary) => {
-            if (secondary?.success && secondary.data) {
-              const merged: DeliveryOrderDto = {
-                ...primary.data,
-                otherOrderId: secondary.data.id,
-                otherRecipientName: secondary.data.recipientName,
-                otherAddress: secondary.data.address,
-                otherCity: secondary.data.city,
-                otherPostalCode: secondary.data.postalCode,
-                otherPhoneNumber: secondary.data.phoneNumber,
-                otherBuyerName: secondary.data.buyerName,
-                otherBuyerEmail: secondary.data.buyerEmail,
-                otherBuyerPhone: secondary.data.buyerPhone,
-              };
-              return { ...primary, data: merged } as ApiResponse<DeliveryOrderDto>;
-            }
-            return primary;
-          })
-        );
-      })
-    );
-  }
+//if not swap
+       
+        // return this.userService.getById(primary.data.sellerId).pipe(
+        //   map((sellerResp) => {
+        //     if (sellerResp?.success && sellerResp.data) {
+        //       const merged: DeliveryOrderDto = {
+        //         ...primary.data,
+        //         otherBuyerName: sellerResp.data.fullName,
+        //         otherBuyerEmail: sellerResp.data.email,
+        //         otherBuyerPhone: sellerResp.data.phoneNumber,
+        //         otherAddress: sellerResp.data.address,
+        //         otherPostalCode: sellerResp.data.postalCode,
+        //         otherPhoneNumber: sellerResp.data.phoneNumber,
+        //         otherCity: sellerResp.data.city,
+        //       };
+        //       return { ...primary, data: merged } as ApiResponse<DeliveryOrderDto>;
+        //     };
+        //     return primary;
+        //   })
+        // );
+
+        
+      
 
   getOrderStatusSummary(orderId: number): Observable<ApiResponse<OrderStatusSummary>> {
     const headers = this.getAuthHeaders();

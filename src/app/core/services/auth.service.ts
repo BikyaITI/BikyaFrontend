@@ -44,7 +44,10 @@ export class AuthService {
             email: decoded?.email || '',
             FullName: decoded?.fullName || decoded?.name || '',
             fullName: decoded?.fullName || decoded?.name || '',
-            phone : decoded?.phone || '',
+            phoneNumber: decoded?.phoneNumber || '',
+            address: decoded?.address || '',
+            city: decoded?.city || '',
+            postalCode: decoded?.postalCode || '',
             profileImageUrl: decoded?.profileImageUrl || null,
             isActive: true,
             createdAt: new Date(decoded?.iat * 1000),
@@ -80,7 +83,7 @@ export class AuthService {
     console.log('AuthService: Register request:', request); // Debug
     console.log('AuthService: Register URL:', `${this.API_URL}/register`); // Debug
     
-    return this.http.post<ApiResponse<AuthResponse>>(`${this.API_URL}/register`, request).pipe(
+    return this.http.post<ApiResponse<AuthResponse>>(`${this.API_URL}/register-test`, request).pipe(
       tap((response) => {
         console.log('AuthService: Register response:', response); // Debug
         if (response.success) {
@@ -172,7 +175,8 @@ return this.http.post<ApiResponse<boolean>>(`${environment.apiUrl}/api/Identity/
     return user;
   }
 
- setCurrentUserToLacal(user: IUser): void {
+  setCurrentUserToLacal(user: IUser): void {
+   console.log('AuthService: Setting current user to local storage:', user); // Debug
   localStorage.setItem('user', JSON.stringify(user));
   localStorage.setItem("userRoles", JSON.stringify(user.roles || []));
   localStorage.setItem("userEmail", user.email);
@@ -188,7 +192,7 @@ return this.http.post<ApiResponse<boolean>>(`${environment.apiUrl}/api/Identity/
 
     localStorage.setItem("token", authResponse.token);
     localStorage.setItem("refreshToken", authResponse.refreshToken);
-
+  
     // حفظ معلومات المستخدم
     if (authResponse.user) {
       console.log('AuthService: Saving user data:', authResponse.user); // Debug
@@ -208,7 +212,10 @@ return this.http.post<ApiResponse<boolean>>(`${environment.apiUrl}/api/Identity/
           email: decoded?.email || authResponse.email || '',
           FullName: decoded?.fullName || decoded?.name || authResponse.fullName || '',
           fullName: decoded?.fullName || decoded?.name || authResponse.fullName || '',
-          phone : decoded?.phone || authResponse.phone || '',
+          phoneNumber: decoded?.phoneNumber || authResponse.phoneNumber || '',
+          address: decoded?.address || authResponse.address || '',
+          city: decoded?.city|| authResponse.city|| '',
+          postalCode: decoded?.postalCode||authResponse.postalCode || '',
           isActive: true,
           createdAt: new Date(decoded?.iat * 1000),
           roles: decoded?.role ? [decoded.role] : decoded?.roles || []

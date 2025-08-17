@@ -7,7 +7,10 @@ export interface IUser {
   email: string
   fullName: string
  FullName: string
-  phone : string
+  phoneNumber: string
+  address: string
+  city: string
+  postalCode: string
   isActive: boolean
   createdAt: Date
   roles?: string[]
@@ -32,25 +35,29 @@ export interface RegisterRequest {
   adminRegistrationCode?: string
 }
 
-// export interface AuthResponse {
-//   token: string
-//   refreshToken: string
-//   user: IUser
-// }
+
 export interface AuthResponse {
   token: string;
   refreshToken: string;
   userId?: number;
   email?: string;
   fullName?: string;
-   FullName?: string
-  phone?: string;
+  phoneNumber?: string;
+  address?: string;
+  city?: string;
+  postalCode?: string;
   userName?: string;
   user?: IUser;
 }
 export interface IUpdateProfileRequest {
-  fullName: string
-  email: string
+  fullName: string;
+  email: string;
+  address: string;
+  city: string
+  postalCode: string
+  phoneNumber: string
+
+
 }
 
 export interface IChangePasswordRequest {
@@ -84,4 +91,14 @@ export interface PublicUserProfile {
   averageRating?: number;
   reviews?: IReview[];
   productsForSale?: IProduct[];
+}
+
+export interface IUserAddressInfo {
+  id: number; // Required integer
+  fullName: string; // Required string
+  email: string; // Required string
+  phoneNumber: string; // Required string
+  address: string; // Required string
+  city: string; // Required string
+  postalCode: string; // Required string
 }

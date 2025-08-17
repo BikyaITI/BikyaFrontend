@@ -5,8 +5,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastrModule } from 'ngx-toastr';
 
 // Components
-import { ExchangeRequestComponent } from './exchange-request/exchange-request.component';
-import { ExchangeListComponent } from './exchange-list/exchange-list.component';
+// import { ExchangeRequestComponent } from './exchange-request/exchange-request.component';
+// import { ExchangeListComponent } from './exchange-list/exchange-list.component';
 
 // Services
 import { ExchangeService } from '../../core/services/exchange.service';
@@ -14,15 +14,15 @@ import { ProductService } from '../../core/services/product.service';
 
 // Routes
 import { EXCHANGE_ROUTES } from './exchange.routes';
+import { ExchangeListComponent } from './exchange-list/exchange-list.component';
+import { ExchangeRequestComponent } from './exchange-request/exchange-request.component';
 
 @NgModule({
-  declarations: [
-    ExchangeListComponent,
-    ExchangeRequestComponent
-  ],
+
   imports: [
     CommonModule,
-    FormsModule,
+    FormsModule, ExchangeListComponent,
+    ExchangeRequestComponent,
     ReactiveFormsModule,
     RouterModule.forChild(EXCHANGE_ROUTES),
     ToastrModule.forRoot({

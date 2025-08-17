@@ -1,22 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { 
-  DeliveryService, 
+ 
   DeliveryOrderDto, 
   UpdateOrderStatusDto, 
   UpdateDeliveryShippingStatusDto,
   OrderStatusSummary,
   AvailableTransitions
-} from '../../../core/services/delivery.service';
+} from '../../../core/models/delivery.model';
+import { DeliveryService } from '../../../core/services/delivery.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-delivery-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './delivery-dashboard.component.html',
+  imports: [CommonModule, FormsModule,RouterLink],
+
+templateUrl: './delivery-dashboard.component.html',
   styleUrls: ['./delivery-dashboard.component.scss']
 })
 export class DeliveryDashboardComponent implements OnInit {
@@ -92,8 +95,9 @@ export class DeliveryDashboardComponent implements OnInit {
       next: (response) => {
         console.log('DeliveryDashboardComponent: Orders response:', response);
         if (response.success) {
-          this.orders = response.data;
+          this.orders = response.data!;
           console.log('DeliveryDashboardComponent: Loaded orders:', this.orders.length);
+          console.log('DeliveryDashboardComponent: Loaded orders:', this.orders);
           
           if (this.orders.length > 0) {
             this.toastr.success(`تم تحميل ${this.orders.length} طلب بنجاح`, 'تم التحميل');
@@ -396,4 +400,12 @@ export class DeliveryDashboardComponent implements OnInit {
     this.toastr.success('تم تسجيل الخروج بنجاح', 'تسجيل الخروج');
     this.router.navigate(['/login']);
   }
+   getImageUrl(image: string): string {
+       return image 
+              ? `${environment.apiUrl}${image}`
+              : 'product.png';
+     }
+    onImageError(event: Event) {
+      (event.target as HTMLImageElement).src = 'product.png';
+    }
 } 

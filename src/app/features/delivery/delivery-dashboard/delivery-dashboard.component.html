@@ -169,19 +169,22 @@
 
             <div class="order-content">
               <div class="product-info">
-                <div class="product-image">
-                  <img 
-                    [src]="order.productImage || 'assets/images/placeholder-product.svg'" 
-                    [alt]="order.productName"
-                  />
-                </div>
+                
                 <div class="product-details">
-                  <h4 class="product-name">{{ order.productName }}</h4>
+                   <h6 class="me-3" style="display: inline;">
+              <a [routerLink]="['/products', order.productId]"> {{ order.productName }}</a>
+            </h6>
+            <span *ngIf="order.isSwapOrder"
+              ><i class="bi bi-arrow-left-right"></i>
+              <h6 class="ms-3" style="display: inline;">
+                <a [routerLink]="['/products', order.relatedProductId]"> {{ order.relatedProductTitle }}</a>
+              </h6>
+            </span>
                   <p class="product-description" *ngIf="order.isSwapOrder">
                     <strong>تبادل منتجات:</strong> هذا الطلب جزء من عملية تبادل
                   </p>
                   <div class="customer-info">
-                    <p><strong>المشتري:</strong> {{ order.buyerName || 'غير محدد' }}</p>
+                    <p><strong>المشتري:</strong> {{ order.buyerInfo.fullName }}</p>
                   </div>
                 </div>
               </div>
@@ -196,17 +199,17 @@
                 <ng-container *ngIf="order.isSwapOrder; else normalOrderDetails">
                   <div class="detail-row">
                     <span class="detail-label">العميل 1:</span>
-                    <span class="detail-value">{{ order.party1Name || order.recipientName || order.buyerName || 'غير محدد' }}</span>
+                    <span class="detail-value">{{ order.party1Name || order.buyerInfo.fullName }}</span>
                   </div>
                   <div class="detail-row">
                     <span class="detail-label">المنتج (1):</span>
                     <span class="detail-value">{{ order.party1Product || order.productName || 'غير محدد' }}</span>
                   </div>
-                  <div class="detail-row" *ngIf="order.party2Name || order.otherOrderId">
+                  <div class="detail-row" *ngIf="order.party2Name || order.relatedOrderId">
                     <span class="detail-label">العميل 2:</span>
                     <span class="detail-value">{{ order.party2Name || 'غير محدد' }}</span>
                   </div>
-                  <div class="detail-row" *ngIf="order.party2Product || order.otherOrderId">
+                  <div class="detail-row" *ngIf="order.party2Product || order.relatedOrderId">
                     <span class="detail-label">المنتج (2):</span>
                     <span class="detail-value">{{ order.party2Product || 'غير محدد' }}</span>
                   </div>
@@ -216,19 +219,19 @@
                 <ng-template #normalOrderDetails>
                   <div class="detail-row">
                     <span class="detail-label">اسم المستلم:</span>
-                    <span class="detail-value">{{ order.recipientName || order.buyerName || 'غير محدد' }}</span>
+                    <span class="detail-value">{{ order.buyerInfo.fullName }}</span>
                   </div>
                   <div class="detail-row">
                     <span class="detail-label">العنوان:</span>
-                    <span class="detail-value">{{ order.address || (order.recipientName ? '—' : 'غير محدد') }}</span>
+                    <span class="detail-value">{{ order.buyerInfo.address }}</span>
                   </div>
                   <div class="detail-row">
                     <span class="detail-label">المدينة:</span>
-                    <span class="detail-value">{{ order.city || (order.recipientName ? '—' : 'غير محدد') }}</span>
+                    <span class="detail-value">{{ order.buyerInfo.city }}</span>
                   </div>
                   <div class="detail-row">
                     <span class="detail-label">رقم الهاتف:</span>
-                    <span class="detail-value">{{ order.phoneNumber || order.buyerPhone || 'غير محدد' }}</span>
+                    <span class="detail-value">{{ order.buyerInfo.phoneNumber }}</span>
                   </div>
                 </ng-template>
               </div>

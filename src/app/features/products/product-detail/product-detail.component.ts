@@ -271,6 +271,8 @@ export class ProductDetailComponent implements OnInit {
       return "admin";
     else if (this.currentUser?.id === this.product?.userId)
       return "owner"
+    else if (this.currentUser?.roles?.includes('Delivery'))
+      return "delivery";
     else
       return "user"
   }

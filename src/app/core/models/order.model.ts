@@ -16,6 +16,7 @@ export interface Order {
   shippingInfo?: ShippingInfo;
   isSwapOrder?: boolean;
   needReview: boolean; // Indicates if the order needs a review
+  productTitle?: string; // Optional field for product title
 }
 
 export enum OrderStatus {

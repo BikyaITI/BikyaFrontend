@@ -20,30 +20,31 @@
                 <div class="col-md-6">
                   <div class="info-item">
                     <strong>Order ID:</strong>
-                    <span class="badge bg-primary ms-2">#{{ orderDetails.id }}</span>
+                    <span class="badge bg-primary text-light ms-2">#{{ orderDetails.id }}</span>
                   </div>
                   <div class="info-item">
                     <strong>Product:</strong>
-                    <span class="ms-2">{{ orderDetails.product?.title }}</span>
+                    <span class="ms-2">{{ orderDetails.productTitle }}</span>
                   </div>
-                  <div class="info-item">
+                  <!-- <div class="info-item">
                     <strong>Quantity:</strong>
                     <span class="ms-2">{{ orderDetails.quantity }}</span>
+                  </div> -->
+                    <div class="info-item">
+                    <strong>Date:</strong>
+                    <span class="ms-2">{{ orderDetails.createdAt | date:'short' }}</span>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="info-item">
                     <strong>Total Amount:</strong>
-                    <span class="badge bg-success ms-2 fs-6">{{ orderAmount | currency:'EGP' }}</span>
+                    <span class="badge bg-success text-light ms-2 fs-6">{{ orderAmount | currency:'EGP' }}</span>
                   </div>
                   <div class="info-item">
                     <strong>Status:</strong>
-                    <span class="badge bg-warning ms-2">{{ orderDetails.status }}</span>
+                    <span class="badge bg-warning text-light ms-2">{{ orderDetails.status }}</span>
                   </div>
-                  <div class="info-item">
-                    <strong>Date:</strong>
-                    <span class="ms-2">{{ orderDetails.createdAt | date:'short' }}</span>
-                  </div>
+                
                 </div>
               </div>
             </div>

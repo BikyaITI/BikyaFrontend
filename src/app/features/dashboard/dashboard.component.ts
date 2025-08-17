@@ -75,7 +75,7 @@ template: `
       <div class="container">
         <div class="row">
           <!-- Quick Actions -->
-          <div class="col-lg-3 col-md-6 mb-4">
+          <div class="col-lg-4 col-md-6 mb-4">
             <div class="feature-card text-center">
               <div class="feature-icon">
                 <i class="fas fa-plus"></i>
@@ -86,7 +86,7 @@ template: `
             </div>
           </div>
 
-          <div class="col-lg-3 col-md-6 mb-4">
+          <div class="col-lg-4 col-md-6 mb-4">
             <div class="feature-card text-center">
               <div class="feature-icon">
                 <i class="fas fa-box"></i>
@@ -97,7 +97,7 @@ template: `
             </div>
           </div>
 
-<div class="col-lg-3 col-md-6 mb-4">
+<!-- <div class="col-lg-3 col-md-6 mb-4">
             <div class="feature-card text-center">
               <div class="feature-icon">
                 <i class="fas fa-plus"></i>
@@ -106,9 +106,9 @@ template: `
               <p>List new Categories</p>
               <a routerLink="/categories" class="btn btn-primary">Get Started</a>
             </div>
-          </div>
+          </div> -->
 
-          <div class="col-lg-3 col-md-6 mb-4">
+          <div class="col-lg-4 col-md-6 mb-4">
             <div class="feature-card text-center">
               <div class="feature-icon">
                 <i class="fas fa-receipt"></i>
@@ -119,7 +119,7 @@ template: `
             </div>
           </div>
 
-          <div class="col-lg-3 col-md-6 mb-4">
+          <!-- <div class="col-lg-3 col-md-6 mb-4">
             <div class="feature-card text-center">
               <div class="feature-icon">
                 <i class="fas fa-wallet"></i>
@@ -128,7 +128,7 @@ template: `
               <p>Manage your account balance</p>
               <a routerLink="/wallet" class="btn btn-primary">Open Wallet</a>
             </div>
-          </div>
+          </div> -->
         </div>
 
         <!-- Recent Activity -->
@@ -433,6 +433,3 @@ getMainImage(product: IProduct): string {
    console.log("Review done,",this.ordersNeedingReview);
   }
 }
-// dashboard: 1 Blocked aria - hidden on an element because its descendant retained focus.The focus must not be hidden from assistive technology users.Avoid using aria-hidden on a focused element or its ancestor.Consider using the inert attribute instead, which will also prevent focus.For more details, see the aria-hidden section of the WAI - ARIA specification at https://w3c.github.io/aria/#aria-hidden.
-// Element with focus: <button.btn-close >
-//   Ancestor with aria - hidden: <div.modal fade#reviewModal > 
