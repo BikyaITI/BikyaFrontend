@@ -1,4 +1,49 @@
-<div class="container py-5">
+<div class="row justify-content-center" 
+     style="min-height: 100vh; background: var(--beige-100);">
+  <div class="col-md-8 col-lg-6">
+    <div class="card shadow-lg rounded-4 mx-auto" 
+         style="max-width: 600px; 
+                background: linear-gradient(135deg, #3d405b 0%, #81b29a 100%); 
+                margin-top: 100px;
+                border-radius: 4px;"
+                >
+      <div class="card-body p-5 text-center text-white">
+
+        <!-- Title -->
+        <h2 class="mb-4">Email Verification</h2>
+
+        <!-- Loading -->
+        <div *ngIf="isLoading" class="fade-in">
+          <div class="spinner-border text-light" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-3 text-light">Verifying your email, please wait...</p>
+        </div>
+
+        <!-- Success -->
+        <div *ngIf="!isLoading && success" class="fade-in">
+          <i class="fas fa-check-circle fa-4x text-success mb-3 animate-zoom"></i>
+          <h4 class="fw-bold text-success">{{ successMessage }}</h4>
+          <a routerLink="/login" class="btn btn-success w-100 mt-4">Go to Login</a>
+        </div>
+
+        <!-- Error -->
+        <div *ngIf="!isLoading && errorMessage" class="fade-in">
+          <i class="fas fa-times-circle fa-4x text-danger mb-3 animate-zoom"></i>
+          <h4 class="fw-bold text-danger">{{ errorMessage }}</h4>
+          <a routerLink="/login" class="btn btn-outline-danger w-100 mt-4">Back to Login</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<!-- <div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-md-8 col-lg-6">
       <div class="card shadow-lg border-0 rounded-4">
@@ -24,4 +69,4 @@
       </div>
     </div>
   </div>
-</div> 
+</div>  -->

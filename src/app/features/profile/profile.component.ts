@@ -11,6 +11,9 @@ import { ReviewComponent } from "../review/review.component"
 import { IUser, UserStats, IUpdateProfileRequest, IChangePasswordRequest } from "../../core/models/user.model"
 import { filter, take } from 'rxjs/operators';
 import { ToastrService } from "ngx-toastr"
+import { OrederReview } from "../../core/models/order.model"
+import { OrderService } from "../../core/services/order.service"
+import { ReviewFormComponent } from "../review-form/review-form.component";
 
 @Component({
   selector: "app-profile",
@@ -23,6 +26,8 @@ export class ProfileComponent implements OnInit {
   currentUser: IUser | null = null
   activeTab: 'overview' | 'editProfile' | 'password' | 'account' = 'overview';
   averageRating: number = 0;
+    ordersNeedingReview: OrederReview[] = []
+    selectedOrder: OrederReview | undefined = {} as OrederReview
   
   profileForm: FormGroup
   passwordForm: FormGroup
@@ -61,6 +66,7 @@ export class ProfileComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private orderService: OrderService
   ) {
     this.profileForm = this.fb.group({
       fullName: ["", Validators.required],
@@ -80,6 +86,7 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    
   this.authService.currentUser$
     .pipe(
       filter((user): user is IUser => user !== null),
@@ -120,9 +127,10 @@ export class ProfileComponent implements OnInit {
         },
       });
     });
-}
+   this.loadOrdersNeedingReview()
+  }
 
-
+  
  // ✅ التحقق من تطابق كلمة السر
   passwordMatchValidator(form: AbstractControl): ValidationErrors | null {
     const newPassword = form.get('newPassword');
@@ -329,7 +337,34 @@ navigateToMyProducts(): void {
   this.router.navigate(['/my-products']); 
 }
 
+loadOrdersNeedingReview(): void {
+    this.orderService.getOrdersForReview().subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.ordersNeedingReview = [...response.data];
+        }
+      },
+      error: (err: any) => {
+        console.error("Failed to load orders needing review", err);
+      },
+    })
+  }
 
+  openModal(order: OrederReview): void {
+    // Set to undefined first to force destroy
+    this.selectedOrder = undefined;
+
+    // Delay a tick so Angular destroys the component
+    setTimeout(() => {
+      this.selectedOrder = order;
+      const modal = new (window as any).bootstrap.Modal(document.getElementById("reviewModal"));
+      modal.show();
+    });}
+
+  onReviewDone() {
+    this.loadOrdersNeedingReview();
+    console.log("Review done,", this.ordersNeedingReview);
+  }
   clearMessages(): void {
     this.profileSuccessMessage = ""
     this.profileErrorMessage = ""

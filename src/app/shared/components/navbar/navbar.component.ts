@@ -48,13 +48,13 @@ import { Collapse } from 'bootstrap';
                 <span>Categories</span>
               </a>
             </li>
-            <li class="nav-item" *ngIf="currentUser">
+            <!-- <li class="nav-item" *ngIf="currentUser">
               <a class="nav-link d-flex align-items-center gap-2" routerLink="/dashboard" routerLinkActive="active"
               (click)="goToDashboard()">
                 <i class="fas fa-tachometer-alt"></i>
                 <span>Dashboard</span>
               </a>
-            </li>
+            </li> -->
             <li class="nav-item" *ngIf="currentUser">
               <a class="nav-link d-flex align-items-center gap-2" routerLink="/exchange" routerLinkActive="active">
                 <i class="bi bi-arrow-left-right"></i>
@@ -147,6 +147,7 @@ import { Collapse } from 'bootstrap';
     .dropdown-menu.show {
       display: block !important;
     }
+    
   `]
 })
 export class NavbarComponent implements OnInit, AfterViewInit {

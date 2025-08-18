@@ -1,58 +1,62 @@
-<div class="container py-4">
-  <h2 class="mb-4">All Categories</h2>
+<div class="body">
+  <div class="container py-4" style="min-height: 75vh;">
+    
+    <h2 class="mb-4">All Categories</h2>
 
-  <!-- Spinner While Loading -->
-  <div class="d-flex justify-content-center my-5" *ngIf="isLoading">
-    <div class="spinner-border text-dark" role="status" style="width: 3rem; height: 3rem;">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-  </div>
-
-  <!-- Cards Grid (only when not loading and data exists) -->
-   
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4" *ngIf="!isLoading && categories.length">
-    <div class="col" *ngFor="let category of categories">
-      <a [routerLink]="['/category', category.id]" class="text-decoration-none text-dark">
-      <div class="card category-card text-center h-100 shadow-sm">
-        <div class="image-wrapper">
-          <img 
-            [src]="category.iconUrl || 'https://via.placeholder.com/300x200?text=No+Image'" 
-            alt="{{ category.name }}" 
-            class="card-img-top"
-          />
-        </div>
-        <div class="card-body">
-          <h6 class="category-name">{{ category.name }}</h6>
-        </div>
+    <!-- Spinner While Loading -->
+    <div class="d-flex justify-content-center my-5" *ngIf="isLoading">
+      <div class="spinner-border text-dark" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Loading...</span>
       </div>
-      </a>
     </div>
+
+    <!-- Cards Grid -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4" *ngIf="!isLoading && categories.length">
+      <div class="col" *ngFor="let category of categories">
+        <a [routerLink]="['/category', category.id]" class="text-decoration-none text-dark">
+          <div class="card category-card text-center h-100 shadow-sm border-0 rounded-4">
+            <div class="image-wrapper" style="height: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+              <img 
+                [src]="category.iconUrl || 'https://via.placeholder.com/300x200?text=No+Image'" 
+                alt="{{ category.name }}" 
+                class="card-img-top"
+                style="object-fit: contain; max-height: 100%;"
+              />
+            </div>
+            <div class="card-body">
+              <h6 class="category-name mb-0 fw-semibold">{{ category.name }}</h6>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- No Data Message -->
+    <div *ngIf="!isLoading && categories.length === 0" class="text-center text-muted mt-5">
+      <i class="bi bi-folder-x fs-1 d-block mb-2"></i>
+      <p class="mb-0">No categories found.</p>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="d-flex justify-content-center align-items-center mt-5 gap-3" *ngIf="!isLoading && totalPages > 1">
+      <button 
+        class="btn btn-outline-dark rounded-circle d-flex align-items-center justify-content-center"
+        [disabled]="currentPage === 1"
+        (click)="goToPage(currentPage - 1)"
+        style="width: 40px; height: 40px;">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+
+      <span class="fw-semibold fs-6">Page {{ currentPage }} of {{ totalPages }}</span>
+
+      <button 
+        class="btn btn-outline-dark rounded-circle d-flex align-items-center justify-content-center"
+        [disabled]="currentPage === totalPages"
+        (click)="goToPage(currentPage + 1)"
+        style="width: 40px; height: 40px;">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+
   </div>
-   
-  <!-- No Data Message -->
-  <div *ngIf="!isLoading && categories.length === 0" class="text-center text-muted mt-5">
-    🚫 No categories found.
-  </div>
-
-  <!-- Pagination Controls -->
- <div class="d-flex justify-content-center align-items-center mt-5 gap-3" *ngIf="!isLoading && totalPages > 1">
-  <button 
-    class="btn btn-outline-dark rounded-circle d-flex align-items-center justify-content-center"
-    [disabled]="currentPage === 1"
-    (click)="goToPage(currentPage - 1)"
-    style="width: 40px; height: 40px;">
-    <i class="bi bi-chevron-left"></i>
-  </button>
-
-  <span class="fw-semibold fs-6">Page {{ currentPage }} of {{ totalPages }}</span>
-
-  <button 
-    class="btn btn-outline-dark rounded-circle d-flex align-items-center justify-content-center"
-    [disabled]="currentPage === totalPages"
-    (click)="goToPage(currentPage + 1)"
-    style="width: 40px; height: 40px;">
-    <i class="bi bi-chevron-right"></i>
-  </button>
-</div>
-
 </div>

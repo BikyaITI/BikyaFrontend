@@ -68,7 +68,7 @@ export class LoginComponent {
               });
             } else {
               console.log('Redirecting to user dashboard...'); // Debug
-              this.router.navigate(['/dashboard']);
+              this.router.navigate(['/profile']);
             }
           } else if (!response.success) {
             // Check for unverified email error

@@ -1,193 +1,172 @@
-<section class="page-header py-5 bg-light">
-      <div class="container">
-        <!--  Message  -->
-<div class="alert  alert-dismissible fade show " [ngClass]="{'alert-success': alertType === 'success', 'alert-danger': alertType === 'error'}" role="alert" *ngIf="alertMessage"
-style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
-  <i class="bi bi-check-circle me-2"></i>
-  {{ alertMessage }}
-  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
+<div class="body">
+  <section class=" py-5 ">
+    <div class="container p-header">
+      <!--  Message  -->
+      <div class="alert  alert-dismissible fade show "
+        [ngClass]="{'alert-success': alertType === 'success', 'alert-danger': alertType === 'error'}" role="alert"
+        *ngIf="alertMessage" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+        <i class="bi bi-check-circle me-2"></i>
+        {{ alertMessage }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
 
 
-        <div class="row align-items-center">
-          <div class="col-md-6">
-            <h1 class="page-title">Our Products</h1>
-            <p class="page-subtitle">Discover quality pre-loved children's items</p>
-          </div>
-          <div class="col-md-6">
-            <nav aria-label="breadcrumb">
-              <ol class="breadcrumb justify-content-md-end">
-                <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
-                <li class="breadcrumb-item active">Products</li>
-              </ol>
-            </nav>
-          </div>
+      <div class="row align-items-center ">
+        <div class="col-md-6">
+          <h1 class="page-title">Our Products</h1>
+          <p class="page-subtitle">Discover quality pre-loved children's items</p>
+        </div>
+        <div class="col-md-6">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-md-end">
+              <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
+              <li class="breadcrumb-item active">Products</li>
+            </ol>
+          </nav>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Products Section -->
-    <section class="products-section py-5">
-      <div class="container">
-        <div class="row">
-          <!-- Filters Sidebar -->
-          <div class="col-lg-3 mb-4">
-            <div class="filters-sidebar">
-              <div class="filter-section">
-                <h6 class="filter-title">Categories</h6>
-                <div class="filter-options">
-                  <div class="category-filter border rounded p-3" style="max-height: 150px; overflow-y: auto;">
-  <div class="form-check" *ngFor="let category of categories">
-    <input
-      class="form-check-input"
-      type="checkbox"
-      [id]="'category-' + category.id"
-      [value]="category.id"
-      (change)="onCategoryChange($event)">
-    <label class="form-check-label" [for]="'category-' + category.id">
-      {{ category.name }}
-    </label>
-  </div>
-</div>
-                </div>
-              </div>
-
-              <div class="filter-section">
-                <h6 class="filter-title">Price Range</h6>
-                <div class="price-range">
-                  <div class="row mb-2">
-                    <div class="col-6">
-                      <input
-                        type="number"
-                        class="form-control form-control-sm"
-                        placeholder="Min"
-                        [(ngModel)]="minPrice"
-                        (change)="onMinPriceChange($event)">
-                    </div>
-                    <div class="col-6">
-                      <input
-                        type="number"
-                        class="form-control form-control-sm"
-                        placeholder="Max"
-                        [(ngModel)]="maxPrice"
-                        (change)="onMaxPriceChange($event)">
-                    </div>
-                  </div>
-                  <input
-                    type="range"
-                    class="form-range"
-                    min="0"
-                    max="20000"
-                    [value]="maxPrice || 100"
-                    (input)="onPriceRangeChange($event)">
-                  <div class="d-flex justify-content-between">
-                    <span class="small text-muted">$0</span>
-                    <span class="small text-muted">$20000+</span>
+  <!-- Products Section -->
+  <section class="products-section py-5">
+    <div class="container">
+      <div class="row">
+        <!-- Filters Sidebar -->
+        <div class="col-lg-3 mb-4">
+          <div class="filters-sidebar">
+            <div class="filter-section">
+              <h6 class="filter-title">Categories</h6>
+              <div class="filter-options">
+                <div class="category-filter border rounded p-3" style="max-height: 150px; overflow-y: auto;">
+                  <div class="form-check" *ngFor="let category of categories">
+                    <input class="form-check-input" type="checkbox" [id]="'category-' + category.id"
+                      [value]="category.id" (change)="onCategoryChange($event)">
+                    <label class="form-check-label" [for]="'category-' + category.id">
+                      {{ category.name }}
+                    </label>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div class="filter-section">
-                <h6 class="filter-title">Condition</h6>
-                <div class="filter-options">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="new" value="new" (change)="onConditionChange($event)">
-                    <label class="form-check-label" for="new">new</label>
+            <div class="filter-section">
+              <h6 class="filter-title">Price Range</h6>
+              <div class="price-range">
+                <div class="row mb-2">
+                  <div class="col-6">
+                    <input type="number" class="form-control form-control-sm" placeholder="Min" [(ngModel)]="minPrice"
+                      (change)="onMinPriceChange($event)">
                   </div>
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="used" value="used" (change)="onConditionChange($event)">
-                    <label class="form-check-label" for="used">used</label>
+                  <div class="col-6">
+                    <input type="number" class="form-control form-control-sm" placeholder="Max" [(ngModel)]="maxPrice"
+                      (change)="onMaxPriceChange($event)">
                   </div>
-                  
+                </div>
+                <input type="range" class="form-range" min="0" max="20000" [value]="maxPrice || 100"
+                  (input)="onPriceRangeChange($event)">
+                <div class="d-flex justify-content-between">
+                  <span class="small text-muted">$0</span>
+                  <span class="small text-muted">$20000+</span>
                 </div>
               </div>
+            </div>
 
-              <div class="filter-section">
+            <div class="filter-section">
+              <h6 class="filter-title">Condition</h6>
+              <div class="filter-options">
                 <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="exchangeOnly"
-                    [(ngModel)]="exchangeOnly"
-                    (change)="applyFilters()">
-                  <label class="form-check-label" for="exchangeOnly">
-                    Exchange Only
-                  </label>
+                  <input class="form-check-input" type="checkbox" id="new" value="new"
+                    (change)="onConditionChange($event)">
+                  <label class="form-check-label" for="new">new</label>
                 </div>
-              </div>
-
-              <button class="btn btn-primary w-100 mt-3" (click)="applyFilters()">Apply Filters</button>
-              <button class="btn btn-outline-secondary w-100 mt-2" (click)="clearFilters()">Clear All</button>
-            </div>
-          </div>
-
-          <!-- Products Grid -->
-          <div class="col-lg-9">
-            <div class="products-header d-flex justify-content-between align-items-center mb-4">
-              <div class="results-info">
-                <span class="text-muted">Showing {{filteredProducts.length}} of {{products.length}} results</span>
-              </div>
-              <div class="d-flex align-items-center">
-                <div class="search-container me-3" style="width: 250px;">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Search products..."
-                    [(ngModel)]="searchTerm"
-                    (keyup.enter)="searchProducts()"
-                    (input)="onSearchInput()">
-                  <i class="fas fa-search search-icon"></i>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="used" value="used"
+                    (change)="onConditionChange($event)">
+                  <label class="form-check-label" for="used">used</label>
                 </div>
-                <select class="form-select" style="width: auto;" [(ngModel)]="sortBy" (change)="onSortChange()">
-                  <option value="" disabled selected>Sort by</option>
-                   <option value="name-low">Name: A to Z</option>
-                   <option value="name-high">Name: Z to A</option>
-                   <option value="price-low">Price: Low to High</option>
-                   <option value="price-high">Price: High to Low</option>
-                   <option value="newest">Newest First</option>
-                  
-                </select>
+
               </div>
             </div>
 
-            <div *ngIf="isLoading" class="loading-spinner">
-              <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
+            <div class="filter-section">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="exchangeOnly" [(ngModel)]="exchangeOnly"
+                  (change)="applyFilters()">
+                <label class="form-check-label" for="exchangeOnly">
+                  Exchange Only
+                </label>
               </div>
             </div>
 
-
-
-<div class="row" *ngIf="!isLoading">
-
-  <div  class="col-lg-4 col-md-6 mb-4" *ngFor="let product of pagedProducts()">
-       <app-product-list  [product]="product" [role]="'user'" (notify)="handleNotification($event)"></app-product-list>
-  </div>
-</div>
-            <div *ngIf="!isLoading && filteredProducts.length === 0" class="text-center py-5">
-              <i class="fas fa-box-open display-1 text-muted mb-3"></i>
-              <h3>No products found</h3>
-              <p class="text-muted">Try adjusting your search criteria</p>
-            </div>
-
-            <!-- Pagination -->
-            <nav aria-label="Products pagination" class="mt-5" *ngIf="filteredProducts.length > 0">
-              <ul class="pagination justify-content-center">
-                <li class="page-item" [class.disabled]="currentPage === 1">
-                  <a class="page-link" href="#" (click)="goToPage(currentPage - 1);$event.preventDefault()" tabindex="-1">Previous</a>
-                </li>
-                <li class="page-item"
-                    *ngFor="let page of getPageNumbers()"
-                    [class.active]="page === currentPage">
-                  <a class="page-link" href="#" (click)="goToPage(page); $event.preventDefault()">{{page}}</a>
-                </li>
-                <li class="page-item" [class.disabled]="currentPage === totalPages">
-                 <a class="page-link" href="#" (click)="goToPage(currentPage + 1); $event.preventDefault()">Next</a>
-                </li>
-              </ul>
-            </nav>
-
+            <button class="btn btn-primary w-100 mt-3" (click)="applyFilters()">Apply Filters</button>
+            <button class="btn btn-outline-secondary w-100 mt-2" (click)="clearFilters()">Clear All</button>
           </div>
         </div>
+
+        <!-- Products Grid -->
+        <div class="col-lg-9">
+          <div class="products-header d-flex justify-content-between align-items-center mb-4">
+            <div class="results-info">
+              <span class="text-muted">Showing {{filteredProducts.length}} of {{products.length}} results</span>
+            </div>
+            <div class="d-flex align-items-center">
+              <div class="search-container me-3" style="width: 250px;">
+                <input type="text" class="form-control" placeholder="Search products..." [(ngModel)]="searchTerm"
+                  (keyup.enter)="searchProducts()" (input)="onSearchInput()">
+                <i class="fas fa-search search-icon"></i>
+              </div>
+              <select class="form-select" style="width: auto;" [(ngModel)]="sortBy" (change)="onSortChange()">
+                <option value="" disabled selected>Sort by</option>
+                <option value="name-low">Name: A to Z</option>
+                <option value="name-high">Name: Z to A</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="newest">Newest First</option>
+
+              </select>
+            </div>
+          </div>
+
+          <div *ngIf="isLoading" class="loading-spinner">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+
+
+
+          <div class="row" *ngIf="!isLoading">
+
+            <div class="col-lg-4 col-md-6 mb-4" *ngFor="let product of pagedProducts()">
+              <app-product-list [product]="product" [role]="'user'"
+                (notify)="handleNotification($event)"></app-product-list>
+            </div>
+          </div>
+          <div *ngIf="!isLoading && filteredProducts.length === 0" class="text-center py-5">
+            <i class="fas fa-box-open display-1 text-muted mb-3"></i>
+            <h3>No products found</h3>
+            <p class="text-muted">Try adjusting your search criteria</p>
+          </div>
+
+          <!-- Pagination -->
+          <nav aria-label="Products pagination" class="mt-5" *ngIf="filteredProducts.length > 0">
+            <ul class="pagination justify-content-center">
+              <li class="page-item" [class.disabled]="currentPage === 1">
+                <a class="page-link" href="#" (click)="goToPage(currentPage - 1);$event.preventDefault()"
+                  tabindex="-1">Previous</a>
+              </li>
+              <li class="page-item" *ngFor="let page of getPageNumbers()" [class.active]="page === currentPage">
+                <a class="page-link" href="#" (click)="goToPage(page); $event.preventDefault()">{{page}}</a>
+              </li>
+              <li class="page-item" [class.disabled]="currentPage === totalPages">
+                <a class="page-link" href="#" (click)="goToPage(currentPage + 1); $event.preventDefault()">Next</a>
+              </li>
+            </ul>
+          </nav>
+
+        </div>
       </div>
-    </section>
+    </div>
+  </section>
+</div>

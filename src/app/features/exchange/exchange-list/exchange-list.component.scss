@@ -1,9 +1,13 @@
 /* Exchange List Component Styles */
 :host {
   display: block;
-  padding: 1rem;
+  
 }
-
+.body{
+  background-color:var(--beige-100);
+  padding: 20px 0;
+  margin: 0;
+}
 .container {
   max-width: 1200px;
   margin: 0 auto;

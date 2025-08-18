@@ -1,11 +1,11 @@
-import { Component,  OnInit } from "@angular/core"
+import { Component, OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { RouterModule } from "@angular/router"
-import  { AuthService } from "../../core/services/auth.service"
-import  { ProductService } from "../../core/services/product.service"
-import  { OrderService } from "../../core/services/order.service"
-import  { IProduct} from "../../core/models/product.model"
-import  { Order, OrederReview } from "../../core/models/order.model"
+import { AuthService } from "../../core/services/auth.service"
+import { ProductService } from "../../core/services/product.service"
+import { OrderService } from "../../core/services/order.service"
+import { IProduct } from "../../core/models/product.model"
+import { Order, OrederReview } from "../../core/models/order.model"
 import { CategoryService } from "../../core/services/category.service"
 import { IUser } from "../../core/models/user.model"
 import { environment } from "../../../environments/environment"
@@ -15,15 +15,15 @@ import { ReviewFormComponent } from "../review-form/review-form.component"
   selector: "app-dashboard",
   standalone: true,
   imports: [CommonModule, RouterModule, ReviewFormComponent],
-template: `
+  template: `
     <!-- Hero Section -->
     <section class="hero-section">
       <div class="container">
         <div class="row align-items-center min-vh-75 ">
                 <div *ngIf="ordersNeedingReview.length > 0" class="alert alert-info">
-  You have {{ ordersNeedingReview.length }} orders waiting for your review.
-  <a  class="cursor-pointer" (click)="openModal(ordersNeedingReview[0])">Leave a review now</a>.
-</div>
+                You have {{ ordersNeedingReview.length }} orders waiting for your review.
+                    <a  class="cursor-pointer" (click)="openModal(ordersNeedingReview[0])">Leave a review now</a>.
+        </div>
           <div class="col-lg-6">
       
             <div class="hero-content">
@@ -61,11 +61,6 @@ template: `
               </div>
             </div>
           </div>
-          <div class="col-lg-6">
-            <div class="hero-image">
-              <img src="#" alt="Dashboard" class="img-fluid rounded-4 shadow-lg">
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -74,62 +69,7 @@ template: `
     <section class="dashboard-section py-5">
       <div class="container">
         <div class="row">
-          <!-- Quick Actions -->
-          <div class="col-lg-3 col-md-6 mb-4">
-            <div class="feature-card text-center">
-              <div class="feature-icon">
-                <i class="fas fa-plus"></i>
-              </div>
-              <h5>Add Product</h5>
-              <p>List a new item for sale or exchange</p>
-              <a routerLink="/add-product" class="btn btn-primary">Get Started</a>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 mb-4">
-            <div class="feature-card text-center">
-              <div class="feature-icon">
-                <i class="fas fa-box"></i>
-              </div>
-              <h5>My Products</h5>
-              <p>Manage your listed products</p>
-              <a routerLink="/my-products" class="btn btn-primary">View Products</a>
-            </div>
-          </div>
-
-<div class="col-lg-3 col-md-6 mb-4">
-            <div class="feature-card text-center">
-              <div class="feature-icon">
-                <i class="fas fa-plus"></i>
-              </div>
-              <h5>Add Category</h5>
-              <p>List new Categories</p>
-              <a routerLink="/categories" class="btn btn-primary">Get Started</a>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 mb-4">
-            <div class="feature-card text-center">
-              <div class="feature-icon">
-                <i class="fas fa-receipt"></i>
-              </div>
-              <h5>Orders</h5>
-              <p>Track your purchases and sales</p>
-              <a routerLink="/orders" class="btn btn-primary">View Orders</a>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 mb-4">
-            <div class="feature-card text-center">
-              <div class="feature-icon">
-                <i class="fas fa-wallet"></i>
-              </div>
-              <h5>Wallet</h5>
-              <p>Manage your account balance</p>
-              <a routerLink="/wallet" class="btn btn-primary">Open Wallet</a>
-            </div>
-          </div>
-        </div>
+        
 
         <!-- Recent Activity -->
         <div class="row mt-5">
@@ -243,8 +183,8 @@ template: `
       </div>
     </div>
   </div>
-</div>
-    </section>
+</div>  </div>
+
   `,
   styles: [
     `
@@ -275,7 +215,7 @@ export class DashboardComponent implements OnInit {
   recentOrders: Order[] = []
   recentActivity: any[] = []
   ordersNeedingReview: OrederReview[] = []
-  selectedOrder: OrederReview | undefined  = {} as OrederReview
+  selectedOrder: OrederReview | undefined = {} as OrederReview
 
   stats = {
     totalProducts: 0,
@@ -289,7 +229,7 @@ export class DashboardComponent implements OnInit {
     private productService: ProductService,
     private orderService: OrderService,
     private categoryService: CategoryService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe((user) => {
@@ -363,20 +303,20 @@ export class DashboardComponent implements OnInit {
       },
     ]
   }
-  loadOrdersNeedingReview(): void { 
+  loadOrdersNeedingReview(): void {
     this.orderService.getOrdersForReview().subscribe({
-      next: (response:any) => {
+      next: (response: any) => {
         if (response.success) {
           this.ordersNeedingReview = [...response.data];
-        } 
+        }
       },
-      error: (err:any) => {
+      error: (err: any) => {
         console.error("Failed to load orders needing review", err);
       },
     })
   }
 
-  openModal(order:OrederReview): void { 
+  openModal(order: OrederReview): void {
     // Set to undefined first to force destroy
     this.selectedOrder = undefined;
 
@@ -398,11 +338,11 @@ export class DashboardComponent implements OnInit {
   //   }
   // }
 
-getMainImage(product: IProduct): string {
+  getMainImage(product: IProduct): string {
     const mainImage = product.images?.find((img) => img.isMain)
-   return mainImage && mainImage.imageUrl
-    ? `${environment.apiUrl}${mainImage.imageUrl}`
-    : 'product.png';
+    return mainImage && mainImage.imageUrl
+      ? `${environment.apiUrl}${mainImage.imageUrl}`
+      : 'product.png';
   }
   getProductStatus(product: IProduct): string {
     return product.isApproved ? "Approved" : "Pending"
@@ -430,7 +370,7 @@ getMainImage(product: IProduct): string {
   }
   onReviewDone() {
     this.loadOrdersNeedingReview();
-   console.log("Review done,",this.ordersNeedingReview);
+    console.log("Review done,", this.ordersNeedingReview);
   }
 }
 // dashboard: 1 Blocked aria - hidden on an element because its descendant retained focus.The focus must not be hidden from assistive technology users.Avoid using aria-hidden on a focused element or its ancestor.Consider using the inert attribute instead, which will also prevent focus.For more details, see the aria-hidden section of the WAI - ARIA specification at https://w3c.github.io/aria/#aria-hidden.

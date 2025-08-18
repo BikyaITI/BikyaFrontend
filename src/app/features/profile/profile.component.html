@@ -1,183 +1,182 @@
-<div class="container mt-4">
-  <div class="row">
-    <!-- Profile Sidebar -->
-    <div class="col-md-4">
-      <div class="card shadow-sm">
-        <div class="card-body text-center">
-          <div class="profile-avatar mb-3">
+<div class="body">
+  <div class="container mt-4">
+    <div class="row">
+      <!-- Profile Sidebar -->
+      <div class="col-md-4">
+        <div class="card shadow-sm">
+          <div class="card-body text-center">
+            <div class="profile-avatar mb-3">
 
-  <!-- profile-image.component.html -->
-<div class="position-relative mx-auto" style="width: 120px; height: 120px;">
-  <label for="fileInput"
-         class="w-100 h-100 bg-primary rounded-circle d-flex align-items-center justify-content-center overflow-hidden position-relative"
-         style="cursor: pointer;">
+              <!-- profile-image.component.html -->
+              <div class="position-relative mx-auto" style="width: 120px; height: 120px;">
+                <label for="fileInput"
+                  class="w-100 h-100 bg-primary rounded-circle d-flex align-items-center justify-content-center overflow-hidden position-relative"
+                  style="cursor: pointer;">
 
-    <img *ngIf="previewUrl"
-         [src]="previewUrl"
-         class="w-100 h-100 object-fit-cover rounded-circle"
-         alt="Profile Image" />
+                  <img *ngIf="previewUrl" [src]="previewUrl" class="w-100 h-100 object-fit-cover rounded-circle"
+                    alt="Profile Image" />
 
-    <ng-container *ngIf="!previewUrl">
-      <i class="bi bi-plus-lg text-white" style="font-size: 2rem;"></i>
-    </ng-container>
+                  <ng-container *ngIf="!previewUrl">
+                    <i class="bi bi-plus-lg text-white" style="font-size: 2rem;"></i>
+                  </ng-container>
 
-    <div class="position-absolute top-0 start-0 w-100 h-100 rounded-circle bg-black bg-opacity-25 d-flex align-items-center justify-content-center opacity-0 hover-overlay">
-      <i class="bi bi-camera text-white fs-4"></i>
-    </div>
-  </label>
+                  <div
+                    class="position-absolute top-0 start-0 w-100 h-100 rounded-circle bg-black bg-opacity-25 d-flex align-items-center justify-content-center opacity-0 hover-overlay">
+                    <i class="bi bi-camera text-white fs-4"></i>
+                  </div>
+                </label>
 
-  <input type="file"
-         id="fileInput"
-         accept="image/*"
-         (change)="onFileSelected($event)"
-         class="d-none" />
-</div>
+                <input type="file" id="fileInput" accept="image/*" (change)="onFileSelected($event)" class="d-none" />
+              </div>
 
-<!-- رسالة رفع الصورة -->
-<div *ngIf="message" class="text-center mt-2 text-success">
-  {{ message }}
-</div>
+              <!-- رسالة رفع الصورة -->
+              <div *ngIf="message" class="text-center mt-2 text-success">
+                {{ message }}
+              </div>
 
 
 
-          </div>
-          <h4 class="mb-1">{{currentUser?.fullName}}</h4>
-          <p class="text-muted mb-3">{{currentUser?.email}}</p>
-          <div class="d-grid gap-2">
-            <!-- Overview -->
-            <button class="btn" [ngClass]="{
+            </div>
+            <h4 class="mb-1">{{currentUser?.fullName}}</h4>
+            <p class="text-muted mb-3">{{currentUser?.email}}</p>
+            <div class="d-grid gap-2">
+              <!-- Overview -->
+              <button class="btn" [ngClass]="{
   'btn-primary': activeTab === 'overview',
   'btn-outline-primary': activeTab !== 'overview'
 }" (click)="setActiveTab('overview')">
-              <i class="bi bi-person-circle"></i> Profile Overview
-            </button>
+                <i class="bi bi-person-circle"></i> Profile Overview
+              </button>
 
-            <!-- Edit Profile -->
-            <button class="btn" [ngClass]="{
-  'btn-secondary': activeTab === 'editProfile',
-  'btn-outline-seondary': activeTab !== 'editProfile'
-}" (click)="setActiveTab('editProfile')">
-              <i class="bi bi-person"></i> Edit Profile
-            </button>
+              <!-- Edit Profile -->
+              <button class="btn btn-outline-custom-secondary" [ngClass]="{ 'active': activeTab === 'editProfile' }"
+                (click)="setActiveTab('editProfile')">
+                <i class="bi bi-person"></i> Edit Profile
+              </button>
 
-            <!-- Change Password -->
-            <button class="btn" [ngClass]="{
-  'btn-warning': activeTab === 'password',
-  'btn-outline-warning': activeTab !== 'password'
-}" (click)="setActiveTab('password')">
-              <i class="bi bi-lock"></i> Change Password
-            </button>
+              <!-- Change Password -->
+              <button class="btn btn-outline-custom-light" [ngClass]="{ 'active': activeTab === 'password' }"
+                (click)="setActiveTab('password')">
+                <i class="bi bi-lock"></i> Change Password
+              </button>
 
-            <!-- Account Settings -->
-            <button class="btn" [ngClass]="{
-  'btn-danger': activeTab === 'account',
-  'btn-outline-danger': activeTab !== 'account'
-}" (click)="setActiveTab('account')">
-              <i class="bi bi-gear"></i> Account Settings
-            </button>
+              <!-- Account Settings -->
+              <button class="btn btn-outline-custom-dark" [ngClass]="{ 'active': activeTab === 'account' }"
+                (click)="setActiveTab('account')">
+                <i class="bi bi-gear"></i> Account Settings
+              </button>
 
-          </div>
-        </div>
-      </div>
 
-      <!-- Quick Stats -->
-      <div class="card shadow-sm mt-3">
-        <div class="card-header">
-          <h6 class="mb-0"><i class="bi bi-graph-up"></i> Account Stats</h6>
-        </div>
-        <div class="card-body">
-          <div class="row text-center">
-            <div class="col-6">
-              <h4 class="text-primary mb-0">{{userStats.totalProducts}}</h4>
-              <small class="text-muted">Products</small>
-            </div>
-            <div class="col-6">
-              <h4 class="text-success mb-0">{{userStats.totalOrders}}</h4>
-              <small class="text-muted">Orders</small>
+
             </div>
           </div>
-          <hr>
-          <div class="row text-center">
-            <div class="col-6">
-              <h4 class="text-info mb-0">{{userStats.totalSales}}</h4>
-              <small class="text-muted">Sales</small>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="card shadow-sm mt-3">
+          <div class="card-header">
+            <h6 class="mb-0"><i class="bi bi-graph-up"></i> Account Stats</h6>
+          </div>
+          <div class="card-body">
+            <div class="row text-center">
+              <div class="col-6">
+                <h4 class="text-primary mb-0">{{userStats.totalProducts}}</h4>
+                <small class="text-muted">Products</small>
+              </div>
+              <div class="col-6">
+                <h4 class="mb-0" style="color: var(--secondary-color);">{{userStats.totalOrders}}</h4>
+                <small class="text-muted">Orders</small>
+              </div>
             </div>
-            <div class="col-6">
-              <h4 class="text-warning mb-0">{{userStats.avrageReating}}</h4>
-              <small class="text-muted">Rating</small>
+            <hr>
+            <div class="row text-center">
+              <div class="col-6">
+                <h4 class="text-info mb-0">{{userStats.totalSales}}</h4>
+                <small class="text-muted">Sales</small>
+              </div>
+              <div class="col-6">
+                <h4 class="text-warning mb-0">{{userStats.avrageReating}}</h4>
+                <small class="text-muted">Rating</small>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Tab Contents -->
-    <!-- Default Profile View (When no tab is selected) -->
+      <!-- Tab Contents -->
+      <!-- Default Profile View (When no tab is selected) -->
 
 
-    <div class="col-md-8">
+      <div class="col-md-8">
 
-      <div class="card shadow-sm" *ngIf="activeTab === 'overview'">
-        <div class="card-body text-center">
-          <h5 class="mb-3">Welcome to your profile!</h5>
-          <p class="text-muted mb-4">You can manage your account using the buttons on the left.</p>
+        <div class="card shadow-sm" *ngIf="activeTab === 'overview'">
+          <div class="card-body text-center">
+                    <div *ngIf="ordersNeedingReview.length > 0" class="alert alert-info">
+  You have {{ ordersNeedingReview.length }} orders waiting for your review.
+  <a  class="cursor-pointer" (click)="openModal(ordersNeedingReview[0])">Leave a review now</a>.
+</div>
+            <h5 class="mb-3">Welcome to your profile!</h5>
+            <p class="text-muted mb-4">You can manage your account using the buttons on the left.</p>
 
-          <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
-            <button class="btn btn-outline-secondary" (click)="navigateToMyProducts()">
-              <i class="bi bi-box"></i> My Products
-            </button>
-            <button class="btn btn-success" (click)="navigateToAddProduct()">
-              <i class="bi bi-plus-circle"></i> Add Product
-            </button>
-            <button class="btn btn-info" (click)="navigateToOrders()">
-              <i class="bi bi-box-seam"></i> View Orders
-            </button>
+            <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+              <button class="btn btn-outline-custom-secondary" (click)="navigateToMyProducts()">
+                <i class="bi bi-box"></i> My Products
+              </button>
+
+              <button class="btn btn-outline-custom-primary" (click)="navigateToAddProduct()">
+                <i class="bi bi-plus-circle"></i> Add Product
+              </button>
+
+              <button class="btn btn-outline-custom-light" (click)="navigateToOrders()">
+                <i class="bi bi-box-seam"></i> View Orders
+              </button>
+            </div>
+
           </div>
-        </div>
-        <div>
-          <hr class="w-50 mx-auto text-secondary">
-        </div>
-        <div class="card-body text-center">
-          <h5><i class="bi bi-star-fill text-warning"></i> My Reviews</h5>
-          <app-review [sellerId]="currentUser?.id"></app-review>
+          <div>
+            <hr class="w-50 mx-auto text-secondary">
+          </div>
+          <div class="card-body text-center">
+            <h5><i class="bi bi-star-fill text-warning"></i> My Reviews</h5>
+            <app-review [sellerId]="currentUser?.id"></app-review>
+
+          </div>
 
         </div>
+        <!-- Profile Edit Tab -->
+        <div class="card shadow-sm" *ngIf="activeTab === 'editProfile'">
+          <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-person"></i> Edit Profile</h5>
+          </div>
+          <div class="card-body">
+            <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="fullName" class="form-label">Full Name *</label>
+                  <input type="text" class="form-control" id="fullName" formControlName="fullName"
+                    [class.is-invalid]="profileForm.get('fullName')?.invalid && profileForm.get('fullName')?.touched">
+                  <div class="invalid-feedback">
+                    Full name is required
+                  </div>
+                </div>
 
-      </div>
-      <!-- Profile Edit Tab -->
-      <div class="card shadow-sm" *ngIf="activeTab === 'editProfile'">
-        <div class="card-header">
-          <h5 class="mb-0"><i class="bi bi-person"></i> Edit Profile</h5>
-        </div>
-        <div class="card-body">
-          <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="fullName" class="form-label">Full Name *</label>
-                <input type="text" class="form-control" id="fullName" formControlName="fullName"
-                  [class.is-invalid]="profileForm.get('fullName')?.invalid && profileForm.get('fullName')?.touched">
-                <div class="invalid-feedback">
-                  Full name is required
+                <div class="col-md-6 mb-3">
+                  <label for="email" class="form-label">Email *</label>
+                  <input type="email" class="form-control" id="email" formControlName="email"
+                    [class.is-invalid]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched">
+                  <div class="invalid-feedback">
+                    Valid email is required
+                  </div>
                 </div>
               </div>
 
-              <div class="col-md-6 mb-3">
-                <label for="email" class="form-label">Email *</label>
-                <input type="email" class="form-control" id="email" formControlName="email"
-                  [class.is-invalid]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched">
-                <div class="invalid-feedback">
-                  Valid email is required
-                </div>
+              <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="phone" formControlName="phone"
+                  placeholder="Enter your phone number">
               </div>
-            </div>
 
-            <div class="mb-3">
-              <label for="phone" class="form-label">Phone Number</label>
-              <input type="tel" class="form-control" id="phone" formControlName="phone"
-                placeholder="Enter your phone number">
-            </div>
-
-            <!-- <div class="mb-3">
+              <!-- <div class="mb-3">
               <label for="bio" class="form-label">Bio</label>
               <textarea class="form-control" id="bio" formControlName="bio" rows="4"
                 placeholder="Tell us about yourself..." maxlength="500"></textarea>
@@ -186,167 +185,170 @@
               </div>
             </div> -->
 
-            <div class="alert alert-success" *ngIf="profileSuccessMessage">
-              <i class="bi bi-check-circle"></i> {{profileSuccessMessage}}
+              <div class="alert alert-success" *ngIf="profileSuccessMessage">
+                <i class="bi bi-check-circle"></i> {{profileSuccessMessage}}
+              </div>
+
+              <div class="alert alert-danger" *ngIf="profileErrorMessage">
+                <i class="bi bi-exclamation-triangle"></i> {{profileErrorMessage}}
+              </div>
+
+              <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid || isUpdatingProfile">
+                <span *ngIf="isUpdatingProfile" class="spinner-border spinner-border-sm me-2"></span>
+                {{isUpdatingProfile ? 'Updating...' : 'Update Profile'}}
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Change Password Tab -->
+        <div class="card shadow-sm" *ngIf="activeTab === 'password'">
+          <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-lock"></i> Change Password</h5>
+          </div>
+          <div class="card-body">
+            <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+
+              <div class="mb-3">
+                <label for="currentPassword" class="form-label">Current Password *</label>
+                <input type="password" class="form-control" id="currentPassword" formControlName="currentPassword"
+                  [class.is-invalid]="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched">
+                <div class="invalid-feedback" *ngIf="passwordForm.get('currentPassword')?.errors?.['required']">
+                  Current password is required
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="newPassword" class="form-label">New Password *</label>
+                <input type="password" class="form-control" id="newPassword" formControlName="newPassword"
+                  [class.is-invalid]="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched">
+                <div class="invalid-feedback" *ngIf="passwordForm.get('newPassword')?.errors?.['required']">
+                  New password is required
+                </div>
+                <div class="invalid-feedback" *ngIf="passwordForm.get('newPassword')?.errors?.['minlength']">
+                  Password must be at least 6 characters long
+                </div>
+                <div class="invalid-feedback" *ngIf="passwordForm.get('newPassword')?.errors?.['pattern']">
+                  Password must include uppercase, lowercase, number, and special character
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Confirm New Password *</label>
+                <input type="password" class="form-control" id="confirmPassword" formControlName="ConfirmNewPassword"
+                  [class.is-invalid]="passwordForm.get('ConfirmNewPassword')?.invalid && passwordForm.get('ConfirmNewPassword')?.touched">
+
+                <div class="invalid-feedback" *ngIf="passwordForm.get('ConfirmNewPassword')?.errors?.['required']">
+                  Confirm password is required
+                </div>
+                <div class="invalid-feedback"
+                  *ngIf="passwordForm.get('ConfirmNewPassword')?.errors?.['passwordMismatch']">
+                  Passwords do not match
+                </div>
+              </div>
+
+              <div class="alert alert-success" *ngIf="passwordSuccessMessage">
+                <i class="bi bi-check-circle"></i> {{passwordSuccessMessage}}
+              </div>
+
+              <div class="alert alert-danger" *ngIf="passwordErrorMessage">
+                <i class="bi bi-exclamation-triangle"></i> {{passwordErrorMessage}}
+              </div>
+
+              <button type="submit" class="btn btn-warning" [disabled]="passwordForm.invalid || isChangingPassword">
+                <span *ngIf="isChangingPassword" class="spinner-border spinner-border-sm me-2"></span>
+                {{isChangingPassword ? 'Changing...' : 'Change Password'}}
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Account Settings Tab -->
+        <!-- Account Settings Tab -->
+        <div class="card shadow-sm" *ngIf="activeTab === 'account'">
+          <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-gear"></i> Account Settings</h5>
+          </div>
+          <div class="card-body">
+
+            <div class="settings-section mb-4">
+              <h6 class="text-primary">Notifications</h6>
+              <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                <label class="form-check-label" for="emailNotifications">Email Notifications</label>
+              </div>
+              <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" id="orderUpdates" checked>
+                <label class="form-check-label" for="orderUpdates">Order Updates</label>
+              </div>
+              <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" id="marketingEmails">
+                <label class="form-check-label" for="marketingEmails">Marketing Emails</label>
+              </div>
             </div>
 
-            <div class="alert alert-danger" *ngIf="profileErrorMessage">
-              <i class="bi bi-exclamation-triangle"></i> {{profileErrorMessage}}
+            <div class="settings-section mb-4">
+              <h6 class="text-primary">Privacy</h6>
+              <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" id="profileVisibility" checked>
+                <label class="form-check-label" for="profileVisibility">Make Profile Public</label>
+              </div>
+              <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" id="showOnlineStatus">
+                <label class="form-check-label" for="showOnlineStatus">Show Online Status</label>
+              </div>
             </div>
 
-            <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid || isUpdatingProfile">
-              <span *ngIf="isUpdatingProfile" class="spinner-border spinner-border-sm me-2"></span>
-              {{isUpdatingProfile ? 'Updating...' : 'Update Profile'}}
-            </button>
-          </form>
+            <div class="settings-section">
+              <h6 class="text-danger">Danger Zone</h6>
+              <p class="text-muted">These actions cannot be undone</p>
+
+              <div class="alert alert-success" *ngIf="deactiveSuccessMessage">
+                <i class="bi bi-check-circle"></i> {{deactiveSuccessMessage}}
+              </div>
+
+              <div class="alert alert-danger" *ngIf="deactiveErrorMessage">
+                <i class="bi bi-exclamation-triangle"></i> {{deactiveErrorMessage}}
+              </div>
+
+              <!-- زر يفتح المودال -->
+              <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal">
+                <i class="bi bi-exclamation-triangle"></i> Deactivate Account
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
 
-    <!-- Change Password Tab -->
-<div class="card shadow-sm" *ngIf="activeTab === 'password'">
-  <div class="card-header">
-    <h5 class="mb-0"><i class="bi bi-lock"></i> Change Password</h5>
-  </div>
-  <div class="card-body">
-    <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
-      
-      <div class="mb-3">
-        <label for="currentPassword" class="form-label">Current Password *</label>
-        <input type="password" class="form-control" id="currentPassword" formControlName="currentPassword"
-          [class.is-invalid]="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched">
-        <div class="invalid-feedback" *ngIf="passwordForm.get('currentPassword')?.errors?.['required']">
-          Current password is required
+        <!-- Modal: Deactivate Account -->
+        <div class="modal fade" id="deactivateModal" tabindex="-1" aria-labelledby="deactivateModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header bg-warning-subtle">
+                <h5 class="modal-title" id="deactivateModalLabel">
+                  <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+                  Confirm Deactivation
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+
+              <div class="modal-body">
+                Are you sure you want to deactivate your account? This action cannot be undone.
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                  Cancel
+                </button>
+                <button type="button" class="btn btn-danger" (click)="confirmDeactivate()" data-bs-dismiss="modal">
+                  Yes, Deactivate
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div class="mb-3">
-        <label for="newPassword" class="form-label">New Password *</label>
-        <input type="password" class="form-control" id="newPassword" formControlName="newPassword"
-          [class.is-invalid]="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched">
-        <div class="invalid-feedback" *ngIf="passwordForm.get('newPassword')?.errors?.['required']">
-          New password is required
-        </div>
-        <div class="invalid-feedback" *ngIf="passwordForm.get('newPassword')?.errors?.['minlength']">
-          Password must be at least 6 characters long
-        </div>
-        <div class="invalid-feedback" *ngIf="passwordForm.get('newPassword')?.errors?.['pattern']">
-          Password must include uppercase, lowercase, number, and special character
-        </div>
       </div>
-
-      <div class="mb-3">
-        <label for="confirmPassword" class="form-label">Confirm New Password *</label>
-        <input type="password" class="form-control" id="confirmPassword" formControlName="ConfirmNewPassword"
-          [class.is-invalid]="passwordForm.get('ConfirmNewPassword')?.invalid && passwordForm.get('ConfirmNewPassword')?.touched">
-        
-        <div class="invalid-feedback" *ngIf="passwordForm.get('ConfirmNewPassword')?.errors?.['required']">
-          Confirm password is required
-        </div>
-        <div class="invalid-feedback" *ngIf="passwordForm.get('ConfirmNewPassword')?.errors?.['passwordMismatch']">
-          Passwords do not match
-        </div>
-      </div>
-
-      <div class="alert alert-success" *ngIf="passwordSuccessMessage">
-        <i class="bi bi-check-circle"></i> {{passwordSuccessMessage}}
-      </div>
-
-      <div class="alert alert-danger" *ngIf="passwordErrorMessage">
-        <i class="bi bi-exclamation-triangle"></i> {{passwordErrorMessage}}
-      </div>
-
-      <button type="submit" class="btn btn-warning" [disabled]="passwordForm.invalid || isChangingPassword">
-        <span *ngIf="isChangingPassword" class="spinner-border spinner-border-sm me-2"></span>
-        {{isChangingPassword ? 'Changing...' : 'Change Password'}}
-      </button>
-    </form>
-  </div>
-</div>
-
-      <!-- Account Settings Tab -->
-      <!-- Account Settings Tab -->
-<div class="card shadow-sm" *ngIf="activeTab === 'account'">
-  <div class="card-header">
-    <h5 class="mb-0"><i class="bi bi-gear"></i> Account Settings</h5>
-  </div>
-  <div class="card-body">
-
-    <div class="settings-section mb-4">
-      <h6 class="text-primary">Notifications</h6>
-      <div class="form-check form-switch mb-2">
-        <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
-        <label class="form-check-label" for="emailNotifications">Email Notifications</label>
-      </div>
-      <div class="form-check form-switch mb-2">
-        <input class="form-check-input" type="checkbox" id="orderUpdates" checked>
-        <label class="form-check-label" for="orderUpdates">Order Updates</label>
-      </div>
-      <div class="form-check form-switch mb-2">
-        <input class="form-check-input" type="checkbox" id="marketingEmails">
-        <label class="form-check-label" for="marketingEmails">Marketing Emails</label>
-      </div>
-    </div>
-
-    <div class="settings-section mb-4">
-      <h6 class="text-primary">Privacy</h6>
-      <div class="form-check form-switch mb-2">
-        <input class="form-check-input" type="checkbox" id="profileVisibility" checked>
-        <label class="form-check-label" for="profileVisibility">Make Profile Public</label>
-      </div>
-      <div class="form-check form-switch mb-2">
-        <input class="form-check-input" type="checkbox" id="showOnlineStatus">
-        <label class="form-check-label" for="showOnlineStatus">Show Online Status</label>
-      </div>
-    </div>
-
-    <div class="settings-section">
-      <h6 class="text-danger">Danger Zone</h6>
-      <p class="text-muted">These actions cannot be undone</p>
-
-      <div class="alert alert-success" *ngIf="deactiveSuccessMessage">
-        <i class="bi bi-check-circle"></i> {{deactiveSuccessMessage}}
-      </div>
-
-      <div class="alert alert-danger" *ngIf="deactiveErrorMessage">
-        <i class="bi bi-exclamation-triangle"></i> {{deactiveErrorMessage}}
-      </div>
-
-      <!-- زر يفتح المودال -->
-      <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal">
-        <i class="bi bi-exclamation-triangle"></i> Deactivate Account
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: Deactivate Account -->
-<div class="modal fade" id="deactivateModal" tabindex="-1" aria-labelledby="deactivateModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-warning-subtle">
-        <h5 class="modal-title" id="deactivateModalLabel">
-          <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>
-          Confirm Deactivation
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-
-      <div class="modal-body">
-        Are you sure you want to deactivate your account? This action cannot be undone.
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-          Cancel
-        </button>
-        <button type="button" class="btn btn-danger" (click)="confirmDeactivate()" data-bs-dismiss="modal">
-          Yes, Deactivate
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
 
     </div>
-
   </div>

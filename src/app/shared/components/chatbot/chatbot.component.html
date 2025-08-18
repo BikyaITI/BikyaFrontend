@@ -1,8 +1,8 @@
-<!-- <!-- Floating toggle button -->
+<!--  Floating toggle button -->
 <button *ngIf="!isChatOpen()"
         class="btn rounded-circle shadow-lg position-fixed bottom-0 end-0 m-4 chat-toggle-btn"
         style="width: 60px; height: 60px; z-index: 1050;
-               background: linear-gradient(135deg, #ff80ab, #80d8ff); border: none;"
+               background: var(--gradient-secondary); border: none;"
         (click)="toggleChat()">
   <i class="bi bi-chat-dots fs-3 text-white"></i>
 </button>
@@ -14,9 +14,9 @@
 
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center px-3 py-2 text-white"
-         style="background: linear-gradient(135deg, #ff80ab, #80d8ff);">
-      <h6 class="mb-0 fw-bold " style="color: #2db9f5;">
-        <i class="bi bi-robot me-2 fs-5" style="color: #2db9f5;" ></i> Baby bot
+         style=" background: var(--gradient-secondary);">
+      <h6 class="mb-0 fw-bold " style="color: var(--primary-color);">
+        <i class="bi bi-robot me-2 fs-5" style="color: var(--primary-color);" ></i> Baby bot
       </h6>
       <span *ngIf="api.loading()" class="small">...Responding</span>
       <button class="btn btn-sm btn-light rounded-circle" (click)="closeChat()">
@@ -40,7 +40,7 @@
                }"
                [ngStyle]="m.role === 'user'
                  ? {
-                     background: 'linear-gradient(135deg, #ff80ab, #80d8ff)',
+                     background: 'var(--primary-color)',
                      color: 'white',
                      borderRadius: '20px 20px 0px 20px',
                      maxWidth: '80%',
@@ -58,14 +58,14 @@
             <div class="small fw-bold mb-1"
                  [ngStyle]="m.role === 'user'
                    ? { color: '#f0f0f0' }
-                   : { color: '#6c757d' }">
+                   : { color: 'var(--primary-dark)' }">
 
               <ng-container *ngIf="m.role === 'user'; else botLabel">
                 You:
               </ng-container>
 
               <ng-template #botLabel>
-                <i class="bi bi-robot me-2 fs-5" style="color: #55ccff;"></i>
+                <i class="bi bi-robot me-2 fs-5" style="color: var(--primary-dark);"></i>
                 Baby bot:
               </ng-template>
 
@@ -91,7 +91,7 @@
              [disabled]="api.loading()"
              (keyup.enter)="onSend()">
       <button class="btn text-white rounded-end px-4"
-              style="background: linear-gradient(135deg, #ff80ab, #80d8ff); border: none;"
+              style="background: var(--gradient-secondary); border: none;"
               [disabled]="!draft.trim() || api.loading()"
               (click)="onSend()">
         <i class="bi bi-send-fill"></i>

@@ -1,32 +1,94 @@
+.body {
+  background-color: var(--beige-100);
+  padding: 20px 0px;
+}
 
-    .profile-avatar {
-      position: relative;
-    }
+.profile-avatar {
+  position: relative;
+}
 
-    .settings-section {
-      padding: 1rem 0;
-      border-bottom: 1px solid #dee2e6;
-    }
+.settings-section {
+  padding: 1rem 0;
+  border-bottom: 1px solid #dee2e6;
+}
 
-    .settings-section:last-child {
-      border-bottom: none;
-    }
+.settings-section:last-child {
+  border-bottom: none;
+}
 
-    .form-check-label {
-      font-weight: 500;
-    }
+.form-check-label {
+  font-weight: 500;
+}
 
-    .card {
-      transition: transform 0.2s ease-in-out;
-    }
+.card {
+  transition: transform 0.2s ease-in-out;
 
-    .card:hover {
-      transform: translateY(-2px);
-    }
-    .hover-overlay {
+  background-color: var(--beige-50);
+  /* بيج فاتح */
+  border-radius: 12px;
+  /* زوايا ناعمة */
+  border: 1px solid #e0d5c2;
+  /* حدود خفيفة بيج أغمق شوية */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  /* ظل ناعم */
+}
+
+
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.hover-overlay {
   transition: opacity 0.3s ease;
 }
 
 label:hover .hover-overlay {
   opacity: 1 !important;
+}
+.btn-outline-custom-primary {
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  background: transparent;
+  transition: all 0.3s ease;
+}
+.btn-outline-custom-primary:hover,
+.btn-outline-custom-primary:focus {
+  background: var(--primary-color);
+  color: #fff;
+}
+/* Edit Profile - Secondary */
+.btn-outline-custom-secondary {
+  border: 1px solid var(--secondary-color);
+  color: var(--secondary-color);
+  background: transparent;
+}
+.btn-outline-custom-secondary:hover,
+.btn-outline-custom-secondary.active {
+  background: var(--secondary-color);
+  color: #fff;
+}
+
+/* Change Password - Light */
+.btn-outline-custom-light {
+  border: 1px solid var(--primary-light);
+  color: var(--primary-light);
+  background: transparent;
+}
+.btn-outline-custom-light:hover,
+.btn-outline-custom-light.active {
+  background: var(--primary-light);
+  color: #000;
+}
+
+/* Account Settings - Dark */
+.btn-outline-custom-dark {
+  border: 1px solid var(--primary-dark);
+  color: var(--primary-dark);
+  background: transparent;
+}
+.btn-outline-custom-dark:hover,
+.btn-outline-custom-dark.active {
+  background: var(--primary-dark);
+  color: #fff;
 }

@@ -134,7 +134,7 @@ export class EditProductComponent implements OnInit {
   
 
   goBack(): void {
-    this.router.navigate(["/dashboard"])
+    this.router.navigate(["/my-products"])
   }
 
 }
