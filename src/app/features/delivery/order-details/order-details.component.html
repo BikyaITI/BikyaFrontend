@@ -3,25 +3,22 @@
   <header class="header">
     <div class="header-content">
       <div class="header-left">
-        <button
-          (click)="goBack()"
-          class="back-button"
-        >
+        <button (click)="goBack()" class="back-button">
           <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </button>
         <div class="header-text">
-          <h1>تفاصيل الطلب #{{ orderId }}</h1>
-          <p>مرحباً، {{ userName }}</p>
+          <h1>Order Details #{{ orderId }}</h1>
+          <p>Welcome, {{ userName }}</p>
         </div>
       </div>
-      <button
-        (click)="logout()"
-        class="logout-button"
-      >
-        تسجيل الخروج
-      </button>
+      <button (click)="logout()" class="logout-button">Logout</button>
     </div>
   </header>
 
@@ -31,7 +28,7 @@
     <div *ngIf="isLoading" class="loading-container">
       <div class="loading-content">
         <div class="loading-spinner"></div>
-        <p class="loading-text">جاري تحميل تفاصيل الطلب...</p>
+        <p class="loading-text">Loading order details...</p>
       </div>
     </div>
 
@@ -40,42 +37,44 @@
       <!-- Order Summary -->
       <div class="order-summary">
         <div class="summary-header">
-          <h2>ملخص الطلب</h2>
+          <h2>Order Summary</h2>
           <span [class]="getStatusClass(order.status)" class="status-badge">
             {{ getStatusText(order.status) }}
           </span>
         </div>
         <div class="summary-grid">
           <div class="summary-item">
-            <div class="label">رقم الطلب</div>
+            <div class="label">Order ID</div>
             <div class="value">#{{ order.id }}</div>
           </div>
           <div class="summary-item">
-            <div class="label">إجمالي المبلغ</div>
-            <div class="value amount">{{ order.totalAmount | currency:'EGP' }}</div>
+            <div class="label">Total Amount</div>
+            <div class="value amount">
+              {{ order.totalAmount | currency : "EGP" }}
+            </div>
           </div>
           <div class="summary-item">
-            <div class="label">تاريخ الطلب</div>
-            <div class="value">{{ order.createdAt | date:'short' }}</div>
+            <div class="label">Order Date</div>
+            <div class="value">{{ order.createdAt | date : "short" }}</div>
           </div>
         </div>
       </div>
 
       <!-- Product Info -->
       <div class="product-info">
-        <h3>تفاصيل المنتج</h3>
+        <h3>Product Details</h3>
         <div class="product-content">
-          <div class="product-image">
-            <img *ngIf="order.productImage && order.productImage !== '' && !order.productImage.includes('placeholder.com')" [src]="order.productImage" alt="Product">
-            <div *ngIf="!order.productImage || order.productImage === '' || order.productImage.includes('placeholder.com')" class="placeholder">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-          </div>
           <div class="product-details">
-            <h4>{{ order.productName }}</h4>
-            <p>تاريخ الدفع: {{ order.paidAt | date:'short' }}</p>
+           <h4 class="me-3" style="display: inline;">
+              <a [routerLink]="['/products', order.productId]"> {{ order.productName }}</a>
+            </h4>
+            <span *ngIf="order.isSwapOrder"
+              ><i class="bi bi-arrow-left-right"></i>
+              <h4 class="ms-3" style="display: inline;">
+                <a  [routerLink]="['/products', order.relatedProductId]"> {{ order.relatedProductTitle }}</a>
+              </h4>
+            </span>
+            <p>Payment Date: {{ order.paidAt | date : "short" }}</p>
           </div>
         </div>
       </div>
@@ -83,70 +82,70 @@
       <div class="info-grid">
         <!-- Shipping Details - Customer 1 (this order) -->
         <div class="info-card">
-          <h3>معلومات الشحن - العميل 1</h3>
+          <h3>
+            Shipping Information -
+            <span>{{ order.isSwapOrder ? "User 1" : "Buyer" }}</span>
+          </h3>
           <div class="info-list">
             <div class="info-item">
-              <div class="label">اسم العميل</div>
-              <div class="value">{{ order.buyerName || 'غير متوفر' }}</div>
+              <div class="label">User Name</div>
+              <div class="value">{{ order.buyerInfo.fullName }}</div>
             </div>
             <div class="info-item">
-              <div class="label">البريد الإلكتروني</div>
-              <div class="value">{{ order.buyerEmail || 'غير متوفر' }}</div>
+              <div class="label">Email</div>
+              <div class="value">{{ order.buyerInfo.email }}</div>
             </div>
             <div class="info-item">
-              <div class="label">هاتف العميل</div>
-              <div class="value">{{ order.buyerPhone || 'غير متوفر' }}</div>
+              <div class="label">Phone</div>
+              <div class="value">{{ order.buyerInfo.phoneNumber }}</div>
+            </div>
+
+            <div class="info-item">
+              <div class="label">Address</div>
+              <div class="value">{{ order.buyerInfo.address }}</div>
             </div>
             <div class="info-item">
-              <div class="label">اسم المستلم</div>
-              <div class="value">{{ order.recipientName || 'غير متوفر' }}</div>
+              <div class="label">City</div>
+              <div class="value">{{ order.buyerInfo.city }}</div>
             </div>
             <div class="info-item">
-              <div class="label">العنوان</div>
-              <div class="value">{{ order.address || 'غير متوفر' }}</div>
-            </div>
-            <div class="info-item">
-              <div class="label">المدينة</div>
-              <div class="value">{{ order.city || 'غير متوفر' }}</div>
-            </div>
-            <div class="info-item">
-              <div class="label">هاتف المستلم</div>
-              <div class="value">{{ order.phoneNumber || 'غير متوفر' }}</div>
+              <div class="label">Postal Code</div>
+              <div class="value">{{ order.buyerInfo.postalCode }}</div>
             </div>
           </div>
         </div>
 
         <!-- Shipping Details - Customer 2 (related swap order) -->
-        <div class="info-card" *ngIf="order.isSwapOrder && order.otherOrderId">
-          <h3>معلومات الشحن - العميل 2</h3>
+        <div class="info-card">
+          <h3>
+            Shipping Information -
+            <span>{{ order.isSwapOrder ? "User 2" : "Seller" }}</span>
+          </h3>
           <div class="info-list">
             <div class="info-item">
-              <div class="label">اسم العميل</div>
-              <div class="value">{{ order.otherBuyerName || 'غير متوفر' }}</div>
+              <div class="label">User Name</div>
+              <div class="value">{{ order.sellerInfo.fullName }}</div>
             </div>
             <div class="info-item">
-              <div class="label">البريد الإلكتروني</div>
-              <div class="value">{{ order.otherBuyerEmail || 'غير متوفر' }}</div>
+              <div class="label">Email</div>
+              <div class="value">{{ order.sellerInfo.email }}</div>
             </div>
             <div class="info-item">
-              <div class="label">هاتف العميل</div>
-              <div class="value">{{ order.otherBuyerPhone || 'غير متوفر' }}</div>
+              <div class="label">Phone</div>
+              <div class="value">{{ order.sellerInfo.phoneNumber }}</div>
+            </div>
+
+            <div class="info-item">
+              <div class="label">Address</div>
+              <div class="value">{{ order.sellerInfo.address }}</div>
             </div>
             <div class="info-item">
-              <div class="label">اسم المستلم</div>
-              <div class="value">{{ order.otherRecipientName || 'غير متوفر' }}</div>
+              <div class="label">City</div>
+              <div class="value">{{ order.sellerInfo.city }}</div>
             </div>
             <div class="info-item">
-              <div class="label">العنوان</div>
-              <div class="value">{{ order.otherAddress || 'غير متوفر' }}</div>
-            </div>
-            <div class="info-item">
-              <div class="label">المدينة</div>
-              <div class="value">{{ order.otherCity || 'غير متوفر' }}</div>
-            </div>
-            <div class="info-item">
-              <div class="label">هاتف المستلم</div>
-              <div class="value">{{ order.otherPhoneNumber || 'غير متوفر' }}</div>
+              <div class="label">Postal Code</div>
+              <div class="value">{{ order.sellerInfo.postalCode }}</div>
             </div>
           </div>
         </div>
@@ -155,25 +154,24 @@
       <!-- Action Buttons -->
       <div class="action-section">
         <div class="action-buttons">
-          <button
-            (click)="goBack()"
-            class="action-button secondary"
-          >
+          <button (click)="goBack()" class="action-button secondary">
             <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+              <path
+                d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+              />
             </svg>
-            العودة للوحة التحكم
+            Back to Dashboard
           </button>
-          
+
           <div class="status-info">
             <div class="current-status">
-              <span class="status-label">الحالة الحالية:</span>
+              <span class="status-label">Current Status:</span>
               <span [class]="getStatusClass(order.status)" class="status-badge">
                 {{ getStatusText(order.status) }}
               </span>
             </div>
             <p class="status-note">
-              يمكنك تحديث حالة الطلب من لوحة التحكم الرئيسية
+              You can update the order status from the main dashboard.
             </p>
           </div>
         </div>
@@ -184,20 +182,25 @@
     <div *ngIf="!isLoading && !order" class="not-found">
       <div class="not-found-content">
         <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          />
         </svg>
-        <h3>الطلب غير موجود</h3>
-        <p>لم يتم العثور على الطلب المطلوب.</p>
+        <h3>Order Not Found</h3>
+        <p>The requested order could not be found.</p>
         <div class="warning">
-          <p><strong>ملاحظة:</strong> تأكد من أن الـ backend يعمل على المنفذ 65162</p>
+          <p>
+            <strong>Note:</strong> Make sure the backend is running on port
+            65162
+          </p>
         </div>
-        <button
-          (click)="goBack()"
-          class="back-button"
-        >
-          العودة للوحة التحكم
+        <button (click)="goBack()" class="back-button">
+          Back to Dashboard
         </button>
       </div>
     </div>
   </main>
-</div> 
+</div>

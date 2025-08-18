@@ -71,9 +71,20 @@ export class ProfileComponent implements OnInit {
     this.profileForm = this.fb.group({
       fullName: ["", Validators.required],
       email: ["", [Validators.required, Validators.email]],
-      phone: [""],
+      phoneNumber: ['', [
+        Validators.required,
+        Validators.pattern(/^[0-9]{11}$/) // لازم يكون 11 رقم بالظبط
+      ]],
+      address: ['', [Validators.required, Validators.maxLength(200)]],
+      city: ['', [Validators.required, Validators.maxLength(100)]],
+      postalCode: ['', [
+        Validators.required,
+        Validators.pattern(/^[0-9]{5,10}$/) // من 5 لـ 10 أرقام
+      ]]
+    });
+      
    
-    })
+  
 
     this.passwordForm = this.fb.group(
       {
@@ -98,7 +109,10 @@ export class ProfileComponent implements OnInit {
       this.profileForm.patchValue({
         fullName: user.fullName,
         email: user.email,
-        phone: user.phone,
+        phoneNumber: user.phoneNumber,
+        address: user.address ,
+        city: user.city ,
+        postalCode: user.postalCode 
       });
 
       this.previewUrl = user.profileImageUrl || null; // هنا نحدث المتغير مباشرة
@@ -114,11 +128,17 @@ export class ProfileComponent implements OnInit {
           this.profileForm.patchValue({
             fullName: this.currentUser.fullName,
             email: this.currentUser.email,
-            phone: this.currentUser.phone,
+            phoneNumber: this.currentUser.phoneNumber,
+            address: this.currentUser.address,
+            city: this.currentUser.city ,
+            postalCode: this.currentUser.postalCode 
           });
 
           this.previewUrl = this.currentUser.profileImageUrl || null; // تحديث المتغير
 
+          console.log('Current User:', this.currentUser);
+          console.log('Profile Form Value:', this.profileForm.value);
+         
           console.log(`Updated Current User Image URL: ${this.previewUrl}`);
           this.cdr.detectChanges();  // تأكد من تحديث العرض
         },
@@ -195,6 +215,10 @@ updateProfile(): void {
     const updateRequest: IUpdateProfileRequest = {
       fullName: this.profileForm.get("fullName")?.value,
       email: this.profileForm.get("email")?.value,
+      phoneNumber: this.profileForm.get("phoneNumber")?.value,
+      address: this.profileForm.get("address")?.value,
+      city: this.profileForm.get("city")?.value,
+      postalCode: this.profileForm.get("postalCode")?.value
     };
 
     this.userService.updateProfile(updateRequest).subscribe({

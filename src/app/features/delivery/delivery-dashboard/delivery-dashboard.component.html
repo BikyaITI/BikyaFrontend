@@ -1,382 +1,386 @@
 <div class="delivery-dashboard-container">
   <!-- Header -->
-  <header class="dashboard-header">
-    <div class="header-content">
-      <div class="header-left">
-        <div class="logo-section">
-          <div class="delivery-logo">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-            </svg>
-          </div>
-          <div class="header-text">
-            <h1>لوحة تحكم التوصيل</h1>
-            <p>إدارة الطلبات والتوصيل</p>
-          </div>
-        </div>
-      </div>
-      <div class="header-right">
-        <div class="user-info">
-          <div class="user-avatar">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-            </svg>
-          </div>
-          <div class="user-details">
-            <span class="user-name">{{ userName }}</span>
-            <span class="user-role">موظف التوصيل</span>
-          </div>
-        </div>
-        <button
-          (click)="logout()"
-          class="logout-button"
-        >
-          <svg class="logout-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17 7l-1.41 1.39L18.17 11H8v2h10.17l-2.58 2.61L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+<header class="dashboard-header">
+  <div class="header-content">
+    <div class="header-left">
+      <div class="logo-section">
+        <div class="delivery-logo">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
           </svg>
-          تسجيل الخروج
-        </button>
+        </div>
+        <div class="header-text">
+          <h1>Delivery Dashboard</h1>
+          <p>Manage orders and delivery</p>
+        </div>
       </div>
     </div>
-  </header>
-
-  <!-- Main Content -->
-  <main class="dashboard-main">
-    <div class="dashboard-content">
-      <!-- Stats Section -->
-      <div class="stats-section">
-        <div class="stats-grid">
-          <div class="stat-card total-orders">
-            <div class="stat-icon">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-              </svg>
-            </div>
-            <div class="stat-content">
-              <h3 class="stat-title">إجمالي الطلبات</h3>
-              <p class="stat-value">{{ orders.length }}</p>
-            </div>
-          </div>
-
-          <div class="stat-card pending-orders">
-            <div class="stat-icon">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-              </svg>
-            </div>
-            <div class="stat-content">
-              <h3 class="stat-title">في الانتظار</h3>
-              <p class="stat-value">{{ getOrdersByStatus('Paid').length + getOrdersByStatus('1').length }}</p>
-            </div>
-          </div>
-
-          <div class="stat-card completed-orders">
-            <div class="stat-icon">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-              </svg>
-            </div>
-            <div class="stat-content">
-              <h3 class="stat-title">مكتملة</h3>
-              <p class="stat-value">{{ getOrdersByStatus('Completed').length + getOrdersByStatus('3').length }}</p>
-            </div>
-          </div>
-
-          <div class="stat-card swap-orders">
-            <div class="stat-icon">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M16 17.01V10h-2v7.01h-3L15 21l4-3.99h-3zM9 3L5 6.99h3V14h2V6.99h3L9 3z"/>
-              </svg>
-            </div>
-            <div class="stat-content">
-              <h3 class="stat-title">طلبات التبادل</h3>
-              <p class="stat-value">{{ getSwapOrders().length }}</p>
-            </div>
-          </div>
+    <div class="header-right">
+      <div class="user-info">
+        <div class="user-avatar">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </div>
+        <div class="user-details">
+          <span class="user-name">{{ userName }}</span>
+          <span class="user-role">Delivery Staff</span>
         </div>
       </div>
+      <button
+        (click)="logout()"
+        class="logout-button"
+      >
+        <svg class="logout-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17 7l-1.41 1.39L18.17 11H8v2h10.17l-2.58 2.61L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+        </svg>
+        Logout
+      </button>
+    </div>
+  </div>
+</header>
 
-      <!-- Orders Section -->
-      <div class="orders-section">
-        <div class="section-header">
-          <div class="section-title">
-            <h2 class="orders-title">الطلبات الجاهزة للتوصيل</h2>
-            <p class="orders-subtitle">قائمة الطلبات التي تحتاج إلى توصيل</p>
-          </div>
-          <button
-            (click)="loadOrders()"
-            class="refresh-button"
-            [disabled]="isLoading"
-          >
-            <svg *ngIf="isLoading" class="loading-spinner" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="31.416" stroke-dashoffset="31.416">
-                <animate attributeName="stroke-dashoffset" values="0;31.416" dur="1s" repeatCount="indefinite"/>
-              </circle>
-            </svg>
-            <svg *ngIf="!isLoading" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-            </svg>
-            تحديث
-          </button>
-        </div>
-
-        <!-- Loading State -->
-        <div *ngIf="isLoading" class="loading-container">
-          <div class="loading-spinner">
-            <svg viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="31.416" stroke-dashoffset="31.416">
-                <animate attributeName="stroke-dashoffset" values="0;31.416" dur="1s" repeatCount="indefinite"/>
-              </circle>
-            </svg>
-            <p>جاري تحميل الطلبات...</p>
-          </div>
-        </div>
-
-        <!-- Orders Grid -->
-        <div *ngIf="!isLoading && orders.length > 0" class="orders-grid">
-          <div *ngFor="let order of orders" class="order-card" [ngClass]="{'exchange-order': order.isSwapOrder}">
-            <!-- Exchange Order Header -->
-            <div *ngIf="order.isSwapOrder" class="exchange-header">
-              <div class="exchange-badge">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M16 17.01V10h-2v7.01h-3L15 21l4-3.99h-3zM9 3L5 6.99h3V14h2V6.99h3L9 3z"/>
-                </svg>
-                طلب تبادل
-              </div>
-              <div class="exchange-info" *ngIf="order.exchangeInfo">
-                {{ order.exchangeInfo }}
-              </div>
-            </div>
-
-            <div class="order-header">
-              <div class="order-id">
-                <span class="order-number">طلب رقم #{{ order.id }}</span>
-                <span class="order-date">{{ order.createdAt | date:'short' }}</span>
-                <span *ngIf="order.relatedOrderId" class="related-order">
-                  مرتبط مع طلب #{{ order.relatedOrderId }}
-                </span>
-              </div>
-              <div class="order-status">
-                <span class="status-badge" [ngClass]="getStatusBadgeClass(order.status)">
-                  <span class="status-icon">{{ getStatusIcon(order.status) }}</span>
-                  {{ getStatusText(order.status) }}
-                </span>
-                <span class="shipping-status-badge" [ngClass]="getShippingStatusBadgeClass(order.shippingStatus)">
-                  {{ getShippingStatusText(order.shippingStatus) }}
-                </span>
-              </div>
-            </div>
-
-            <div class="order-content">
-              <div class="product-info">
-                <div class="product-image">
-                  <img 
-                    [src]="order.productImage || 'assets/images/placeholder-product.svg'" 
-                    [alt]="order.productName"
-                  />
-                </div>
-                <div class="product-details">
-                  <h4 class="product-name">{{ order.productName }}</h4>
-                  <p class="product-description" *ngIf="order.isSwapOrder">
-                    <strong>تبادل منتجات:</strong> هذا الطلب جزء من عملية تبادل
-                  </p>
-                  <div class="customer-info">
-                    <p><strong>المشتري:</strong> {{ order.buyerName || 'غير محدد' }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="order-details">
-                <div class="detail-row">
-                  <span class="detail-label">المبلغ الإجمالي:</span>
-                  <span class="detail-value amount">{{ order.totalAmount | currency:'EGP':'symbol':'1.2-2' }}</span>
-                </div>
-
-                <!-- Swap (exchange): show two parties names + their respective products only -->
-                <ng-container *ngIf="order.isSwapOrder; else normalOrderDetails">
-                  <div class="detail-row">
-                    <span class="detail-label">العميل 1:</span>
-                    <span class="detail-value">{{ order.party1Name || order.recipientName || order.buyerName || 'غير محدد' }}</span>
-                  </div>
-                  <div class="detail-row">
-                    <span class="detail-label">المنتج (1):</span>
-                    <span class="detail-value">{{ order.party1Product || order.productName || 'غير محدد' }}</span>
-                  </div>
-                  <div class="detail-row" *ngIf="order.party2Name || order.otherOrderId">
-                    <span class="detail-label">العميل 2:</span>
-                    <span class="detail-value">{{ order.party2Name || 'غير محدد' }}</span>
-                  </div>
-                  <div class="detail-row" *ngIf="order.party2Product || order.otherOrderId">
-                    <span class="detail-label">المنتج (2):</span>
-                    <span class="detail-value">{{ order.party2Product || 'غير محدد' }}</span>
-                  </div>
-                </ng-container>
-
-                <!-- Normal orders: keep full address details unchanged -->
-                <ng-template #normalOrderDetails>
-                  <div class="detail-row">
-                    <span class="detail-label">اسم المستلم:</span>
-                    <span class="detail-value">{{ order.recipientName || order.buyerName || 'غير محدد' }}</span>
-                  </div>
-                  <div class="detail-row">
-                    <span class="detail-label">العنوان:</span>
-                    <span class="detail-value">{{ order.address || (order.recipientName ? '—' : 'غير محدد') }}</span>
-                  </div>
-                  <div class="detail-row">
-                    <span class="detail-label">المدينة:</span>
-                    <span class="detail-value">{{ order.city || (order.recipientName ? '—' : 'غير محدد') }}</span>
-                  </div>
-                  <div class="detail-row">
-                    <span class="detail-label">رقم الهاتف:</span>
-                    <span class="detail-value">{{ order.phoneNumber || order.buyerPhone || 'غير محدد' }}</span>
-                  </div>
-                </ng-template>
-              </div>
-            </div>
-
-            <div class="order-actions">
-              <button 
-                (click)="viewOrderDetails(order.id)"
-                class="action-button view-button"
-              >
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                </svg>
-                التفاصيل
-              </button>
-
-              <button 
-                (click)="openStatusModal(order)"
-                class="action-button status-button"
-              >
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                </svg>
-                تحديث الحالة
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Empty State -->
-        <div *ngIf="!isLoading && orders.length === 0" class="empty-state">
-          <div class="empty-icon">
+  <!-- Main Content -->
+<main class="dashboard-main">
+  <div class="dashboard-content">
+    <!-- Stats Section -->
+    <div class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-card total-orders"
+          (click)="filterOrders('All')">
+          <div class="stat-icon">
             <svg viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
             </svg>
           </div>
-          <h3>لا توجد طلبات</h3>
-          <p>لا توجد طلبات جاهزة للتوصيل في الوقت الحالي</p>
+          <div class="stat-content">
+            <h3 class="stat-title">Total Orders</h3>
+            <p class="stat-value">{{ orders.length }}</p>
+          </div>
+        </div>
+
+        <div class="stat-card pending-orders cursor-pointer" (click)="filterOrders('Pending')">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-title">Pending</h3>
+            <p class="stat-value">{{ getOrdersByStatus('Paid').length + getOrdersByStatus('1').length }}</p>
+          </div>
+        </div>
+
+        <div class="stat-card completed-orders" (click)="filterOrders('Completed')">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-title">Completed</h3>
+            <p class="stat-value">{{ getOrdersByStatus('Completed').length + getOrdersByStatus('3').length }}</p>
+          </div>
+        </div>
+
+        <div class="stat-card swap-orders" (click)="filterOrders('Swap')">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M16 17.01V10h-2v7.01h-3L15 21l4-3.99h-3zM9 3L5 6.99h3V14h2V6.99h3L9 3z"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <h3 class="stat-title">Swap Orders</h3>
+            <p class="stat-value">{{ getSwapOrders().length }}</p>
+          </div>
         </div>
       </div>
     </div>
-  </main>
 
-  <!-- Enhanced Status Update Modal -->
-  <div *ngIf="showStatusModal" class="modal-overlay" (click)="closeModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>
-          <span class="modal-icon">📦</span>
-          تحديث حالة الطلب #{{ selectedOrder?.id }}
-        </h3>
-        <button class="close-button" (click)="closeModal()">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-          </svg>
-        </button>
-      </div>
-      
-      <div class="modal-body">
-        <!-- Current Status Display -->
-        <div class="current-status-section">
-          <h4>الحالة الحالية</h4>
-          <div class="current-status-display">
-            <span class="status-badge current" [ngClass]="getStatusBadgeClass(selectedOrder?.status || '')">
-              <span class="status-icon">{{ getStatusIcon(selectedOrder?.status || '') }}</span>
-              {{ getStatusText(selectedOrder?.status || '') }}
-            </span>
-            <p class="status-description">{{ getStatusDescription(selectedOrder?.status || '') }}</p>
-          </div>
+    <!-- Orders Section -->
+    <div class="orders-section">
+      <div class="section-header">
+        <div class="section-title">
+          <h2 class="orders-title">Orders Ready for Delivery</h2>
+          <p class="orders-subtitle">List of orders that need delivery</p>
         </div>
-
-        <!-- Status Update Form -->
-        <div class="status-update-form">
-          <h4>تحديث إلى حالة جديدة</h4>
-          
-          <div class="form-group">
-            <label class="form-label">اختر الحالة الجديدة:</label>
-            <div class="status-options-grid">
-              <div 
-                *ngFor="let option of getAvailableStatusOptions()" 
-                class="status-option"
-                [class.selected]="updateOrderStatusData.status === option.value"
-                (click)="updateOrderStatusData.status = option.value"
-              >
-                <div class="status-option-icon">{{ option.icon }}</div>
-                <div class="status-option-content">
-                  <div class="status-option-label">{{ option.label }}</div>
-                  <div class="status-option-description">{{ option.description }}</div>
-                </div>
-                <div class="status-option-check" *ngIf="updateOrderStatusData.status === option.value">
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">ملاحظات إضافية (اختياري):</label>
-            <textarea 
-              [(ngModel)]="updateOrderStatusData.notes" 
-              class="form-control notes-textarea" 
-              rows="3" 
-              placeholder="أضف ملاحظات حول التحديث، مثل: تم التوصيل للعميل، أو تم الاتصال بالعميل..."
-            ></textarea>
-          </div>
-        </div>
-
-        <!-- Error/Success Messages -->
-        <div *ngIf="errorMessage" class="alert alert-danger">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-          </svg>
-          {{ errorMessage }}
-        </div>
-
-        <div *ngIf="successMessage" class="alert alert-success">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-          </svg>
-          {{ successMessage }}
-        </div>
-      </div>
-      
-      <div class="modal-footer">
-        <button class="btn-secondary" (click)="closeModal()" [disabled]="isUpdatingStatus">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-          </svg>
-          إلغاء
-        </button>
-        <button 
-          class="btn-primary" 
-          (click)="updateOrderStatus()" 
-          [disabled]="isUpdatingStatus || !updateOrderStatusData.status"
+        <button
+          (click)="loadOrders()"
+          class="refresh-button"
+          [disabled]="isLoading"
         >
-          <svg *ngIf="isUpdatingStatus" class="loading-spinner" viewBox="0 0 24 24">
+          <svg *ngIf="isLoading" class="loading-spinner" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="31.416" stroke-dashoffset="31.416">
               <animate attributeName="stroke-dashoffset" values="0;31.416" dur="1s" repeatCount="indefinite"/>
             </circle>
           </svg>
-          <svg *ngIf="!isUpdatingStatus" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          <svg *ngIf="!isLoading" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
           </svg>
-          {{ isUpdatingStatus ? 'جاري التحديث...' : 'تحديث الحالة' }}
+          Refresh
         </button>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-container">
+        <div class="loading-spinner">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="31.416" stroke-dashoffset="31.416">
+              <animate attributeName="stroke-dashoffset" values="0;31.416" dur="1s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
+          <p>Loading orders...</p>
+        </div>
+      </div>
+
+      <!-- Orders Grid -->
+      <div *ngIf="!isLoading && orders.length > 0" class="orders-grid">
+        <div *ngFor="let order of filteredOrders" class="order-card" [ngClass]="{'exchange-order': order.isSwapOrder}">
+          <!-- Exchange Order Header -->
+          <div *ngIf="order.isSwapOrder" class="exchange-header">
+            <div class="exchange-badge">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M16 17.01V10h-2v7.01h-3L15 21l4-3.99h-3zM9 3L5 6.99h3V14h2V6.99h3L9 3z"/>
+              </svg>
+              Swap Order
+            </div>
+            <div class="exchange-info" *ngIf="order.exchangeInfo">
+              {{ order.exchangeInfo }}
+            </div>
+          </div>
+
+          <div class="order-header">
+            <div class="order-id">
+              <span class="order-number">Order #{{ order.id }}</span>
+              <span class="order-date">{{ order.createdAt | date:'short' }}</span>
+              <span *ngIf="order.relatedOrderId" class="related-order">
+                Related to Order #{{ order.relatedOrderId }}
+              </span>
+            </div>
+            <div class="order-status">
+              <span class="status-badge" [ngClass]="getStatusBadgeClass(order.status)">
+                <span class="status-icon">{{ getStatusIcon(order.status) }}</span>
+                {{ getStatusText(order.status) }}
+              </span>
+              <span class="shipping-status-badge" [ngClass]="getShippingStatusBadgeClass(order.shippingStatus)">
+                {{ getShippingStatusText(order.shippingStatus) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="order-content">
+            <div class="product-info">
+              
+              <div class="product-details">
+                <h6 class="me-3" style="display: inline;">
+                  <a [routerLink]="['/products', order.productId]"> {{ order.productName }}</a>
+                </h6>
+                <span *ngIf="order.isSwapOrder">
+                  <i class="bi bi-arrow-left-right"></i>
+                  <h6 class="ms-3" style="display: inline;">
+                    <a [routerLink]="['/products', order.relatedProductId]"> {{ order.relatedProductTitle }}</a>
+                  </h6>
+                </span>
+                <p class="product-description" *ngIf="order.isSwapOrder">
+                  <strong>Product Swap:</strong> This order is part of an exchange request.
+                </p>
+                <div class="customer-info">
+                  <p><strong>Buyer:</strong> {{ order.buyerInfo.fullName }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="order-details">
+              <div class="detail-row">
+                <span class="detail-label">Total Amount:</span>
+                <span class="detail-value amount">{{ order.totalAmount | currency:'EGP':'symbol':'1.2-2' }}</span>
+              </div>
+
+              <!-- Swap (exchange): show two parties names + their respective products only -->
+              <ng-container *ngIf="order.isSwapOrder; else normalOrderDetails">
+                <div class="detail-row">
+                  <span class="detail-label">User 1:</span>
+                  <span class="detail-value">{{ order.party1Name || order.buyerInfo.fullName }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Product (1):</span>
+                  <span class="detail-value">{{ order.party1Product || order.productName || 'Not specified' }}</span>
+                </div>
+                <div class="detail-row" *ngIf="order.party2Name || order.relatedOrderId">
+                  <span class="detail-label">User 2:</span>
+                  <span class="detail-value">{{ order.party2Name || 'Not specified' }}</span>
+                </div>
+                <div class="detail-row" *ngIf="order.party2Product || order.relatedOrderId">
+                  <span class="detail-label">Product (2):</span>
+                  <span class="detail-value">{{ order.party2Product || 'Not specified' }}</span>
+                </div>
+              </ng-container>
+
+              <!-- Normal orders: keep full address details unchanged -->
+              <ng-template #normalOrderDetails>
+                <div class="detail-row">
+                  <span class="detail-label">Recipient Name:</span>
+                  <span class="detail-value">{{ order.buyerInfo.fullName }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Address:</span>
+                  <span class="detail-value">{{ order.buyerInfo.address }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">City:</span>
+                  <span class="detail-value">{{ order.buyerInfo.city }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Phone Number:</span>
+                  <span class="detail-value">{{ order.buyerInfo.phoneNumber }}</span>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+
+          <div class="order-actions ">
+            <button 
+              (click)="viewOrderDetails(order.id)"
+              class="action-button view-button"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+              </svg>
+              Details
+            </button>
+
+            <button 
+              (click)="openStatusModal(order)"
+              class="action-button status-button"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              Update Status
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoading && orders.length === 0" class="empty-state">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+          </svg>
+        </div>
+        <h3>No Orders</h3>
+        <p>No orders ready for delivery at the moment</p>
       </div>
     </div>
   </div>
-</div> 
+</main>
+
+
+<!-- Enhanced Status Update Modal -->
+<div *ngIf="showStatusModal" class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>
+        <span class="modal-icon">📦</span>
+        Update Order Status #{{ selectedOrder?.id }}
+      </h3>
+      <button class="close-button" (click)="closeModal()">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <!-- Current Status Display -->
+      <div class="current-status-section">
+        <h4>Current Status</h4>
+        <div class="current-status-display">
+          <span class="status-badge current" [ngClass]="getStatusBadgeClass(selectedOrder?.status || '')">
+            <span class="status-icon">{{ getStatusIcon(selectedOrder?.status || '') }}</span>
+            {{ getStatusText(selectedOrder?.status || '') }}
+          </span>
+          <p class="status-description">{{ getStatusDescription(selectedOrder?.status || '') }}</p>
+        </div>
+      </div>
+
+      <!-- Status Update Form -->
+      <div class="status-update-form">
+        <h4>Update to New Status</h4>
+        
+        <div class="form-group">
+          <label class="form-label">Select New Status:</label>
+          <div class="status-options-grid">
+            <div 
+              *ngFor="let option of getAvailableStatusOptions()" 
+              class="status-option"
+              [class.selected]="updateOrderStatusData.status === option.value"
+              (click)="updateOrderStatusData.status = option.value"
+            >
+              <div class="status-option-icon">{{ option.icon }}</div>
+              <div class="status-option-content">
+                <div class="status-option-label">{{ option.label }}</div>
+                <div class="status-option-description">{{ option.description }}</div>
+              </div>
+              <div class="status-option-check" *ngIf="updateOrderStatusData.status === option.value">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Additional Notes (Optional):</label>
+          <textarea 
+            [(ngModel)]="updateOrderStatusData.notes" 
+            class="form-control notes-textarea" 
+            rows="3" 
+            placeholder="Add notes about this update, e.g. delivered to customer, contacted customer..."
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Error/Success Messages -->
+      <div *ngIf="errorMessage" class="alert alert-danger">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+        {{ errorMessage }}
+      </div>
+
+      <div *ngIf="successMessage" class="alert alert-success">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+        </svg>
+        {{ successMessage }}
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeModal()" [disabled]="isUpdatingStatus">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+        Cancel
+      </button>
+      <button 
+        class="btn-primary" 
+        (click)="updateOrderStatus()" 
+        [disabled]="isUpdatingStatus || !updateOrderStatusData.status"
+      >
+        <svg *ngIf="isUpdatingStatus" class="loading-spinner" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="31.416" stroke-dashoffset="31.416">
+            <animate attributeName="stroke-dashoffset" values="0;31.416" dur="1s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+        <svg *ngIf="!isUpdatingStatus" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+        {{ isUpdatingStatus ? 'Updating...' : 'Update Status' }}
+      </button>
+    </div>
+  </div>
+</div>

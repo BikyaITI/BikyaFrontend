@@ -191,14 +191,14 @@ export class AdminUserListComponent implements OnInit, OnDestroy {
 
   async confirmDelete(user: IUser) {
     const result = await Swal.fire({
-      title: 'تأكيد الحذف',
-      text: `هل أنت متأكد من حذف المستخدم "${user.FullName || user.email}"؟`,
+      title: 'Confirm Deletion',
+      text: `Are you sure you want to delete the user "${user.FullName || user.email}"?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'نعم، احذف',
-      cancelButtonText: 'إلغاء',
+      confirmButtonText: 'Yes, Delete',
+      cancelButtonText: 'Cancel',
       reverseButtons: true
     });
 
@@ -246,17 +246,17 @@ export class AdminUserListComponent implements OnInit, OnDestroy {
 
   async confirmLock(user: IUser) {
     const isLocked = this.adminUserService.isUserLocked(user);
-    const actionText = isLocked ? 'إلغاء القفل' : 'قفل';
-    
+    const actionText = isLocked ? 'Unlock' : 'Lock';
+
     const result = await Swal.fire({
-      title: `تأكيد ${actionText}`,
-      text: `هل أنت متأكد من ${actionText} المستخدم "${user.fullName}"؟`,
+      title: `Confirm ${actionText}`,
+      text: `Are you sure you want to ${actionText.toLowerCase()} the user "${user.fullName}"?`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: isLocked ? '#28a745' : '#ffc107',
       cancelButtonColor: '#6c757d',
-      confirmButtonText: `نعم، ${actionText}`,
-      cancelButtonText: 'إلغاء',
+      confirmButtonText: `Yes, ${actionText}`,
+      cancelButtonText: 'Cancel',
       reverseButtons: true
     });
 
@@ -268,6 +268,7 @@ export class AdminUserListComponent implements OnInit, OnDestroy {
       }
     }
   }
+
 
   lockUser(id: number) {
     this.isLocking[id] = true;
@@ -345,17 +346,17 @@ export class AdminUserListComponent implements OnInit, OnDestroy {
 
   async assignAdmin(user: IUser) {
     const isAdmin = user.roles?.includes('Admin');
-    const actionText = isAdmin ? 'إلغاء صلاحيات المدير' : 'تعيين كمدير';
-    
+    const actionText = isAdmin ? 'Remove Admin Role' : 'Assign as Admin';
+
     const result = await Swal.fire({
-      title: `تأكيد ${actionText}`,
-      text: `هل أنت متأكد من ${actionText} للمستخدم "${user.fullName}"؟`,
+      title: `Confirm ${actionText}`,
+      text: `Are you sure you want to ${actionText.toLowerCase()} for the user "${user.fullName}"?`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: isAdmin ? '#dc3545' : '#17a2b8',
       cancelButtonColor: '#6c757d',
-      confirmButtonText: `نعم، ${actionText}`,
-      cancelButtonText: 'إلغاء',
+      confirmButtonText: `Yes, ${actionText}`,
+      cancelButtonText: 'Cancel',
       reverseButtons: true
     });
 
@@ -367,6 +368,7 @@ export class AdminUserListComponent implements OnInit, OnDestroy {
       }
     }
   }
+
 
   assignAdminRole(id: number) {
     this.isAssigning[id] = true;

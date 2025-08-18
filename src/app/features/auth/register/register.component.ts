@@ -34,7 +34,10 @@ export class RegisterComponent implements OnInit {
       {
         fullName: ["", Validators.required],
         email: ["", [Validators.required, Validators.email]],
-        phone: ["", Validators.required],
+        phone: ["", [Validators.required, Validators.pattern(/^\d{11}$/)]],  // enforce 11 digits
+        address: ["", Validators.required],
+        city: ["", Validators.required],
+        postalCode: ["", Validators.required],
         userType: ["User", Validators.required],
         password: ["", [Validators.required, Validators.minLength(8)]],
         confirmPassword: ["", Validators.required],
@@ -120,8 +123,23 @@ export class RegisterComponent implements OnInit {
     console.log('Form errors:', this.registerForm.errors);
     console.log('Form values:', this.registerForm.value);
     
+
     // Check each field
-    const fields = ['fullName', 'email', 'phone', 'userType', 'password', 'confirmPassword', 'agreeTerms', 'adminRegistrationCode'];
+    const fields = [
+      'fullName',
+      'email',
+      'phone',
+      'address',
+      'city',
+      'postalCode',
+      'profileImageUrl',
+      'userType',
+      'password',
+      'confirmPassword',
+      'agreeTerms',
+      'adminRegistrationCode'
+    ];
+
     fields.forEach(field => {
       const control = this.registerForm.get(field);
       console.log(`${field}:`, {
@@ -148,6 +166,9 @@ export class RegisterComponent implements OnInit {
         fullName: this.registerForm.get("fullName")?.value,
         email: this.registerForm.get("email")?.value,
         phoneNumber: this.registerForm.get("phone")?.value,
+        address: this.registerForm.get("address")?.value,
+        city: this.registerForm.get("city")?.value,
+        postalCode: this.registerForm.get("postalCode")?.value,
         password: this.registerForm.get("password")?.value,
         confirmPassword: this.registerForm.get("confirmPassword")?.value,
         userType: this.registerForm.get("userType")?.value,

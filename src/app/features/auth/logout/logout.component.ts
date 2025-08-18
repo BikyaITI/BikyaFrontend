@@ -13,17 +13,17 @@ import { AuthService } from '../../../core/services/auth.service';
         <div class="col-md-6">
           <div class="card">
             <div class="card-body text-center">
-              <h3>تسجيل الخروج</h3>
-              <p *ngIf="isLoading">جاري تسجيل الخروج...</p>
-              <p *ngIf="!isLoading && !errorMessage">تم تسجيل الخروج بنجاح!</p>
+              <h3>Logout</h3>
+              <p *ngIf="isLoading">Logging out...</p>
+              <p *ngIf="!isLoading && !errorMessage">You have been logged out successfully!</p>
               <p *ngIf="errorMessage" class="text-danger">{{ errorMessage }}</p>
               
               <div *ngIf="!isLoading" class="mt-3">
                 <button class="btn btn-primary me-2" routerLink="/login">
-                  تسجيل الدخول مرة أخرى
+                  Login Again
                 </button>
                 <button class="btn btn-secondary" routerLink="/home">
-                  العودة للرئيسية
+                  Back to Home
                 </button>
               </div>
             </div>
@@ -52,9 +52,9 @@ export class LogoutComponent implements OnInit {
   }
 
   private performLogout(): void {
-    // مباشرة نمسح البيانات المحلية
+    // Directly clear local data
     this.authService.logout();
     this.isLoading = false;
     console.log('Logout completed');
   }
-} 
+}

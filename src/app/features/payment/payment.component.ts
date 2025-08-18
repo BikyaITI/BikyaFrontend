@@ -11,6 +11,7 @@ import {
   PaymentDto 
 } from '../../core/models/payment.model';
 import { ApiResponse } from '../../core/models/api-response.model';
+import { Order } from '../../core/models/order.model';
 
 @Component({
   selector: 'app-payment',
@@ -28,7 +29,7 @@ export class PaymentComponent implements OnInit {
   currentUserId: number = 0;
   orderId: number = 0;
   orderAmount: number = 0;
-  orderDetails: any = null;
+  orderDetails: Order|null=null ;
 
   constructor(
     private fb: FormBuilder, 
@@ -75,7 +76,7 @@ export class PaymentComponent implements OnInit {
       next: (response) => {
         this.isLoading = false;
         if (response.success && response.data) {
-          this.orderDetails = response.data;
+          this.orderDetails = response.data;     
           this.orderAmount = response.data.totalAmount;
         }
       },

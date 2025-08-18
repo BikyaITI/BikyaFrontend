@@ -44,7 +44,7 @@ export class ExchangeRequestComponent implements OnInit {
         this.loadRequestedProduct();
         this.loadMyProducts();
       } else {
-        this.toastr.error('معرف المنتج غير صالح');
+        this.toastr.error('Invalid product ID');
         this.router.navigate(['/']);
       }
     });
@@ -65,8 +65,8 @@ export class ExchangeRequestComponent implements OnInit {
     } catch (error: any) {
       console.error('Error loading product:', error);
       this.toastr.error(
-        error.error?.message || 'فشل تحميل تفاصيل المنتج',
-        'خطأ في تحميل المنتج'
+        error.error?.message || 'Failed to load product details',
+        'Product Load Error'
       );
       this.router.navigate(['/']);
     }
@@ -83,16 +83,16 @@ export class ExchangeRequestComponent implements OnInit {
       }
     });
     subscription.unsubscribe();
-    
+
     return currentUserId;
   }
 
   async loadMyProducts(): Promise<void> {
     this.isLoading = true;
     const userId = this.getCurrentUserId();
-    
+
     if (!userId) {
-      this.toastr.error('يجب تسجيل الدخول أولاً', 'خطأ في المصادقة');
+      this.toastr.error('You must log in first', 'Authentication Error');
       this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
       return;
     }
@@ -113,24 +113,23 @@ export class ExchangeRequestComponent implements OnInit {
     } catch (error: any) {
       console.error('Error loading products:', error);
       this.toastr.error(
-        error.error?.message || 'فشل تحميل منتجاتك',
-        'خطأ في تحميل المنتجات'
+        error.error?.message || 'Failed to load your products',
+        'Product Load Error'
       );
     } finally {
       this.isLoading = false;
     }
   }
 
-
   getMainImageUrl(product: IProduct | null): string {
     if (!product?.images || product.images.length === 0) {
       return 'assets/images/placeholder-product.svg';
     }
-    
+
     // Find main image or fallback to first image
     const mainImage = product.images.find(img => img.isMain);
     let imageUrl = mainImage?.imageUrl || (product.images[0]?.imageUrl || '');
-    
+
     // If imageUrl is relative, ensure it has a leading slash
     if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('assets/')) {
       if (!imageUrl.startsWith('/')) {
@@ -141,12 +140,12 @@ export class ExchangeRequestComponent implements OnInit {
         imageUrl = 'https://localhost:65162' + imageUrl;
       }
     }
-    
+
     // Return local placeholder if no valid URL or if it's a broken placeholder URL
     if (!imageUrl || imageUrl.includes('via.placeholder.com')) {
       return 'assets/images/placeholder-product.svg';
     }
-    
+
     return imageUrl;
   }
 
@@ -158,12 +157,12 @@ export class ExchangeRequestComponent implements OnInit {
   async submitRequest(): Promise<void> {
     // Validate form
     if (!this.selectedProductId) {
-      this.toastr.warning('الرجاء اختيار منتج للتبادل');
+      this.toastr.warning('Please select a product to exchange');
       return;
     }
 
     if (!this.requestedProduct) {
-      this.toastr.error('حدث خطأ في تحميل بيانات المنتج المطلوب');
+      this.toastr.error('Error loading requested product data');
       return;
     }
 
@@ -178,36 +177,30 @@ export class ExchangeRequestComponent implements OnInit {
     this.isSubmitting = true;
 
     try {
-      // Show loading state
-      this.toastr.info('جاري إرسال طلب التبادل...', 'يرجى الانتظار');
+      this.toastr.info('Sending exchange request...', 'Please wait');
 
-      // Send request
       const response = await this.exchangeService.createExchange(request)
         .pipe(first())
         .toPromise();
 
       if (response?.success) {
-        // Show success message
-        this.toastr.success('تم إرسال طلب التبادل بنجاح', 'تم بنجاح');
-        
-        // Navigate to exchange list with success state
+        this.toastr.success('Exchange request sent successfully', 'Success');
+
         await this.router.navigate(['/exchange'], {
           state: { exchangeSuccess: true }
         });
       } else {
-        throw new Error(response?.message || 'فشل إرسال طلب التبادل');
+        throw new Error(response?.message || 'Failed to send exchange request');
       }
     } catch (error: any) {
       console.error('Error creating exchange request:', error);
-      
-      // Show appropriate error message
-      const errorMessage = error?.error?.message || 
-                         error?.message || 
-                         'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى';
-      
-      this.toastr.error(errorMessage, 'خطأ');
+
+      const errorMessage = error?.error?.message ||
+        error?.message ||
+        'Unexpected error occurred. Please try again';
+
+      this.toastr.error(errorMessage, 'Error');
     } finally {
-      // Reset loading state
       this.isSubmitting = false;
     }
   }

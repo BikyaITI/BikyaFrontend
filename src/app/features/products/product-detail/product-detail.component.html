@@ -167,7 +167,7 @@
         <div class="owner-actions" *ngIf="currentUser && getRole() === 'owner'">
           <div class="row g-2">
             <div class="col-6">
-              <button class="btn btn-custom-light w-100" [routerLink]="['/edit-product', product.id]">
+              <button class="btn btn-warning w-100" (click)="OnEdit(product.id)">
                 <i class="bi bi-pencil"></i> Edit
               </button>
             </div>

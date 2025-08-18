@@ -222,14 +222,14 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
 
   async confirmCancelOrder(order: any) {
     const result = await Swal.fire({
-      title: 'تأكيد الإلغاء',
-      text: `هل أنت متأكد من إلغاء الطلب "${order.productTitle}"؟`,
+      title: 'Confirm Cancellation',
+      text: `Are you sure you want to cancel the order "${order.productTitle}"?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'نعم، ألغِ!',
-      cancelButtonText: 'إلغاء',
+      confirmButtonText: 'Yes, Cancel!',
+      cancelButtonText: 'Dismiss',
       reverseButtons: true
     });
     if (result.isConfirmed) {
@@ -239,14 +239,14 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
 
   async confirmCompleteOrder(order: any) {
     const result = await Swal.fire({
-      title: 'تأكيد الإكمال',
-      text: `هل أنت متأكد من إكمال الطلب "${order.productTitle}"؟`,
+      title: 'Confirm Completion',
+      text: `Are you sure you want to complete the order "${order.productTitle}"?`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#28a745',
       cancelButtonColor: '#6c757d',
-      confirmButtonText: 'نعم، أكمل!',
-      cancelButtonText: 'إلغاء',
+      confirmButtonText: 'Yes, Complete!',
+      cancelButtonText: 'Dismiss',
       reverseButtons: true
     });
     if (result.isConfirmed) {
@@ -331,29 +331,29 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
         if (res.success && res.data) {
           const details = res.data;
           Swal.fire({
-            title: `تفاصيل الطلب - #${details.id}`,
+            title: `Order Details - #${details.id}`,
             html: `
-              <div class="text-start">
-                <p><strong>المنتج:</strong> ${details.productTitle}</p>
-                <p><strong>المشتري:</strong> ${details.buyerName}</p>
-                <p><strong>البائع:</strong> ${details.sellerName}</p>
-                <p><strong>الحالة:</strong> ${details.status}</p>
-                <p><strong>تاريخ الإنشاء:</strong> ${new Date(details.createdAt).toLocaleString()}</p>
-                <p><strong>المبلغ:</strong> ${details.totalAmount}</p>
-                <p><strong>الإيميل:</strong> ${details.buyerEmail || '---'}</p>
-                <!-- أضف أي تفاصيل أخرى متوفرة في OrderDetailsDTO -->
-              </div>
-            `,
+            <div class="text-start">
+              <p><strong>Product:</strong> ${details.productTitle}</p>
+              <p><strong>Buyer:</strong> ${details.buyerName}</p>
+              <p><strong>Seller:</strong> ${details.sellerName}</p>
+              <p><strong>Status:</strong> ${details.status}</p>
+              <p><strong>Created At:</strong> ${new Date(details.createdAt).toLocaleString()}</p>
+              <p><strong>Total Amount:</strong> ${details.totalAmount}</p>
+              <p><strong>Email:</strong> ${details.buyerEmail || '---'}</p>
+              <!-- Add any other details available in OrderDetailsDTO -->
+            </div>
+          `,
             icon: 'info',
-            confirmButtonText: 'إغلاق'
+            confirmButtonText: 'Close'
           });
         } else {
-          this.toastr.error('تعذر جلب تفاصيل الطلب');
+          this.toastr.error('Failed to fetch order details');
         }
       },
       error: () => {
         this.isLoading = false;
-        this.toastr.error('تعذر جلب تفاصيل الطلب');
+        this.toastr.error('Failed to fetch order details');
       }
     });
   }

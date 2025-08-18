@@ -134,7 +134,7 @@
                      [routerLink]="['/checkout']"
                      [queryParams]="{ orderId: request.orderForOfferedProductId }">
                     <i class="bi bi-bag-check me-1"></i>
-                    Complete shipping details for this exchange
+                    Complete shipping details for exchange request
                   </a>
                 </div>
               </div>
@@ -182,7 +182,7 @@
                           <img
                             [src]="getMainImageUrl(request.requestedProduct)"
                             class="img-thumbnail me-2"
-                             alt="Image of {{request.requestedProduct?.title || 'Product'}}"
+                             alt="Image {{request.requestedProduct?.title || 'Product'}}"
                             style="width: 60px; height: 60px; object-fit: cover;"
                             (error)="onImageError($event)">
                           <div>
@@ -204,7 +204,7 @@
                           <img
                             [src]="getMainImageUrl(request.offeredProduct)"
                             class="img-thumbnail me-2"
-                             alt="Image of {{request.offeredProduct?.title || 'Product'}}"
+                             alt="Image {{request.offeredProduct?.title || 'Product'}}"
                             style="width: 60px; height: 60px; object-fit: cover;"(error)="onImageError($event)">
                           <div>
                              <h6 class="mb-1">{{request.offeredProduct?.title || '—'}}</h6>
@@ -230,7 +230,7 @@
                      [routerLink]="['/checkout']"
                      [queryParams]="{ orderId: request.orderForRequestedProductId }">
                     <i class="bi bi-bag-check me-1"></i>
-                    Complete the request via Checkout page
+                    Complete the order via Checkout page
                   </a>
                 </div>
 

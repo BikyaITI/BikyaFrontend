@@ -144,4 +144,22 @@ export class MyProductsComponent implements OnInit {
       modal.show()
     }
   }
+
+  handleNotification(event: { type: 'success' | 'error', message: string }) {
+
+    console.log('Notification received:', event);
+    this.errorMessage = "";
+    this.successMessage = "";
+    if(event.type === 'success') 
+      this.successMessage = event.message;
+    else
+      this.errorMessage = event.message;
+
+
+    // Auto-hide after 3s
+    setTimeout(() => {
+      this.errorMessage = "";
+      this.successMessage = "";
+    }, 3000);
+  }
 }
