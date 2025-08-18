@@ -8,6 +8,8 @@ export interface Order {
   productId: number;
   quantity: number;
   totalAmount: number;
+  platformFee: number;
+  sellerAmount: number;
   status: OrderStatus | string; // Changed
   createdAt: Date;
   product: IProduct;

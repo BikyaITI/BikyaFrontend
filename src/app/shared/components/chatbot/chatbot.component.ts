@@ -7,11 +7,12 @@ import { Msg } from '../../../core/models/chat-message.model';
 
 @Component({
   selector: 'app-chatbot',
+  standalone: true,
   imports: [CommonModule , FormsModule],
   templateUrl: './chatbot.component.html',
   styleUrl: './chatbot.component.scss'
 })
-export class ChatWidgetComponent {
+export class ChatbotComponent {
   api = inject(ChatbotService);
   messages = signal<Msg[]>([]);
   draft = '';

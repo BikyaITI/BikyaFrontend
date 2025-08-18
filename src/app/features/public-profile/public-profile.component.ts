@@ -8,14 +8,14 @@ import { IProduct } from '../../core/models/product.model';
 import { IReview } from '../../core/models/ireview';
 import { single } from 'rxjs';
 import { ReviewComponent } from '../review/review.component';
-import { ReviewFormComponent } from '../review-form/review-form.component';
 import { AuthService } from '../../core/services/auth.service';
 import bootstrap, { Modal } from 'bootstrap';
 import { ProductListComponent } from '../../shared/components/product-list/product-list.component';
 
 @Component({
   selector: 'app-public-profile',
-  imports: [FormsModule, CommonModule, RouterModule , ReviewComponent, ReviewFormComponent, ProductListComponent],
+  standalone: true,
+  imports: [FormsModule, CommonModule, RouterModule , ReviewComponent, ProductListComponent],
   templateUrl: './public-profile.component.html',
   styleUrl: './public-profile.component.scss'
 })

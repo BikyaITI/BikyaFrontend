@@ -6,12 +6,12 @@ import { CategoryService } from "../../../core/services/category.service";
 import { ProductService } from "../../../core/services/product.service";
 import { OrderService } from "../../../core/services/order.service";
 import { AdminUserService } from "../../../core/services/admin-user.service";
+import { DashboardService, DashboardStats } from "../../../core/services/dashboard.service";
 import { IProduct } from "../../../core/models/product.model";
 import { ToastrService } from "ngx-toastr";
 import { interval, Subscription } from 'rxjs';
 import { ChartConfiguration, ChartType, ChartOptions } from 'chart.js';
 import { NgChartsModule } from 'ng2-charts';
-import { addMonths, format } from 'date-fns';
 
 @Component({
   selector: "app-admin-dashboard",
@@ -20,49 +20,58 @@ import { addMonths, format } from 'date-fns';
   templateUrl: './admin-dashboard.component.html',
 })
 export class AdminDashboardComponent implements OnInit, OnDestroy {
+  // Dashboard statistics
   stats = {
     totalUsers: 0,
     totalProducts: 0,
     totalCategories: 0,
     totalOrders: 0,
-    totalRevenue: 0,
+    totalSales: 0,
+    totalPlatformProfit: 0,
+    totalSellerProfit: 0,
+    completedOrders: 0,
+    pendingOrders: 0,
+    averageOrderValue: 0
   }
-  categories: ICategory[] = [];
-  recentProducts: any[] = []
-  recentOrders: any[] = []
-  isLoading = false;
-  private refreshSubscription?: Subscription;
 
-  // Modal control
+  // Data arrays
+  categories: ICategory[] = [];
+  recentProducts: any[] = [];
+  recentOrders: any[] = [];
+  products: IProduct[] = [];
+
+  // UI state
+  isLoading = false;
   showModal = false;
   currentChartType: 'users' | 'products' | 'categories' | 'orders' = 'users';
 
-  categoryService = inject(CategoryService)
-  productService = inject(ProductService)
-  orderService = inject(OrderService)
-  adminUserService = inject(AdminUserService)
-  toastr = inject(ToastrService)
+  // Services
+  categoryService = inject(CategoryService);
+  productService = inject(ProductService);
+  orderService = inject(OrderService);
+  adminUserService = inject(AdminUserService);
+  dashboardService = inject(DashboardService);
+  toastr = inject(ToastrService);
 
-  products: IProduct[] = [];
+  // Subscriptions
+  private refreshSubscription?: Subscription;
 
-  // تحسين إعدادات الشارت للطلبات
+  // Chart configurations
   public lineChartData: ChartConfiguration<'line'>['data'] = {
     labels: [],
-    datasets: [
-      {
-        data: [],
-        label: 'Orders',
-        fill: true,
-        tension: 0.4,
-        borderColor: '#667eea',
-        backgroundColor: 'rgba(102, 126, 234, 0.1)',
-        pointBackgroundColor: '#667eea',
-        pointBorderColor: '#fff',
-        pointRadius: 6,
-        pointHoverRadius: 8,
-        borderWidth: 3,
-      }
-    ]
+    datasets: [{
+      data: [],
+      label: 'Orders',
+      fill: true,
+      tension: 0.4,
+      borderColor: '#667eea',
+      backgroundColor: 'rgba(102, 126, 234, 0.1)',
+      pointBackgroundColor: '#667eea',
+      pointBorderColor: '#fff',
+      pointRadius: 6,
+      pointHoverRadius: 8,
+      borderWidth: 3,
+    }]
   };
 
   public lineChartOptions: ChartOptions = {
@@ -73,10 +82,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         display: true,
         position: 'top',
         labels: {
-          font: {
-            size: 12,
-            weight: 'bold'
-          },
+          font: { size: 12, weight: 'bold' },
           color: '#374151',
           usePointStyle: true,
           pointStyle: 'circle'
@@ -100,68 +106,44 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     },
     scales: {
       x: {
-        grid: {
-          color: 'rgba(0, 0, 0, 0.05)'
-        },
-        ticks: {
-          color: '#6b7280',
-          font: {
-            size: 11
-          }
-        }
+        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+        ticks: { color: '#6b7280', font: { size: 11 } }
       },
       y: {
         beginAtZero: true,
-        grid: {
-          color: 'rgba(0, 0, 0, 0.05)'
-        },
-        ticks: {
-          color: '#6b7280',
-          font: {
-            size: 11
-          },
+        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+        ticks: { 
+          color: '#6b7280', 
+          font: { size: 11 },
           callback: function (value: any) {
             return Math.floor(Number(value));
           }
         }
       }
     },
-    interaction: {
-      intersect: false,
-      mode: 'index'
-    }
+    interaction: { intersect: false, mode: 'index' }
   };
 
   public lineChartType: ChartType = 'line';
 
-  // تحسين إعدادات شارت المستخدمين
+  // Users chart configuration
   public usersBarChartData: ChartConfiguration<'bar'>['data'] = {
     labels: [],
-    datasets: [
-      {
-        data: [],
-        label: 'Users',
-        backgroundColor: [
-          'rgba(240, 147, 251, 0.9)',
-          'rgba(240, 147, 251, 0.8)',
-          'rgba(240, 147, 251, 0.7)',
-          'rgba(240, 147, 251, 0.6)',
-          'rgba(240, 147, 251, 0.5)',
-          'rgba(240, 147, 251, 0.4)',
-          'rgba(240, 147, 251, 0.3)',
-          'rgba(240, 147, 251, 0.2)',
-          'rgba(240, 147, 251, 0.9)',
-          'rgba(240, 147, 251, 0.8)',
-          'rgba(240, 147, 251, 0.7)',
-          'rgba(240, 147, 251, 0.6)'
-        ],
-        borderColor: '#f093fb',
-        borderWidth: 2,
-        borderRadius: 12,
-        borderSkipped: false,
-        barThickness: 25,
-      }
-    ]
+    datasets: [{
+      data: [],
+      label: 'Users',
+      backgroundColor: [
+        'rgba(240, 147, 251, 0.9)', 'rgba(240, 147, 251, 0.8)', 'rgba(240, 147, 251, 0.7)',
+        'rgba(240, 147, 251, 0.6)', 'rgba(240, 147, 251, 0.5)', 'rgba(240, 147, 251, 0.4)',
+        'rgba(240, 147, 251, 0.3)', 'rgba(240, 147, 251, 0.2)', 'rgba(240, 147, 251, 0.9)',
+        'rgba(240, 147, 251, 0.8)', 'rgba(240, 147, 251, 0.7)', 'rgba(240, 147, 251, 0.6)'
+      ],
+      borderColor: '#f093fb',
+      borderWidth: 2,
+      borderRadius: 12,
+      borderSkipped: false,
+      barThickness: 25,
+    }]
   };
 
   public usersBarChartOptions: ChartOptions = {
@@ -172,10 +154,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         display: true,
         position: 'top',
         labels: {
-          font: {
-            size: 12,
-            weight: 'bold'
-          },
+          font: { size: 12, weight: 'bold' },
           color: '#374151',
           usePointStyle: true,
           pointStyle: 'circle'
@@ -199,27 +178,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     },
     scales: {
       x: {
-        grid: {
-          display: false
-        },
-        ticks: {
-          color: '#6b7280',
-          font: {
-            size: 10
-          },
-          maxRotation: 45
-        }
+        grid: { display: false },
+        ticks: { color: '#6b7280', font: { size: 10 }, maxRotation: 45 }
       },
       y: {
         beginAtZero: true,
-        grid: {
-          color: 'rgba(0, 0, 0, 0.05)'
-        },
-        ticks: {
-          color: '#6b7280',
-          font: {
-            size: 11
-          },
+        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+        ticks: { 
+          color: '#6b7280', 
+          font: { size: 11 },
           callback: function (value: any) {
             return Math.floor(Number(value));
           }
@@ -230,34 +197,24 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   public usersBarChartType: ChartType = 'bar';
 
-  // تحسين إعدادات شارت المنتجات
+  // Products chart configuration
   public productsBarChartData: ChartConfiguration<'bar'>['data'] = {
     labels: [],
-    datasets: [
-      {
-        data: [],
-        label: 'Products',
-        backgroundColor: [
-          'rgba(79, 172, 254, 0.9)',
-          'rgba(79, 172, 254, 0.8)',
-          'rgba(79, 172, 254, 0.7)',
-          'rgba(79, 172, 254, 0.6)',
-          'rgba(79, 172, 254, 0.5)',
-          'rgba(79, 172, 254, 0.4)',
-          'rgba(79, 172, 254, 0.3)',
-          'rgba(79, 172, 254, 0.2)',
-          'rgba(79, 172, 254, 0.9)',
-          'rgba(79, 172, 254, 0.8)',
-          'rgba(79, 172, 254, 0.7)',
-          'rgba(79, 172, 254, 0.6)'
-        ],
-        borderColor: '#4facfe',
-        borderWidth: 2,
-        borderRadius: 12,
-        borderSkipped: false,
-        barThickness: 25,
-      }
-    ]
+    datasets: [{
+      data: [],
+      label: 'Products',
+      backgroundColor: [
+        'rgba(79, 172, 254, 0.9)', 'rgba(79, 172, 254, 0.8)', 'rgba(79, 172, 254, 0.7)',
+        'rgba(79, 172, 254, 0.6)', 'rgba(79, 172, 254, 0.5)', 'rgba(79, 172, 254, 0.4)',
+        'rgba(79, 172, 254, 0.3)', 'rgba(79, 172, 254, 0.2)', 'rgba(79, 172, 254, 0.9)',
+        'rgba(79, 172, 254, 0.8)', 'rgba(79, 172, 254, 0.7)', 'rgba(79, 172, 254, 0.6)'
+      ],
+      borderColor: '#4facfe',
+      borderWidth: 2,
+      borderRadius: 12,
+      borderSkipped: false,
+      barThickness: 25,
+    }]
   };
 
   public productsBarChartOptions: ChartOptions = {
@@ -268,10 +225,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         display: true,
         position: 'top',
         labels: {
-          font: {
-            size: 12,
-            weight: 'bold'
-          },
+          font: { size: 12, weight: 'bold' },
           color: '#374151',
           usePointStyle: true,
           pointStyle: 'circle'
@@ -295,27 +249,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     },
     scales: {
       x: {
-        grid: {
-          display: false
-        },
-        ticks: {
-          color: '#6b7280',
-          font: {
-            size: 10
-          },
-          maxRotation: 45
-        }
+        grid: { display: false },
+        ticks: { color: '#6b7280', font: { size: 10 }, maxRotation: 45 }
       },
       y: {
         beginAtZero: true,
-        grid: {
-          color: 'rgba(0, 0, 0, 0.05)'
-        },
-        ticks: {
-          color: '#6b7280',
-          font: {
-            size: 11
-          },
+        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+        ticks: { 
+          color: '#6b7280', 
+          font: { size: 11 },
           callback: function (value: any) {
             return Math.floor(Number(value));
           }
@@ -326,34 +268,24 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   public productsBarChartType: ChartType = 'bar';
 
-  // Chart for categories
+  // Categories chart configuration
   public categoriesBarChartData: ChartConfiguration<'bar'>['data'] = {
     labels: [],
-    datasets: [
-      {
-        data: [],
-        label: 'Categories',
-        backgroundColor: [
-          'rgba(67, 233, 123, 0.9)',
-          'rgba(67, 233, 123, 0.8)',
-          'rgba(67, 233, 123, 0.7)',
-          'rgba(67, 233, 123, 0.6)',
-          'rgba(67, 233, 123, 0.5)',
-          'rgba(67, 233, 123, 0.4)',
-          'rgba(67, 233, 123, 0.3)',
-          'rgba(67, 233, 123, 0.2)',
-          'rgba(67, 233, 123, 0.9)',
-          'rgba(67, 233, 123, 0.8)',
-          'rgba(67, 233, 123, 0.7)',
-          'rgba(67, 233, 123, 0.6)'
-        ],
-        borderColor: '#43e97b',
-        borderWidth: 2,
-        borderRadius: 12,
-        borderSkipped: false,
-        barThickness: 25,
-      }
-    ]
+    datasets: [{
+      data: [],
+      label: 'Categories',
+      backgroundColor: [
+        'rgba(67, 233, 123, 0.9)', 'rgba(67, 233, 123, 0.8)', 'rgba(67, 233, 123, 0.7)',
+        'rgba(67, 233, 123, 0.6)', 'rgba(67, 233, 123, 0.5)', 'rgba(67, 233, 123, 0.4)',
+        'rgba(67, 233, 123, 0.3)', 'rgba(67, 233, 123, 0.2)', 'rgba(67, 233, 123, 0.9)',
+        'rgba(67, 233, 123, 0.8)', 'rgba(67, 233, 123, 0.7)', 'rgba(67, 233, 123, 0.6)'
+      ],
+      borderColor: '#43e97b',
+      borderWidth: 2,
+      borderRadius: 12,
+      borderSkipped: false,
+      barThickness: 25,
+    }]
   };
 
   public categoriesBarChartOptions: ChartOptions = {
@@ -364,10 +296,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         display: true,
         position: 'top',
         labels: {
-          font: {
-            size: 12,
-            weight: 'bold'
-          },
+          font: { size: 12, weight: 'bold' },
           color: '#374151',
           usePointStyle: true,
           pointStyle: 'circle'
@@ -391,27 +320,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     },
     scales: {
       x: {
-        grid: {
-          display: false
-        },
-        ticks: {
-          color: '#6b7280',
-          font: {
-            size: 10
-          },
-          maxRotation: 45
-        }
+        grid: { display: false },
+        ticks: { color: '#6b7280', font: { size: 10 }, maxRotation: 45 }
       },
       y: {
         beginAtZero: true,
-        grid: {
-          color: 'rgba(0, 0, 0, 0.05)'
-        },
-        ticks: {
-          color: '#6b7280',
-          font: {
-            size: 11
-          },
+        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+        ticks: { 
+          color: '#6b7280', 
+          font: { size: 11 },
           callback: function (value: any) {
             return Math.floor(Number(value));
           }
@@ -423,8 +340,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   public categoriesBarChartType: ChartType = 'bar';
 
   ngOnInit(): void {
-    console.log('AdminDashboardComponent: Initializing...'); // Debug
-    this.loadDashboardData()
+    console.log('AdminDashboardComponent: Initializing...');
+    this.loadDashboardData();
 
     // Auto-refresh dashboard data every 30 seconds
     this.refreshSubscription = interval(30000).subscribe(() => {
@@ -449,86 +366,96 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
 
   getChartTitle(): string {
-    switch (this.currentChartType) {
-      case 'users':
-        return 'Users Activity Chart';
-      case 'products':
-        return 'Products Distribution Chart';
-      case 'categories':
-        return 'Categories Overview Chart';
-      case 'orders':
-        return 'Orders Status Chart';
-      default:
-        return 'Chart';
-    }
+    const titles = {
+      'users': 'Users Activity Chart',
+      'products': 'Products Distribution Chart',
+      'categories': 'Categories Overview Chart',
+      'orders': 'Orders Status Chart'
+    };
+    return titles[this.currentChartType] || 'Chart';
   }
 
   getChartData(): any {
-    switch (this.currentChartType) {
-      case 'users':
-        return this.usersBarChartData;
-      case 'products':
-        return this.productsBarChartData;
-      case 'categories':
-        return this.categoriesBarChartData;
-      case 'orders':
-        return this.lineChartData;
-      default:
-        return this.usersBarChartData;
-    }
+    const chartData = {
+      'users': this.usersBarChartData,
+      'products': this.productsBarChartData,
+      'categories': this.categoriesBarChartData,
+      'orders': this.lineChartData
+    };
+    return chartData[this.currentChartType] || this.usersBarChartData;
   }
 
   getChartType(): ChartType {
-    switch (this.currentChartType) {
-      case 'users':
-        return this.usersBarChartType;
-      case 'products':
-        return this.productsBarChartType;
-      case 'categories':
-        return this.categoriesBarChartType;
-      case 'orders':
-        return this.lineChartType;
-      default:
-        return this.usersBarChartType;
-    }
+    const chartTypes = {
+      'users': this.usersBarChartType,
+      'products': this.productsBarChartType,
+      'categories': this.categoriesBarChartType,
+      'orders': this.lineChartType
+    };
+    return chartTypes[this.currentChartType] || this.usersBarChartType;
   }
 
   getChartOptions(): ChartOptions {
-    switch (this.currentChartType) {
-      case 'users':
-        return this.usersBarChartOptions;
-      case 'products':
-        return this.productsBarChartOptions;
-      case 'categories':
-        return this.categoriesBarChartOptions;
-      case 'orders':
-        return this.lineChartOptions;
-      default:
-        return this.usersBarChartOptions;
-    }
+    const chartOptions = {
+      'users': this.usersBarChartOptions,
+      'products': this.productsBarChartOptions,
+      'categories': this.categoriesBarChartOptions,
+      'orders': this.lineChartOptions
+    };
+    return chartOptions[this.currentChartType] || this.usersBarChartOptions;
   }
 
+  // Main data loading method
   loadDashboardData(): void {
     this.isLoading = true;
 
-    // Load all data in parallel
     Promise.all([
       this.loadAllCategories(),
       this.loadAllProducts(),
       this.loadAllOrders(),
       this.loadUserCount(),
-      this.loadRecentData()
+      this.loadRecentData(),
+      this.loadDashboardStats()
     ]).finally(() => {
       this.isLoading = false;
     });
   }
 
-  loadAllCategories() {
+  // Load dashboard statistics
+  loadDashboardStats(): Promise<void> {
+    return new Promise<void>((resolve) => {
+      this.dashboardService.getDashboardStats().subscribe({
+        next: (res) => {
+          if (res.success && res.data) {
+            const stats = res.data;
+            this.stats.totalSales = stats.totalSales;
+            this.stats.totalPlatformProfit = stats.totalPlatformProfit;
+            this.stats.totalSellerProfit = stats.totalSellerProfit;
+            this.stats.completedOrders = stats.completedOrders;
+            this.stats.pendingOrders = stats.pendingOrders;
+            this.stats.averageOrderValue = stats.averageOrderValue;
+            
+            this.toastr.success('Dashboard statistics loaded successfully');
+          } else {
+            this.toastr.warning('Failed to load dashboard statistics');
+          }
+          resolve();
+        },
+        error: (err) => {
+          console.error('Error loading dashboard stats:', err);
+          this.toastr.error('Failed to load dashboard statistics');
+          resolve();
+        }
+      });
+    });
+  }
+
+  // Load categories data
+  loadAllCategories(): Promise<void> {
     return new Promise<void>((resolve) => {
       this.categoryService.getAll().subscribe({
         next: (res) => {
           if (res.success) {
-            // Check if data is in items array (paginated response)
             if (res.data && (res.data as any).items) {
               this.categories = (res.data as any).items || [];
             } else if (res.data && Array.isArray(res.data)) {
@@ -538,203 +465,112 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
             }
 
             this.stats.totalCategories = this.categories.length;
-
-            // تحليل التصنيفات حسب عدد المنتجات
-            const categoryStats = this.analyzeCategoriesByProductCount(this.categories);
-            this.categoriesBarChartData.labels = categoryStats.labels;
-            this.categoriesBarChartData.datasets[0].data = categoryStats.data;
+            this.updateCategoriesChart();
           } else {
             this.categories = [];
             this.stats.totalCategories = 0;
-            this.categoriesBarChartData.labels = [];
-            this.categoriesBarChartData.datasets[0].data = [];
+            this.clearCategoriesChart();
           }
           resolve();
         },
         error: () => {
           this.categories = [];
           this.stats.totalCategories = 0;
-          this.categoriesBarChartData.labels = [];
-          this.categoriesBarChartData.datasets[0].data = [];
+          this.clearCategoriesChart();
           resolve();
         }
       });
     });
   }
 
-  loadAllProducts() {
+  // Load products data
+  loadAllProducts(): Promise<void> {
     return new Promise<void>((resolve) => {
       this.productService.getAllProducts().subscribe({
         next: (res) => {
           if (res.success) {
             this.products = res.data;
             this.stats.totalProducts = this.products.length;
-
-            // تحليل المنتجات حسب التصنيف بدلاً من التاريخ
-            const categoryStats = this.analyzeProductsByCategory(this.products);
-            this.productsBarChartData.labels = categoryStats.labels;
-            this.productsBarChartData.datasets[0].data = categoryStats.data;
+            this.updateProductsChart();
           } else {
             this.products = [];
             this.stats.totalProducts = 0;
-            this.productsBarChartData.labels = [];
-            this.productsBarChartData.datasets[0].data = [];
+            this.clearProductsChart();
           }
           resolve();
         },
         error: () => {
           this.products = [];
           this.stats.totalProducts = 0;
-          this.productsBarChartData.labels = [];
-          this.productsBarChartData.datasets[0].data = [];
+          this.clearProductsChart();
           resolve();
         }
       });
     });
   }
 
-  loadAllOrders() {
+  // Load orders data
+  loadAllOrders(): Promise<void> {
     return new Promise<void>((resolve) => {
       this.orderService.getAllOrders().subscribe({
         next: (res) => {
           if (res.success) {
             this.stats.totalOrders = res.data?.length || 0;
-            this.stats.totalRevenue = res.data?.reduce((sum: number, order: any) => sum + (order.totalAmount || 0), 0) || 0;
-
-            // تحليل الطلبات حسب الحالة بدلاً من التاريخ
-            const orderStats = this.analyzeOrdersByStatus(res.data);
-            this.lineChartData.labels = orderStats.labels;
-            this.lineChartData.datasets[0].data = orderStats.data;
+            this.updateOrdersChart(res.data);
           } else {
             this.stats.totalOrders = 0;
-            this.stats.totalRevenue = 0;
-            this.lineChartData.labels = [];
-            this.lineChartData.datasets[0].data = [];
+            this.clearOrdersChart();
           }
           resolve();
         },
-        error: (err) => {
+        error: () => {
           this.stats.totalOrders = 0;
-          this.stats.totalRevenue = 0;
-          this.lineChartData.labels = [];
-          this.lineChartData.datasets[0].data = [];
+          this.clearOrdersChart();
           resolve();
         }
       });
     });
   }
 
-  loadUserCount() {
+  // Load user count
+  loadUserCount(): Promise<void> {
     return new Promise<void>((resolve) => {
       this.adminUserService.getAll('', '', 1, 10000).subscribe({
         next: (res) => {
           if (res.success) {
             this.stats.totalUsers = res.data?.length || 0;
-
-            // تحليل المستخدمين حسب النشاط بدلاً من التاريخ
-            const userStats = this.analyzeUsersByActivity(res.data);
-            this.usersBarChartData.labels = userStats.labels;
-            this.usersBarChartData.datasets[0].data = userStats.data;
+            this.updateUsersChart(res.data);
           } else {
             this.stats.totalUsers = 0;
-            this.usersBarChartData.labels = [];
-            this.usersBarChartData.datasets[0].data = [];
+            this.clearUsersChart();
           }
           resolve();
         },
         error: () => {
           this.stats.totalUsers = 0;
-          this.usersBarChartData.labels = [];
-          this.usersBarChartData.datasets[0].data = [];
+          this.clearUsersChart();
           resolve();
         }
       });
     });
   }
 
-  // تحليل التصنيفات حسب عدد المنتجات
-  analyzeCategoriesByProductCount(categories: any[]): { labels: string[], data: number[] } {
-    const categoryStats: { [key: string]: number } = {};
-
-    categories.forEach(category => {
-      const categoryName = category.name || 'Unknown';
-      const productCount = category.products?.length || 0;
-      categoryStats[categoryName] = productCount;
-    });
-
-    const labels = Object.keys(categoryStats);
-    const data = Object.values(categoryStats);
-
-    return { labels, data };
-  }
-
-  // تحليل المنتجات حسب التصنيف
-  analyzeProductsByCategory(products: any[]): { labels: string[], data: number[] } {
-    const categoryCount: { [key: string]: number } = {};
-
-    products.forEach(product => {
-      const categoryName = product.category?.name || product.categoryName || 'Unknown';
-      categoryCount[categoryName] = (categoryCount[categoryName] || 0) + 1;
-    });
-
-    const labels = Object.keys(categoryCount);
-    const data = Object.values(categoryCount);
-
-    return { labels, data };
-  }
-
-  // تحليل الطلبات حسب الحالة
-  analyzeOrdersByStatus(orders: any[]): { labels: string[], data: number[] } {
-    const statusCount: { [key: string]: number } = {};
-
-    orders.forEach(order => {
-      const status = order.status || 'Unknown';
-      statusCount[status] = (statusCount[status] || 0) + 1;
-    });
-
-    const labels = Object.keys(statusCount);
-    const data = Object.values(statusCount);
-
-    return { labels, data };
-  }
-
-  // تحليل المستخدمين حسب النشاط
-  analyzeUsersByActivity(users: any[]): { labels: string[], data: number[] } {
-    const activityCount: { [key: string]: number } = {
-      'Active': 0,
-      'Inactive': 0,
-      'Banned': 0
-    };
-
-    users.forEach(user => {
-      if (user.isDeleted) {
-        activityCount['Banned']++;
-      } else if (user.isActive) {
-        activityCount['Active']++;
-      } else {
-        activityCount['Inactive']++;
-      }
-    });
-
-    const labels = Object.keys(activityCount);
-    const data = Object.values(activityCount);
-
-    return { labels, data };
-  }
-
+  // Load recent data
   loadRecentData(): void {
-    // Load recent products (last 5)
+    this.loadRecentProducts();
+    this.loadRecentOrders();
+  }
+
+  // Load recent products
+  loadRecentProducts(): void {
     this.productService.getAllProducts().subscribe({
       next: (res) => {
         if (res.success) {
           this.recentProducts = res.data?.slice(0, 5).map((product: any) => {
-            // The API returns product with user object containing FullName
             let userName = 'Unknown';
-
-            // Check if user object exists and has FullName
-            if (product.user && product.user.FullName) {
+            if (product.user?.FullName) {
               userName = product.user.FullName;
-            } else if (product.user && product.user.fullName) {
+            } else if (product.user?.fullName) {
               userName = product.user.fullName;
             } else if (product.userName) {
               userName = product.userName;
@@ -757,8 +593,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         this.recentProducts = [];
       }
     });
+  }
 
-    // Load recent orders (last 5)
+  // Load recent orders
+  loadRecentOrders(): void {
     this.orderService.getAllOrders().subscribe({
       next: (res) => {
         if (res.success) {
@@ -776,6 +614,113 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         this.recentOrders = [];
       }
     });
+  }
+
+  // Chart update methods
+  updateCategoriesChart(): void {
+    const categoryStats = this.analyzeCategoriesByProductCount(this.categories);
+    this.categoriesBarChartData.labels = categoryStats.labels;
+    this.categoriesBarChartData.datasets[0].data = categoryStats.data;
+  }
+
+  updateProductsChart(): void {
+    const categoryStats = this.analyzeProductsByCategory(this.products);
+    this.productsBarChartData.labels = categoryStats.labels;
+    this.productsBarChartData.datasets[0].data = categoryStats.data;
+  }
+
+  updateOrdersChart(orders: any[]): void {
+    const orderStats = this.analyzeOrdersByStatus(orders);
+    this.lineChartData.labels = orderStats.labels;
+    this.lineChartData.datasets[0].data = orderStats.data;
+  }
+
+  updateUsersChart(users: any[]): void {
+    const userStats = this.analyzeUsersByActivity(users);
+    this.usersBarChartData.labels = userStats.labels;
+    this.usersBarChartData.datasets[0].data = userStats.data;
+  }
+
+  // Chart clear methods
+  clearCategoriesChart(): void {
+    this.categoriesBarChartData.labels = [];
+    this.categoriesBarChartData.datasets[0].data = [];
+  }
+
+  clearProductsChart(): void {
+    this.productsBarChartData.labels = [];
+    this.productsBarChartData.datasets[0].data = [];
+  }
+
+  clearOrdersChart(): void {
+    this.lineChartData.labels = [];
+    this.lineChartData.datasets[0].data = [];
+  }
+
+  clearUsersChart(): void {
+    this.usersBarChartData.labels = [];
+    this.usersBarChartData.datasets[0].data = [];
+  }
+
+  // Data analysis methods
+  analyzeCategoriesByProductCount(categories: any[]): { labels: string[], data: number[] } {
+    const categoryStats: { [key: string]: number } = {};
+    categories.forEach(category => {
+      const categoryName = category.name || 'Unknown';
+      const productCount = category.products?.length || 0;
+      categoryStats[categoryName] = productCount;
+    });
+    return {
+      labels: Object.keys(categoryStats),
+      data: Object.values(categoryStats)
+    };
+  }
+
+  analyzeProductsByCategory(products: any[]): { labels: string[], data: number[] } {
+    const categoryCount: { [key: string]: number } = {};
+    products.forEach(product => {
+      const categoryName = product.category?.name || product.categoryName || 'Unknown';
+      categoryCount[categoryName] = (categoryCount[categoryName] || 0) + 1;
+    });
+    return {
+      labels: Object.keys(categoryCount),
+      data: Object.values(categoryCount)
+    };
+  }
+
+  analyzeOrdersByStatus(orders: any[]): { labels: string[], data: number[] } {
+    const statusCount: { [key: string]: number } = {};
+    orders.forEach(order => {
+      const status = order.status || 'Unknown';
+      statusCount[status] = (statusCount[status] || 0) + 1;
+    });
+    return {
+      labels: Object.keys(statusCount),
+      data: Object.values(statusCount)
+    };
+  }
+
+  analyzeUsersByActivity(users: any[]): { labels: string[], data: number[] } {
+    const activityCount: { [key: string]: number } = {
+      'Active': 0,
+      'Inactive': 0,
+      'Banned': 0
+    };
+
+    users.forEach(user => {
+      if (user.isDeleted) {
+        activityCount['Banned']++;
+      } else if (user.isActive) {
+        activityCount['Active']++;
+      } else {
+        activityCount['Inactive']++;
+      }
+    });
+
+    return {
+      labels: Object.keys(activityCount),
+      data: Object.values(activityCount)
+    };
   }
 }
 

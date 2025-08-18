@@ -10,6 +10,7 @@ import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-product-list',
+  standalone: true,
   imports: [CommonModule,RouterLink],
 templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
