@@ -51,6 +51,7 @@
           <th scope="col">Buyer</th>
           <th scope="col">Seller</th>
           <th scope="col">Total</th>
+          <th scope="col">Platform Fee</th>
           <th scope="col">Status</th>
           <th scope="col">Created</th>
           <th scope="col">Type</th>
@@ -78,6 +79,12 @@
           <td>
             <span class="amount" [ngClass]="{'text-success': order.isSwapOrder}">
               {{ order.totalAmount | number:'1.2-2' }}
+            </span>
+          </td>
+          <td>
+            <span class="platform-fee" [ngClass]="{'text-muted': order.isSwapOrder}">
+              {{ order.platformFee | number:'1.2-2' }}
+              <small *ngIf="order.isSwapOrder" class="d-block text-muted">(No fee)</small>
             </span>
           </td>
           <td>

@@ -10,6 +10,7 @@ import { IReview } from '../../core/models/ireview';
 
 @Component({
   selector: 'app-review',
+  standalone: true,
   imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './review.component.html',
   styleUrl: './review.component.scss'

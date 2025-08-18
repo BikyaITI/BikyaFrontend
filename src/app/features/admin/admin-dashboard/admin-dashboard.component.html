@@ -21,17 +21,14 @@
             <i class="fas fa-sync-alt me-2" [class.fa-spin]="isLoading"></i>
             {{ isLoading ? 'Updating...' : 'Refresh Data' }}
           </button>
-          <div class="admin-info">
-            <span class="admin-label">Welcome, Admin</span>
-            <a routerLink="/" class="btn btn-home">
-              <i class="fas fa-home me-2"></i>Back to Site
-            </a>
-          </div>
+          <a routerLink="/" class="btn btn-home">
+            <i class="fas fa-home me-2"></i>Back to Site
+          </a>
         </div>
       </div>
     </div>
 
-    <!-- Stats Cards -->
+    <!-- Main Stats Grid -->
     <div class="stats-grid mb-5">
       <div class="stat-card users-card" (click)="showChart('users')">
         <div class="stat-icon">
@@ -76,7 +73,7 @@
           <i class="fas fa-th-large"></i>
         </div>
         <div class="stat-content">
-          <div class="stat-value">{{categories.length}}</div>
+          <div class="stat-value">{{stats.totalCategories}}</div>
           <div class="stat-label">Total Categories</div>
           <div class="stat-trend positive">
             <i class="fas fa-arrow-up"></i>
@@ -110,22 +107,80 @@
       </div>
     </div>
 
-    <!-- Revenue Section -->
-    <div class="revenue-section mb-5">
+    <!-- Financial Overview Section -->
+    <div class="financial-section mb-5">
+      <h3 class="section-title mb-4">
+        <i class="fas fa-chart-pie me-2"></i>
+        Financial Overview
+      </h3>
+      
+      <div class="financial-grid">
+        <div class="financial-card total-sales-card">
+          <div class="financial-icon">
+            <i class="fas fa-money-bill-wave"></i>
+          </div>
+          <div class="financial-content">
+            <div class="financial-value">{{stats.totalSales | number:'1.0-0'}} <span class="currency">EGP</span></div>
+            <div class="financial-label">Total Sales</div>
+            <div class="financial-description">Sum of all order amounts</div>
+          </div>
+        </div>
+
+        <div class="financial-card platform-profit-card">
+          <div class="financial-icon">
+            <i class="fas fa-percentage"></i>
+          </div>
+          <div class="financial-content">
+            <div class="financial-value">{{stats.totalPlatformProfit | number:'1.0-0'}} <span class="currency">EGP</span></div>
+            <div class="financial-label">Platform Profit (15%)</div>
+            <div class="financial-description">15% of total sales</div>
+          </div>
+        </div>
+
+        <div class="financial-card seller-profit-card">
+          <div class="financial-icon">
+            <i class="fas fa-handshake"></i>
+          </div>
+          <div class="financial-content">
+            <div class="financial-value">{{stats.totalSellerProfit | number:'1.0-0'}} <span class="currency">EGP</span></div>
+            <div class="financial-label">Seller Profit (85%)</div>
+            <div class="financial-description">85% of total sales</div>
+          </div>
+        </div>
+
+        <div class="financial-card average-order-card">
+          <div class="financial-icon">
+            <i class="fas fa-calculator"></i>
+          </div>
+          <div class="financial-content">
+            <div class="financial-value">{{stats.averageOrderValue | number:'1.0-0'}} <span class="currency">EGP</span></div>
+            <div class="financial-label">Average Order Value</div>
+            <div class="financial-description">Total sales ÷ total orders</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Revenue Summary Card -->
+    <div class="revenue-summary mb-5">
       <div class="revenue-card">
         <div class="revenue-content">
           <div class="revenue-info">
-            <h3 class="revenue-title">Total Revenue</h3>
-            <div class="revenue-amount">{{stats.totalRevenue | number:'1.0-0'}} <span class="currency">EGP</span></div>
-            <p class="revenue-description">Total revenue from all completed orders</p>
+            <h3 class="revenue-title">Revenue Summary</h3>
+            <div class="revenue-amount">{{stats.totalSales | number:'1.0-0'}} <span class="currency">EGP</span></div>
+            <p class="revenue-description">Total revenue from all orders</p>
             <div class="revenue-stats">
               <div class="revenue-stat">
                 <span class="stat-number">{{stats.totalOrders}}</span>
                 <span class="stat-text">Total Orders</span>
               </div>
               <div class="revenue-stat">
-                <span class="stat-number">{{stats.totalRevenue > 0 ? ((stats.totalRevenue / stats.totalOrders) | number:'1.0-0') : '0'}}</span>
-                <span class="stat-text">Average Order</span>
+                <span class="stat-number">{{stats.completedOrders}}</span>
+                <span class="stat-text">Completed</span>
+              </div>
+              <div class="revenue-stat">
+                <span class="stat-number">{{stats.pendingOrders}}</span>
+                <span class="stat-text">Pending</span>
               </div>
             </div>
           </div>
@@ -145,13 +200,19 @@
       </div>
     </div>
 
-    <!-- Recent Activity -->
+    <!-- Recent Activity Section -->
     <div class="activity-section">
+      <h3 class="section-title mb-4">
+        <i class="fas fa-clock me-2"></i>
+        Recent Activity
+      </h3>
+      
       <div class="activity-grid">
         <!-- Recent Products -->
         <div class="activity-card">
           <div class="activity-header">
             <h5><i class="fas fa-box me-2"></i>Recent Products</h5>
+            <a routerLink="/admin/products" class="view-all-link">View All</a>
           </div>
           <div class="activity-body">
             <div *ngIf="recentProducts.length === 0" class="empty-state">
@@ -181,6 +242,7 @@
         <div class="activity-card">
           <div class="activity-header">
             <h5><i class="fas fa-receipt me-2"></i>Recent Orders</h5>
+            <a routerLink="/admin/orders" class="view-all-link">View All</a>
           </div>
           <div class="activity-body">
             <div *ngIf="recentOrders.length === 0" class="empty-state">
@@ -276,11 +338,13 @@
       border-radius: 12px;
       font-weight: 600;
       transition: all 0.3s ease;
+      text-decoration: none;
     }
 
     .btn-home:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 25px rgba(240, 147, 251, 0.3);
+      color: white;
     }
 
     .stats-grid {
@@ -408,7 +472,89 @@
       color: #48bb78;
     }
 
-    .revenue-section {
+    /* Financial Section Styles */
+    .financial-section {
+      margin: 2rem 0;
+    }
+
+    .financial-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .financial-card {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .financial-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+    }
+
+    .financial-card:active {
+      transform: translateY(-2px);
+    }
+
+    .financial-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .financial-content {
+      flex: 1;
+    }
+
+    .financial-value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #1a202c;
+      margin-bottom: 0.5rem;
+    }
+
+    .financial-label {
+      color: #718096;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .financial-description {
+      font-size: 0.875rem;
+      color: #718096;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .section-title i {
+      margin-right: 0.75rem;
+      color: #4facfe;
+    }
+
+    /* Revenue Summary Styles */
+    .revenue-summary {
       margin: 2rem 0;
     }
 
@@ -521,6 +667,7 @@
       to { height: var(--height); }
     }
 
+    /* Activity Section Styles */
     .activity-section {
       margin: 2rem 0;
     }
@@ -547,12 +694,27 @@
     .activity-header {
       padding: 1.5rem 2rem;
       border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .activity-header h5 {
       margin: 0;
       font-weight: 700;
       color: #1a202c;
+    }
+
+    .view-all-link {
+      color: #4facfe;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .view-all-link:hover {
+      color: #667eea;
     }
 
     .activity-body {
@@ -737,6 +899,10 @@
       }
 
       .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .financial-grid {
         grid-template-columns: 1fr;
       }
 

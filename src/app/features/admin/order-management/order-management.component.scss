@@ -206,6 +206,34 @@ h2 {
   height: 1rem;
 }
 
+// Amount Styles
+.amount {
+  font-weight: 600;
+  font-size: 1.1rem;
+  
+  &.text-success {
+    color: #27ae60 !important;
+  }
+}
+
+// Platform Fee Styles
+.platform-fee {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #e67e22;
+  
+  &.text-muted {
+    color: #95a5a6 !important;
+  }
+  
+  small {
+    font-size: 0.75rem;
+    font-weight: 400;
+  }
+}
+
+// Product Info Styles
+
 // Responsive Design
 @media (max-width: 768px) {
   .container {
