@@ -9,19 +9,19 @@ import { environment } from '../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class ChatbotService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/api/chatbot`;
+  private apiUrl = `${environment.apiUrl}/api/ChatMessage/Chat`;
 
-  // 🟢 signals
+  //  signals
   sessionId = signal<string | null>(null);
   loading = signal<boolean>(false);
 
-  /** Helper: يفك الـ ApiResponse ويرجع الداتا */
+  /** Helper: unwraps the ApiResponse and returns the data */
   private unwrap<T>(res: ApiResponse<T> | undefined): T {
-    if (!res || !res.success) throw new Error(res?.message ?? 'حصل خطأ غير متوقع');
+    if (!res || !res.success) throw new Error(res?.message ?? 'An unexpected error occurred');
     return res.data;
   }
 
-  /** إنشاء Session جديدة */
+  /** Create a new session */
   async createSession() {
     try {
       const res = await firstValueFrom(
@@ -29,12 +29,12 @@ export class ChatbotService {
       );
       this.sessionId.set(this.unwrap(res));
     } catch (err) {
-      console.error('فشل إنشاء جلسة:', err);
+      console.error('Failed to create session:', err);
       this.sessionId.set(null);
     }
   }
 
-  /** إرسال رسالة واستقبال الرد */
+  /** Send a message and receive the reply */
   async send(text: string) {
     if (!this.sessionId()) {
       await this.createSession();
@@ -49,13 +49,14 @@ export class ChatbotService {
       );
       return this.unwrap(res);
     } catch (err) {
-      console.error('خطأ أثناء الإرسال:', err);
-      return 'حصل خطأ غير متوقع 🚨';
+      console.error('Error while sending:', err);
+      return 'An unexpected error occurred 🚨';
     } finally {
       this.loading.set(false);
     }
   }
 }
+
 //   private conversationsSubject = new BehaviorSubject<ChatConversation[]>([]);
 //   public conversations$ = this.conversationsSubject.asObservable();
   

@@ -7,7 +7,6 @@ import { Msg } from '../../../core/models/chat-message.model';
 
 @Component({
   selector: 'app-chatbot',
-  standalone: true,
   imports: [CommonModule , FormsModule],
   templateUrl: './chatbot.component.html',
   styleUrl: './chatbot.component.scss'
@@ -29,6 +28,15 @@ export class ChatbotComponent {
     this.draft = '';
     const reply = await this.api.send(text);
     this.messages.update(a => [...a, { role: 'assistant', text: reply || '...' }]);
+  }
+    isChatOpen = signal(false);
+  // فتح/قفل الشات
+  toggleChat() {
+    this.isChatOpen.set(!this.isChatOpen());
+  }
+
+  closeChat() {
+    this.isChatOpen.set(false);
   }
 }
 // export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
