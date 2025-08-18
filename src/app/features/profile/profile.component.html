@@ -1,4 +1,5 @@
-<div class="container mt-4">
+<div class="body">
+  <div class="container mt-4">
   <div class="row">
     <!-- Profile Sidebar -->
     <div class="col-md-4">
@@ -52,55 +53,37 @@
           </div>
           <h4 class="mb-1">{{ currentUser?.fullName }}</h4>
           <p class="text-muted mb-3">{{ currentUser?.email }}</p>
-          <div class="d-grid gap-2">
-            <!-- Overview -->
-            <button
-              class="btn"
-              [ngClass]="{
-                'btn-primary': activeTab === 'overview',
-                'btn-outline-primary': activeTab !== 'overview'
-              }"
-              (click)="setActiveTab('overview')"
-            >
-              <i class="bi bi-person-circle"></i> Profile Overview
-            </button>
+    <div class="d-grid gap-2">
+  <!-- Overview -->
+  <button class="btn"
+          [ngClass]="activeTab === 'overview' ? 'btn-primary active' : 'btn-outline-custom-primary'"
+          (click)="setActiveTab('overview')">
+    <i class="bi bi-person-circle"></i> Profile Overview
+  </button>
 
-            <!-- Edit Profile -->
-            <button
-              class="btn"
-              [ngClass]="{
-                'btn-secondary': activeTab === 'editProfile',
-                'btn-outline-seondary': activeTab !== 'editProfile'
-              }"
-              (click)="setActiveTab('editProfile')"
-            >
-              <i class="bi bi-person"></i> Edit Profile
-            </button>
+  <!-- Edit Profile -->
+  <button class="btn"
+          [ngClass]="activeTab === 'editProfile' ? 'btn-outline-custom-secondary active' : 'btn-outline-custom-secondary'"
+          (click)="setActiveTab('editProfile')">
+    <i class="bi bi-person"></i> Edit Profile
+  </button>
 
-            <!-- Change Password -->
-            <button
-              class="btn"
-              [ngClass]="{
-                'btn-warning': activeTab === 'password',
-                'btn-outline-warning': activeTab !== 'password'
-              }"
-              (click)="setActiveTab('password')"
-            >
-              <i class="bi bi-lock"></i> Change Password
-            </button>
+  <!-- Change Password -->
+  <button class="btn"
+          [ngClass]="activeTab === 'password' ? 'btn-outline-custom-light active' : 'btn-outline-custom-light'"
+          (click)="setActiveTab('password')">
+    <i class="bi bi-lock"></i> Change Password
+  </button>
 
-            <!-- Account Settings -->
-            <button
-              class="btn"
-              [ngClass]="{
-                'btn-danger': activeTab === 'account',
-                'btn-outline-danger': activeTab !== 'account'
-              }"
-              (click)="setActiveTab('account')"
-            >
-              <i class="bi bi-gear"></i> Account Settings
-            </button>
-          </div>
+  <!-- Account Settings -->
+  <button class="btn"
+          [ngClass]="activeTab === 'account' ? 'btn-outline-custom-dark active' : 'btn-outline-custom-dark'"
+          (click)="setActiveTab('account')">
+    <i class="bi bi-gear"></i> Account Settings
+  </button>
+</div>
+
+
         </div>
       </div>
 
@@ -115,8 +98,8 @@
               <h4 class="text-primary mb-0">{{ userStats.totalProducts }}</h4>
               <small class="text-muted">Products</small>
             </div>
-            <div class="col-6">
-              <h4 class="text-success mb-0">{{ userStats.totalOrders }}</h4>
+            <div class="col-6" >
+              <h4 class=" mb-0" style="color:var(--secondary-color);">{{ userStats.totalOrders }}</h4>
               <small class="text-muted">Orders</small>
             </div>
           </div>
@@ -148,15 +131,15 @@
 
           <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
             <button
-              class="btn btn-outline-secondary"
+              class="btn btn-outline-custom-light"
               (click)="navigateToMyProducts()"
             >
               <i class="bi bi-box"></i> My Products
             </button>
-            <button class="btn btn-success" (click)="navigateToAddProduct()">
+            <button class="btn btn-outline-custom-primary" (click)="navigateToAddProduct()">
               <i class="bi bi-plus-circle"></i> Add Product
             </button>
-            <button class="btn btn-info" (click)="navigateToOrders()">
+            <button class="btn btn-outline-custom-secondary" (click)="navigateToOrders()">
               <i class="bi bi-box-seam"></i> View Orders
             </button>
           </div>
@@ -543,4 +526,6 @@
       </div>
     </div>
   </div>
+</div>
+
 </div>

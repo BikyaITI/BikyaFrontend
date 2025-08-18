@@ -176,6 +176,6 @@ export class AddProductComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(["/dashboard"])
+    this.router.navigate(["/my-products"])
   }
 }

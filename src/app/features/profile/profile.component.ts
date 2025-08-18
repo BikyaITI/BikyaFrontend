@@ -13,13 +13,12 @@ import { filter, take } from 'rxjs/operators';
 import { ToastrService } from "ngx-toastr"
 import { OrederReview } from "../../core/models/order.model"
 import { OrderService } from "../../core/services/order.service"
-import { ReviewFormComponent } from "../review-form/review-form.component";
 
 @Component({
   selector: "app-profile",
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, ReviewComponent],
-  templateUrl: './profile.component.html',
+  templateUrl:'./profile.component.html',
   styleUrl: './profile.component.scss'
 })
 export class ProfileComponent implements OnInit {

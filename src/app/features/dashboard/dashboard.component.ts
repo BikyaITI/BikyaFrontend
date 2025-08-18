@@ -238,7 +238,7 @@ import { ReviewFormComponent } from "../review-form/review-form.component"
       </div>
     </div>
   </div>
-</div>  </div>
+</div>  
 
   `,
   styles: [
