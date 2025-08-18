@@ -1,6 +1,10 @@
 /* =======================
    تصميم الرسالة الفارغة
 ======================= */
+.body{
+  background-color: var(--beige-100);
+  padding: 20px 0;
+}
 .text-muted {
   font-size: 1.1rem;
   font-weight: 500;
