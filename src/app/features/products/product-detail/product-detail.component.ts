@@ -154,6 +154,14 @@ export class ProductDetailComponent implements OnInit {
   
 
   deleteProduct(): void {
+    this.successMessage = ""
+    this.errorMessage = ""
+    if (!this.product) return
+    if (this.product?.status !== "Available") {
+      this.errorMessage = "You can only delete available products.";
+      return;
+
+    }
     this.confirmTitle = 'Confirm Delete';
     this.confirmMessage = 'Are you sure you want to delete ';
     this.confirmButtonText = 'Delete Product';
@@ -303,9 +311,14 @@ export class ProductDetailComponent implements OnInit {
 
 
   deleteImage(image: IProductImage | null): void {
-    if (!image || !this.product) return;
     this.successMessage = ""
     this.errorMessage=""
+    if (this.product?.status !== "Available") {
+this.errorMessage = "You can only delete images from available products.";
+      return;
+    }
+
+    if (!image || !this.product) return;
     this.productService.deleteImage(image.id).subscribe({
       next: (res) => {
         if (res.success) {
@@ -410,6 +423,16 @@ export class ProductDetailComponent implements OnInit {
 
   isMyProduct(): boolean | null {
   return this.currentUser && this.product && this.product.userId === this.currentUser.id;
-}
+  }
+  
+  OnEdit(productId: number): void {
+if(this.product?.status !== "Available") {
+      this.errorMessage = 'You cannot edit this product. Only edit products that are available.';
+      return;
+    }
+
+    
+    this.router.navigate(['/edit-product', productId]);
+  }
 
 }

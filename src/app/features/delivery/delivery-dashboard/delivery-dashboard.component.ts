@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { 
- 
-  DeliveryOrderDto, 
-  UpdateOrderStatusDto, 
+import {
+
+  DeliveryOrderDto,
+  UpdateOrderStatusDto,
   UpdateDeliveryShippingStatusDto,
   OrderStatusSummary,
   AvailableTransitions
@@ -19,7 +19,7 @@ import { environment } from '../../../../environments/environment';
   standalone: true,
   imports: [CommonModule, FormsModule,RouterLink],
 
-templateUrl: './delivery-dashboard.component.html',
+  templateUrl: './delivery-dashboard.component.html',
   styleUrls: ['./delivery-dashboard.component.scss']
 })
 export class DeliveryDashboardComponent implements OnInit {
@@ -31,34 +31,35 @@ export class DeliveryDashboardComponent implements OnInit {
   availableTransitions: AvailableTransitions | null = null;
   showStatusModal = false;
   isUpdatingStatus = false;
+  filteredOrders: DeliveryOrderDto[] = [];
 
-  // Status options with Arabic labels and descriptions
+  // Status options with English labels and descriptions
   orderStatusOptions = [
-    { 
-      value: 'Paid', 
-      label: 'مدفوع', 
-      description: 'الطلب مدفوع وجاهز للتوصيل',
+    {
+      value: 'Paid',
+      label: 'Paid',
+      description: 'The order is paid and ready for delivery',
       icon: '💰',
       color: 'blue'
     },
-    { 
-      value: 'Shipped', 
-      label: 'تم الشحن', 
-      description: 'الطلب في الطريق للعميل',
+    {
+      value: 'Shipped',
+      label: 'Shipped',
+      description: 'The order is on the way to the customer',
       icon: '🚚',
       color: 'yellow'
     },
-    { 
-      value: 'Completed', 
-      label: 'مكتمل', 
-      description: 'تم توصيل الطلب بنجاح',
+    {
+      value: 'Completed',
+      label: 'Completed',
+      description: 'The order has been successfully delivered',
       icon: '✅',
       color: 'green'
     },
-    { 
-      value: 'Cancelled', 
-      label: 'ملغي', 
-      description: 'تم إلغاء الطلب',
+    {
+      value: 'Cancelled',
+      label: 'Cancelled',
+      description: 'The order has been cancelled',
       icon: '❌',
       color: 'red'
     }
@@ -78,11 +79,11 @@ export class DeliveryDashboardComponent implements OnInit {
     private deliveryService: DeliveryService,
     private router: Router,
     private toastr: ToastrService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     console.log('DeliveryDashboardComponent: Initializing...');
-    this.userName = localStorage.getItem('userName') || 'مستخدم التوصيل';
+    this.userName = localStorage.getItem('userName') || 'Delivery User';
     this.loadOrders();
   }
 
@@ -90,7 +91,7 @@ export class DeliveryDashboardComponent implements OnInit {
     console.log('DeliveryDashboardComponent: Loading orders...');
     this.isLoading = true;
     this.errorMessage = '';
-    
+
     this.deliveryService.getOrdersForDelivery().subscribe({
       next: (response) => {
         console.log('DeliveryDashboardComponent: Orders response:', response);
@@ -98,36 +99,36 @@ export class DeliveryDashboardComponent implements OnInit {
           this.orders = response.data!;
           console.log('DeliveryDashboardComponent: Loaded orders:', this.orders.length);
           console.log('DeliveryDashboardComponent: Loaded orders:', this.orders);
-          
+          this.filterOrders('All');
           if (this.orders.length > 0) {
-            this.toastr.success(`تم تحميل ${this.orders.length} طلب بنجاح`, 'تم التحميل');
+            this.toastr.success(`Successfully loaded ${this.orders.length} orders`, 'Loaded');
           } else {
-            this.toastr.info('لا توجد طلبات جاهزة للتوصيل في الوقت الحالي', 'لا توجد طلبات');
+            this.toastr.info('No orders ready for delivery at the moment', 'No Orders');
           }
         } else {
           console.error('Failed to load orders:', response.message);
-          this.errorMessage = response.message || 'فشل في تحميل الطلبات';
-          this.toastr.error(this.errorMessage, 'خطأ في التحميل');
+          this.errorMessage = response.message || 'Failed to load orders';
+          this.toastr.error(this.errorMessage, 'Load Error');
         }
       },
       error: (error) => {
         console.error('DeliveryDashboardComponent: Error loading orders:', error);
-        let errorMsg = 'فشل في تحميل الطلبات';
-        
+        let errorMsg = 'Failed to load orders';
+
         if (error.status === 404) {
-          errorMsg = 'نقطة النهاية غير موجودة. تحقق من تشغيل الخادم.';
+          errorMsg = 'Endpoint not found. Check if server is running.';
         } else if (error.status === 0) {
-          errorMsg = 'لا يمكن الاتصال بالخادم. تحقق من تشغيل Backend.';
+          errorMsg = 'Cannot connect to the server. Check if Backend is running.';
         } else if (error.status === 401) {
-          errorMsg = 'غير مصرح. تحقق من تسجيل الدخول.';
+          errorMsg = 'Unauthorized. Please check login.';
         } else if (error.status === 403) {
-          errorMsg = 'ليس لديك صلاحية للوصول لهذه البيانات.';
+          errorMsg = 'You do not have permission to access this data.';
         } else if (error.error?.message) {
           errorMsg = error.error.message;
         }
-        
+
         this.errorMessage = errorMsg;
-        this.toastr.error(errorMsg, 'خطأ في التحميل');
+        this.toastr.error(errorMsg, 'Load Error');
       },
       complete: () => {
         console.log('DeliveryDashboardComponent: Orders loading completed');
@@ -138,7 +139,7 @@ export class DeliveryDashboardComponent implements OnInit {
 
   getOrdersByStatus(status: string | number): DeliveryOrderDto[] {
     const statusStr = status.toString();
-    
+
     return this.orders.filter(order => {
       const orderStatus = order.status.toString();
       return orderStatus === statusStr;
@@ -151,7 +152,7 @@ export class DeliveryDashboardComponent implements OnInit {
 
   getStatusBadgeClass(status: string | number): string {
     const statusStr = status.toString();
-    
+
     switch (statusStr) {
       case 'Paid':
       case '1':
@@ -190,23 +191,23 @@ export class DeliveryDashboardComponent implements OnInit {
 
   getStatusText(status: string | number): string {
     const statusStr = status.toString();
-    
+
     switch (statusStr) {
       case 'Paid':
       case '1':
-        return 'مدفوع';
+        return 'Paid';
       case 'Shipped':
       case '2':
-        return 'تم الشحن';
+        return 'Shipped';
       case 'Completed':
       case '3':
-        return 'مكتمل';
+        return 'Completed';
       case 'Pending':
       case '0':
-        return 'في الانتظار';
+        return 'Pending';
       case 'Cancelled':
       case '4':
-        return 'ملغي';
+        return 'Cancelled';
       default:
         return statusStr;
     }
@@ -215,13 +216,13 @@ export class DeliveryDashboardComponent implements OnInit {
   getShippingStatusText(status: string): string {
     switch (status) {
       case 'Pending':
-        return 'في الانتظار';
+        return 'Pending';
       case 'InTransit':
-        return 'في الطريق';
+        return 'In Transit';
       case 'Delivered':
-        return 'تم التوصيل';
+        return 'Delivered';
       case 'Failed':
-        return 'فشل التوصيل';
+        return 'Delivery Failed';
       default:
         return status;
     }
@@ -229,7 +230,7 @@ export class DeliveryDashboardComponent implements OnInit {
 
   getStatusIcon(status: string | number): string {
     const statusStr = status.toString();
-    
+
     switch (statusStr) {
       case 'Paid':
       case '1':
@@ -250,6 +251,19 @@ export class DeliveryDashboardComponent implements OnInit {
         return '📦';
     }
   }
+  filterOrders(status: string): void {
+    console.log(`Filtering orders by status: ${status}`);
+    if (status === 'All') {
+      this.filteredOrders = this.orders;
+    }
+    else if (status === 'Swap') {
+      this.filteredOrders = this.getSwapOrders();
+    }
+    else {
+      this.filteredOrders = this.getOrdersByStatus(status);
+    }
+  }
+
 
   viewOrderDetails(orderId: number): void {
     this.router.navigate(['/delivery/orders', orderId]);
@@ -263,7 +277,7 @@ export class DeliveryDashboardComponent implements OnInit {
       notes: ''
     };
     this.showStatusModal = true;
-    
+
     // Load available transitions for this order
     this.loadAvailableTransitions(order.id);
   }
@@ -288,19 +302,19 @@ export class DeliveryDashboardComponent implements OnInit {
     }
 
     const transitions = this.availableTransitions?.orderStatusTransitions;
-    return this.orderStatusOptions.filter(option => 
+    return this.orderStatusOptions.filter(option =>
       transitions?.includes(option.value) || false
     );
   }
 
   updateOrderStatus(): void {
     if (!this.selectedOrder) {
-      this.toastr.error('لم يتم اختيار طلب للتحديث', 'خطأ');
+      this.toastr.error('No order selected for update', 'Error');
       return;
     }
 
     if (!this.updateOrderStatusData.status) {
-      this.toastr.error('يرجى اختيار حالة جديدة', 'خطأ في الإدخال');
+      this.toastr.error('Please select a new status', 'Input Error');
       return;
     }
 
@@ -319,27 +333,27 @@ export class DeliveryDashboardComponent implements OnInit {
       next: (response) => {
         console.log('=== Update Response ===');
         console.log('Response:', response);
-        
+
         if (response.success) {
           console.log('✅ Order status updated successfully');
-          
+
           const newStatusText = this.getStatusText(this.updateOrderStatusData.status);
-          let successMsg = `تم تحديث حالة الطلب #${this.selectedOrder?.id} إلى "${newStatusText}" بنجاح`;
-          
-          // إذا كان طلب تبادل وتم إكماله، أضف رسالة إضافية
+          let successMsg = `Order #${this.selectedOrder?.id} status updated to "${newStatusText}" successfully`;
+
+          // If it's a swap order and completed, add extra message
           if (this.selectedOrder?.isSwapOrder && this.updateOrderStatusData.status === 'Completed') {
-            successMsg += ' (تم تحديث الطلب المرتبط أيضاً)';
+            successMsg += ' (Linked order also updated)';
           }
-          
+
           this.successMessage = successMsg;
-          this.toastr.success(successMsg, 'تم التحديث بنجاح');
-          
+          this.toastr.success(successMsg, 'Updated Successfully');
+
           this.loadOrders(); // Reload orders
           this.showStatusModal = false;
         } else {
           console.error('❌ Failed to update order status:', response.message);
-          this.errorMessage = response.message || 'فشل في تحديث الحالة';
-          this.toastr.error(this.errorMessage, 'خطأ في التحديث');
+          this.errorMessage = response.message || 'Failed to update status';
+          this.toastr.error(this.errorMessage, 'Update Error');
         }
       },
       error: (error) => {
@@ -347,25 +361,25 @@ export class DeliveryDashboardComponent implements OnInit {
         console.error('Error:', error);
         console.error('Error Status:', error.status);
         console.error('Error Message:', error.message);
-        
-        let errorMessage = 'خطأ في تحديث الحالة';
-        
+
+        let errorMessage = 'Status update error';
+
         if (error.status === 400) {
-          errorMessage = 'تحول الحالة غير مسموح. تحقق من الحالة الحالية للطلب.';
+          errorMessage = 'Status transition not allowed. Check current order status.';
         } else if (error.status === 401) {
-          errorMessage = 'غير مصرح. تحقق من تسجيل الدخول.';
+          errorMessage = 'Unauthorized. Please check login.';
         } else if (error.status === 404) {
-          errorMessage = 'الطلب غير موجود.';
+          errorMessage = 'Order not found.';
         } else if (error.status === 0) {
-          errorMessage = 'لا يمكن الاتصال بالخادم. تحقق من تشغيل Backend.';
+          errorMessage = 'Cannot connect to server. Check if Backend is running.';
         } else if (error.error?.message) {
           errorMessage = error.error.message;
         } else {
-          errorMessage = error.message || 'خطأ غير معروف';
+          errorMessage = error.message || 'Unknown error';
         }
-        
+
         this.errorMessage = errorMessage;
-        this.toastr.error(errorMessage, 'خطأ في التحديث');
+        this.toastr.error(errorMessage, 'Update Error');
       },
       complete: () => {
         this.isUpdatingStatus = false;
@@ -397,15 +411,15 @@ export class DeliveryDashboardComponent implements OnInit {
     localStorage.removeItem('userRoles');
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userName');
-    this.toastr.success('تم تسجيل الخروج بنجاح', 'تسجيل الخروج');
+    this.toastr.success('Logged out successfully', 'Logout');
     this.router.navigate(['/login']);
   }
-   getImageUrl(image: string): string {
-       return image 
-              ? `${environment.apiUrl}${image}`
-              : 'product.png';
-     }
-    onImageError(event: Event) {
-      (event.target as HTMLImageElement).src = 'product.png';
-    }
-} 
+  getImageUrl(image: string): string {
+    return image
+      ? `${environment.apiUrl}${image}`
+      : 'product.png';
+  }
+  onImageError(event: Event) {
+    (event.target as HTMLImageElement).src = 'product.png';
+  }
+}  

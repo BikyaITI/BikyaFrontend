@@ -89,14 +89,14 @@ export class ProductManagementComponent implements OnInit {
 
   async confirmDelete(product: IProduct) {
     const result = await Swal.fire({
-      title: 'تأكيد الحذف',
-      text: `هل أنت متأكد من حذف المنتج "${product.title}"؟`,
+      title: 'Confirm Deletion',
+      text: `Are you sure you want to delete the product "${product.title}"?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'نعم، احذف!',
-      cancelButtonText: 'إلغاء',
+      confirmButtonText: 'Yes, delete!',
+      cancelButtonText: 'Cancel',
       reverseButtons: true
     });
 
@@ -143,14 +143,14 @@ export class ProductManagementComponent implements OnInit {
 
   async confirmApprove(product: IProduct) {
     const result = await Swal.fire({
-      title: 'تأكيد الموافقة',
-      text: `هل أنت متأكد من الموافقة على المنتج "${product.title}"؟`,
+      title: 'Confirm Approval',
+      text: `Are you sure you want to approve the product "${product.title}"?`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#28a745',
       cancelButtonColor: '#6c757d',
-      confirmButtonText: 'نعم، وافق',
-      cancelButtonText: 'إلغاء',
+      confirmButtonText: 'Yes, approve',
+      cancelButtonText: 'Cancel',
       reverseButtons: true
     });
 
@@ -158,7 +158,6 @@ export class ProductManagementComponent implements OnInit {
       this.approveProduct(product.id);
     }
   }
-
   approveProduct(id: number) {
     this.isApproving[id] = true;
     this.productService.approveProduct(id).subscribe({

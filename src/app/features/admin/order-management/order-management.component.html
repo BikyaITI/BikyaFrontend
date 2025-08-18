@@ -62,14 +62,14 @@
           <td>
             <span class="order-id">{{ order.id }}</span>
             <span *ngIf="order.relatedOrderId" class="badge bg-info ms-1">
-              مرتبط مع #{{ order.relatedOrderId }}
+              Linked with #{{ order.relatedOrderId }}
             </span>
           </td>
           <td>
             <div class="product-info">
               <span class="product-title">{{ order.productTitle || 'N/A' }}</span>
               <span *ngIf="order.isSwapOrder" class="badge bg-success ms-2">
-                <i class="fas fa-exchange-alt"></i> تبادل
+                <i class="fas fa-exchange-alt"></i> Exchange
               </span>
             </div>
           </td>
@@ -95,10 +95,10 @@
           <td>{{ order.createdAt ? (order.createdAt | date:'short') : 'N/A' }}</td>
           <td>
             <span *ngIf="order.isSwapOrder" class="badge bg-success">
-              <i class="fas fa-exchange-alt"></i> تبادل
+              <i class="fas fa-exchange-alt"></i> Exchange
             </span>
             <span *ngIf="!order.isSwapOrder" class="badge bg-primary">
-              <i class="fas fa-shopping-cart"></i> عادي
+              <i class="fas fa-shopping-cart"></i> Normal
             </span>
           </td>
           <td>
@@ -133,4 +133,4 @@
   <div *ngIf="!isLoading && !orders.length" class="alert alert-info" role="status">
     <i class="fas fa-info-circle" aria-hidden="true"></i> No orders found.
   </div>
-</div> 
+</div>

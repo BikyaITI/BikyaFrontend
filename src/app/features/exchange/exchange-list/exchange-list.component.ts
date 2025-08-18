@@ -30,11 +30,11 @@ export class ExchangeListComponent implements OnInit {
     private toastr: ToastrService,
     private router: Router,
     private route: ActivatedRoute
-  ) { 
+  ) {
     // Check for success state from navigation
     const navigation = this.router.getCurrentNavigation();
     if (navigation?.extras?.state?.['exchangeSuccess']) {
-      this.toastr.success('تم إرسال طلب التبادل بنجاح', 'تم بنجاح');
+      this.toastr.success('Exchange request sent successfully', 'Success');
     }
   }
 
@@ -48,14 +48,14 @@ export class ExchangeListComponent implements OnInit {
       this.loadExchangeRequests();
     } catch (error) {
       console.error('Error initializing exchange list:', error);
-      this.toastr.error('حدث خطأ أثناء تحميل طلبات التبادل');
+      this.toastr.error('An error occurred while loading exchange requests');
       this.router.navigate(['/']);
     }
   }
 
   async loadExchangeRequests(): Promise<void> {
     this.isLoading = true;
-    
+
     try {
       // Load received requests
       const receivedResponse = await this.exchangeService.getReceivedRequests()
@@ -66,17 +66,17 @@ export class ExchangeListComponent implements OnInit {
         this.receivedRequests = receivedResponse.data;
         console.log('Loaded received requests:', this.receivedRequests);
       } else {
-        throw new Error(receivedResponse?.message || 'فشل تحميل طلبات التبادل الواردة');
+        throw new Error(receivedResponse?.message || 'Failed to load received exchange requests');
       }
 
       // After received requests are loaded, load sent requests
       await this.loadSentRequests();
-      
+
     } catch (error: any) {
       console.error('Error loading exchange requests:', error);
       this.toastr.error(
-        error.error?.message || 'حدث خطأ أثناء تحميل طلبات التبادل',
-        'خطأ في التحميل'
+        error.error?.message || 'An error occurred while loading exchange requests',
+        'Load Error'
       );
     } finally {
       this.isLoading = false;
@@ -93,13 +93,13 @@ export class ExchangeListComponent implements OnInit {
         this.sentRequests = sentResponse.data;
         console.log('Loaded sent requests:', this.sentRequests);
       } else {
-        throw new Error(sentResponse?.message || 'فشل تحميل طلبات التبادل المرسلة');
+        throw new Error(sentResponse?.message || 'Failed to load sent exchange requests');
       }
     } catch (error: any) {
       console.error('Error loading sent requests:', error);
       this.toastr.error(
-        error.error?.message || 'حدث خطأ أثناء تحميل الطلبات المرسلة',
-        'خطأ في التحميل'
+        error.error?.message || 'An error occurred while loading sent requests',
+        'Load Error'
       );
       throw error; // Re-throw to be caught by the caller
     }
@@ -121,13 +121,13 @@ export class ExchangeListComponent implements OnInit {
   getStatusText(status: ExchangeStatus): string {
     switch (status) {
       case ExchangeStatus.Pending:
-        return 'قيد الانتظار';
+        return 'Pending';
       case ExchangeStatus.Accepted:
-        return 'موافق عليه';
+        return 'Accepted';
       case ExchangeStatus.Rejected:
-        return 'مرفوض';
+        return 'Rejected';
       default:
-        return 'غير معروف';
+        return 'Unknown';
     }
   }
 
@@ -146,33 +146,33 @@ export class ExchangeListComponent implements OnInit {
 
   async approveRequest(request: ExchangeRequest): Promise<void> {
     if (!request || !request.id) {
-      this.toastr.warning('طلب تبادل غير صالح', 'خطأ');
+      this.toastr.warning('Invalid exchange request', 'Error');
       return;
     }
 
-    const confirmResult = confirm('هل أنت متأكد من الموافقة على طلب التبادل؟');
+    const confirmResult = confirm('Are you sure you want to approve this exchange request?');
     if (!confirmResult) return;
 
     try {
       this.isLoading = true;
-      this.toastr.info('جاري معالجة طلب الموافقة...', 'يرجى الانتظار');
-      
+      this.toastr.info('Processing approval request...', 'Please wait');
+
       const response = await this.exchangeService.approveRequest(request.id)
         .pipe(first())
         .toPromise();
 
       if (response?.success) {
-        this.toastr.success('تمت الموافقة على طلب التبادل بنجاح', 'تم بنجاح');
+        this.toastr.success('Exchange request approved successfully', 'Success');
         // Refresh the requests
         await this.loadExchangeRequests();
       } else {
-        throw new Error(response?.message || 'فشل الموافقة على الطلب');
+        throw new Error(response?.message || 'Failed to approve the request');
       }
     } catch (error: any) {
       console.error('Error approving request:', error);
       this.toastr.error(
-        error.error?.message || 'حدث خطأ أثناء الموافقة على الطلب',
-        'خطأ'
+        error.error?.message || 'An error occurred while approving the request',
+        'Error'
       );
     } finally {
       this.isLoading = false;
@@ -181,33 +181,33 @@ export class ExchangeListComponent implements OnInit {
 
   async rejectRequest(request: ExchangeRequest): Promise<void> {
     if (!request || !request.id) {
-      this.toastr.warning('طلب تبادل غير صالح', 'خطأ');
+      this.toastr.warning('Invalid exchange request', 'Error');
       return;
     }
 
-    const reason = prompt('الرجاء إدخال سبب الرفض (اختياري):', '') || '';
+    const reason = prompt('Please enter a rejection reason (optional):', '') || '';
     if (reason === null) return; // User cancelled
 
     try {
       this.isLoading = true;
-      this.toastr.info('جاري معالجة طلب الرفض...', 'يرجى الانتظار');
-      
+      this.toastr.info('Processing rejection request...', 'Please wait');
+
       const response = await this.exchangeService.rejectRequest(request.id, reason)
         .pipe(first())
         .toPromise();
 
       if (response?.success) {
-        this.toastr.success('تم رفض طلب التبادل بنجاح', 'تم بنجاح');
+        this.toastr.success('Exchange request rejected successfully', 'Success');
         // Refresh the requests
         await this.loadExchangeRequests();
       } else {
-        throw new Error(response?.message || 'فشل رفض الطلب');
+        throw new Error(response?.message || 'Failed to reject the request');
       }
     } catch (error: any) {
       console.error('Error rejecting request:', error);
       this.toastr.error(
-        error.error?.message || 'حدث خطأ أثناء رفض الطلب',
-        'خطأ'
+        error.error?.message || 'An error occurred while rejecting the request',
+        'Error'
       );
     } finally {
       this.isLoading = false;

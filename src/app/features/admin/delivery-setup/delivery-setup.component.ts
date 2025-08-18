@@ -13,7 +13,7 @@ export class DeliverySetupComponent {
   isLoading = false;
   message = '';
 
-  constructor(private deliveryService: DeliveryService) {}
+  constructor(private deliveryService: DeliveryService) { }
 
   setupDeliverySystem(): void {
     this.isLoading = true;
@@ -22,18 +22,18 @@ export class DeliverySetupComponent {
     this.deliveryService.setupDeliverySystem().subscribe({
       next: (response) => {
         if (response.success) {
-          this.message = 'تم إعداد نظام التوصيل بنجاح! يمكن الآن لموظفي التوصيل تسجيل الدخول.';
+          this.message = 'Delivery system setup completed successfully! Delivery staff can now log in.';
         } else {
-          this.message = response.message || 'فشل إعداد نظام التوصيل';
+          this.message = response.message || 'Failed to set up delivery system.';
         }
       },
       error: (error) => {
         if (error.status === 404) {
-          this.message = 'الباك إند غير متاح. يرجى التأكد من تشغيل الخادم.';
+          this.message = 'Backend not available. Please make sure the server is running.';
         } else if (error.status === 0) {
-          this.message = 'لا يمكن الاتصال بالخادم. يرجى التحقق من تشغيل الباك إند.';
+          this.message = 'Cannot connect to server. Please check if backend is running.';
         } else {
-          this.message = 'حدث خطأ في إعداد نظام التوصيل';
+          this.message = 'An error occurred while setting up the delivery system.';
         }
         console.error('Error setting up delivery system:', error);
       },
@@ -42,4 +42,4 @@ export class DeliverySetupComponent {
       }
     });
   }
-} 
+}

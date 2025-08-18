@@ -98,8 +98,22 @@ console.log("buy now clicked")
     });
   }
    
-  
+  OnEdit(productId: number): void {
+    if(this.product()?.status!=="Available") {
+      this.notify.emit({ type: 'error', message: 'You cannot edit this product. only edit products that are available.' });
+      return;
+    }
+    this.router.navigate(['/edit-product', productId]);
+  }
 
+  onDelete(productId: number): void {
+      if (this.product()?.status !== "Available") {
+        this.notify.emit({ type: 'error', message: 'You cannot delete this product. Only delete products that are available.' });
+        return;
+
+      }
+    this.deleteClicked.emit()
+  }
   isMyProduct(): boolean | null {
     console.log("isMyProduct called", this.currentUser?.id, this.product()!.id);
     return this.currentUser && this.product && this.product()!.userId === this.currentUser?.id;

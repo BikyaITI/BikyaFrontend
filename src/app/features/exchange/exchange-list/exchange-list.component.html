@@ -14,7 +14,7 @@
                 [class.active]="activeTab === 'received'"
                 (click)="setActiveTab('received')"
                 type="button">
-                الطلبات الواردة
+                Incoming Requests
                 <span class="badge bg-primary ms-1">{{receivedRequests.length}}</span>
               </button>
             </li>
@@ -28,7 +28,7 @@
                 [class.active]="activeTab === 'sent'"
                 (click)="setActiveTab('sent')"
                 type="button">
-                الطلبات المرسلة
+                Sent Requests
                 <span class="badge bg-secondary ms-1">{{sentRequests.length}}</span>
               </button>
             </li>
@@ -39,9 +39,9 @@
           <!-- Loading State -->
           <div *ngIf="isLoading" class="text-center py-5">
             <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">جاري التحميل...</span>
+              <span class="visually-hidden">Loading...</span>
             </div>
-            <p class="mt-2">جاري تحميل طلبات التبادل...</p>
+            <p class="mt-2">Loading exchange requests...</p>
           </div>
 
           <!-- Received Requests Tab -->
@@ -54,17 +54,17 @@
 
             <div *ngIf="receivedRequests.length === 0" class="text-center py-5">
               <i class="bi bi-inbox fs-1 text-muted"></i>
-              <p class="mt-3 text-muted">لا توجد طلبات تبادل واردة</p>
+              <p class="mt-3 text-muted">No incoming exchange requests</p>
             </div>
 
             <div *ngFor="let request of receivedRequests" class="card mb-3">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start">
                   <div>
-                    <h5 class="card-title">طلب تبادل #{{request.id}}</h5>
+                    <h5 class="card-title">Exchange Request #{{request.id}}</h5>
                     <p class="text-muted mb-2">
                       <i class="bi bi-arrow-left-circle me-1"></i>
-                      {{request.requester?.userName || 'مستخدم'}} يرغب في تبادل منتجه معك
+                      {{request.requester?.userName || 'User'}} wants to exchange their product with you
                     </p>
                     <span class="badge" [ngClass]="getStatusBadgeClass(request.status)">
                       {{getStatusText(request.status)}}
@@ -85,7 +85,7 @@
                         (error)="onImageError($event)">
                         <div class="flex-grow-1">
                           <div class="d-flex justify-content-between align-items-center">
-                            <h6 class="mb-1 text-dark">منتجك</h6>
+                            <h6 class="mb-1 text-dark">Your Product</h6>
                             <span class="badge bg-secondary" *ngIf="request.requestedProduct?.condition">{{request.requestedProduct?.condition}}</span>
                           </div>
                           <div class="text-muted small">{{request.requestedProduct?.title || '—'}}</div>
@@ -102,7 +102,7 @@
                         <img [src]="getMainImageUrl(request.offeredProduct)" class="rounded" alt="{{request.offeredProduct?.title || 'Product'}}" style="width:80px;height:80px;object-fit:cover;"(error)="onImageError($event)">
                         <div class="flex-grow-1">
                           <div class="d-flex justify-content-between align-items-center">
-                            <h6 class="mb-1 text-dark">المنتج المقدم</h6>
+                            <h6 class="mb-1 text-dark">Offered Product</h6>
                             <span class="badge bg-secondary" *ngIf="request.offeredProduct?.condition">{{request.offeredProduct?.condition}}</span>
                           </div>
                           <div class="text-muted small">{{request.offeredProduct?.title || '—'}}</div>
@@ -114,15 +114,15 @@
                 </div>
 
                 <div *ngIf="request.message" class="mt-3 p-3 bg-light rounded">
-                  <p class="mb-0"><strong>رسالة:</strong> {{request.message}}</p>
+                  <p class="mb-0"><strong>Message:</strong> {{request.message}}</p>
                 </div>
 
                 <div *ngIf="request.status === 'Pending'" class="mt-3 d-flex gap-2">
                   <button class="btn btn-success btn-sm" (click)="approveRequest(request)">
-                    <i class="bi bi-check-circle me-1"></i> قبول
+                    <i class="bi bi-check-circle me-1"></i> Accept
                   </button>
                   <button class="btn btn-outline-danger btn-sm" (click)="rejectRequest(request)">
-                    <i class="bi bi-x-circle me-1"></i> رفض
+                    <i class="bi bi-x-circle me-1"></i> Reject
                   </button>
                 </div>
                 
@@ -133,7 +133,7 @@
                      [routerLink]="['/checkout']"
                      [queryParams]="{ orderId: request.orderForOfferedProductId }">
                     <i class="bi bi-bag-check me-1"></i>
-                    إتمام بيانات الشحن لطلب التبادل
+                    Complete shipping details for exchange request
                   </a>
                 </div>
               </div>
@@ -150,18 +150,18 @@
 
             <div *ngIf="sentRequests.length === 0" class="text-center py-5">
               <i class="bi bi-send fs-1 text-muted"></i>
-              <p class="mt-3 text-muted">لم تقم بإرسال أي طلبات تبادل بعد</p>
-              <a routerLink="/products" class="btn btn-primary mt-2">تصفح المنتجات</a>
+              <p class="mt-3 text-muted">You haven’t sent any exchange requests yet</p>
+              <a routerLink="/products" class="btn btn-primary mt-2">Browse Products</a>
             </div>
 
             <div *ngFor="let request of sentRequests" class="card mb-3">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start">
                   <div>
-                    <h5 class="card-title">طلب تبادل #{{request.id}}</h5>
+                    <h5 class="card-title">Exchange Request #{{request.id}}</h5>
                     <p class="text-muted mb-2">
                       <i class="bi bi-arrow-right-circle me-1"></i>
-                      قمت بإرسال طلب تبادل إلى {{request.owner?.userName || 'مستخدم'}}
+                      You sent an exchange request to {{request.owner?.userName || 'User'}}
                     </p>
                     <span class="badge" [ngClass]="getStatusBadgeClass(request.status)">
                       {{getStatusText(request.status)}}
@@ -176,12 +176,12 @@
                   <div class="col-md-6">
                     <div class="card bg-light">
                       <div class="card-body">
-                        <h6 class="card-subtitle mb-2 text-muted">المنتج المطلوب</h6>
+                        <h6 class="card-subtitle mb-2 text-muted">Requested Product</h6>
                         <div class="d-flex">
                           <img
                             [src]="getMainImageUrl(request.requestedProduct)"
                             class="img-thumbnail me-2"
-                             alt="صورة {{request.requestedProduct?.title || 'منتج'}}"
+                             alt="Image {{request.requestedProduct?.title || 'Product'}}"
                             style="width: 60px; height: 60px; object-fit: cover;"
                             (error)="onImageError($event)">
                           <div>
@@ -198,12 +198,12 @@
                   <div class="col-md-6 mt-2 mt-md-0">
                     <div class="card bg-light">
                       <div class="card-body">
-                        <h6 class="card-subtitle mb-2 text-muted">منتجك</h6>
+                        <h6 class="card-subtitle mb-2 text-muted">Your Product</h6>
                         <div class="d-flex">
                           <img
                             [src]="getMainImageUrl(request.offeredProduct)"
                             class="img-thumbnail me-2"
-                             alt="صورة {{request.offeredProduct?.title || 'منتج'}}"
+                             alt="Image {{request.offeredProduct?.title || 'Product'}}"
                             style="width: 60px; height: 60px; object-fit: cover;"(error)="onImageError($event)">
                           <div>
                              <h6 class="mb-1">{{request.offeredProduct?.title || '—'}}</h6>
@@ -219,7 +219,7 @@
                 </div>
 
                 <div *ngIf="request.message" class="mt-3 p-3 bg-light rounded">
-                  <p class="mb-0"><strong>رسالتك:</strong> {{request.message}}</p>
+                  <p class="mb-0"><strong>Your Message:</strong> {{request.message}}</p>
                 </div>
 
                 <!-- After approval in sent tab: show pay shipping (sender side) -->
@@ -229,13 +229,13 @@
                      [routerLink]="['/checkout']"
                      [queryParams]="{ orderId: request.orderForRequestedProductId }">
                     <i class="bi bi-bag-check me-1"></i>
-                    إتمام الطلب عبر صفحة Checkout
+                    Complete the order via Checkout page
                   </a>
                 </div>
 
                 <div *ngIf="request.status === 'Rejected' && request.responseMessage" class="mt-2">
                   <div class="alert alert-warning mb-0">
-                    <strong>سبب الرفض:</strong> {{request.responseMessage || 'لم يتم تحديد سبب'}}
+                    <strong>Rejection Reason:</strong> {{request.responseMessage || 'No reason provided'}}
                   </div>
                 </div>
               </div>

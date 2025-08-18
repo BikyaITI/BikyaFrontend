@@ -30,7 +30,7 @@ export class OrderDetailsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.userName = localStorage.getItem('userName') || 'مستخدم التوصيل';
+    this.userName = localStorage.getItem('userName') || 'Delivery User';
     this.orderId = Number(this.route.snapshot.paramMap.get('id'));
 
     console.log('Initialized order details for order ID:', this.orderId);
@@ -66,11 +66,11 @@ export class OrderDetailsComponent implements OnInit, OnDestroy {
           console.log('OrderDetailsComponent: Order status type:', typeof this.order?.status);
           console.log('OrderDetailsComponent: Order status value:', this.order?.status);
 
-          // إعادة تعيين حالة التحديث
+          // Reset updateStatus state
 
           console.log('OrderDetailsComponent: Reset updateStatus to empty values');
 
-          // تحميل الحالات المتاحة
+          // Load available statuses
           const availableStatuses = this.getAvailableStatuses();
           console.log('OrderDetailsComponent: Available statuses for current order:', availableStatuses);
         } else {
@@ -96,32 +96,32 @@ export class OrderDetailsComponent implements OnInit, OnDestroy {
       case 'Paid':
       case '1':
         availableStatuses.push(
-          { value: 'Shipped', text: 'تم الشحن' },
-          { value: 'Cancelled', text: 'ملغي' }
+          { value: 'Shipped', text: 'Shipped' },
+          { value: 'Cancelled', text: 'Cancelled' }
         );
         break;
       case 'Shipped':
       case '2':
         availableStatuses.push(
-          { value: 'Completed', text: 'مكتمل' },
-          { value: 'Cancelled', text: 'ملغي' }
+          { value: 'Completed', text: 'Completed' },
+          { value: 'Cancelled', text: 'Cancelled' }
         );
         break;
       case 'Completed':
       case '3':
-        // لا يمكن تحديث الحالة من مكتمل
+        // Cannot update status from Completed
         break;
       case 'Cancelled':
       case '4':
-        // لا يمكن تحديث الحالة من ملغي
+        // Cannot update status from Cancelled
         break;
       default:
-        // للحالات الأخرى، السماح بجميع الحالات
+        // For other statuses, allow all
         availableStatuses.push(
-          { value: 'Paid', text: 'مدفوع' },
-          { value: 'Shipped', text: 'تم الشحن' },
-          { value: 'Completed', text: 'مكتمل' },
-          { value: 'Cancelled', text: 'ملغي' }
+          { value: 'Paid', text: 'Paid' },
+          { value: 'Shipped', text: 'Shipped' },
+          { value: 'Completed', text: 'Completed' },
+          { value: 'Cancelled', text: 'Cancelled' }
         );
     }
 
@@ -130,7 +130,7 @@ export class OrderDetailsComponent implements OnInit, OnDestroy {
 
   getAvailableStatusesText(): string {
     const statuses = this.getAvailableStatuses();
-    return statuses.map(s => s.text).join('، ');
+    return statuses.map(s => s.text).join(', ');
   }
 
   getStatusClass(status: string | number): string {
@@ -163,19 +163,19 @@ export class OrderDetailsComponent implements OnInit, OnDestroy {
     switch (statusStr) {
       case 'Paid':
       case '1':
-        return 'مدفوع';
+        return 'Paid';
       case 'Shipped':
       case '2':
-        return 'تم الشحن';
+        return 'Shipped';
       case 'Completed':
       case '3':
-        return 'مكتمل';
+        return 'Completed';
       case 'Pending':
       case '0':
-        return 'في الانتظار';
+        return 'Pending';
       case 'Cancelled':
       case '4':
-        return 'ملغي';
+        return 'Cancelled';
       default:
         return statusStr;
     }
@@ -201,4 +201,4 @@ export class OrderDetailsComponent implements OnInit, OnDestroy {
     (event.target as HTMLImageElement).src = 'product.png';
   }
 
-} 
+}

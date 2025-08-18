@@ -5,7 +5,7 @@
         <div class="card-header bg-gradient-primary text-white text-center py-4">
           <h3 class="mb-0">
             <i class="fas fa-exchange-alt me-2"></i>
-            طلب تبادل منتج
+            Product Exchange Request
           </h3>
         </div>
         
@@ -13,9 +13,9 @@
           <!-- Loading State -->
           <div *ngIf="isLoading" class="text-center py-5">
             <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-              <span class="visually-hidden">جاري التحميل...</span>
+              <span class="visually-hidden">Loading...</span>
             </div>
-            <p class="mt-3 text-muted">جاري معالجة طلبك...</p>
+            <p class="mt-3 text-muted">Processing your request...</p>
           </div>
 
           <!-- Main Content -->
@@ -24,7 +24,7 @@
             <div class="mb-5" *ngIf="requestedProduct">
               <h5 class="text-primary mb-3">
                 <i class="fas fa-gift me-2"></i>
-                المنتج المطلوب
+                Requested Product
               </h5>
               <div class="product-card p-4 border rounded-3 bg-light">
                 <div class="row align-items-center">
@@ -49,18 +49,18 @@
                         </p>
                         <p class="text-muted mb-1 small">
                           <i class="fas fa-info-circle me-1"></i>
-                          {{ requestedProduct.description || 'لا يوجد وصف' }}
+                          {{ requestedProduct.description || 'No description available' }}
                         </p>
                       </div>
                       <div class="col-md-6">
                         <p class="text-muted mb-1 small">
                           <i class="fas fa-star me-1"></i>
-                          <strong>الحالة:</strong> 
+                          <strong>Condition:</strong> 
                           <span class="badge bg-info">{{ requestedProduct.condition }}</span>
                         </p>
                         <p class="text-muted mb-0 small">
                           <i class="fas fa-folder me-1"></i>
-                          <strong>الفئة:</strong> {{ requestedProduct.categoryName }}
+                          <strong>Category:</strong> {{ requestedProduct.categoryName }}
                         </p>
                       </div>
                     </div>
@@ -75,7 +75,7 @@
               <div class="mb-4">
                 <label for="productSelect" class="form-label fw-bold">
                   <i class="fas fa-handshake me-2"></i>
-                  اختر منتجك للتبادل
+                  Select Your Product for Exchange
                 </label>
                 <select
                   id="productSelect"
@@ -83,14 +83,14 @@
                   [(ngModel)]="selectedProductId"
                   name="selectedProduct"
                   required>
-                  <option [ngValue]="null" disabled>اختر منتج للتبادل</option>
+                  <option [ngValue]="null" disabled>Select a product to exchange</option>
                   <option *ngFor="let product of myProducts" [value]="product.id">
                     {{ product.title }} - {{ product.price | currency:'EGP':'symbol':'1.2-2' }} ({{ product.condition }})
                   </option>
                 </select>
                 <div class="form-text text-muted">
                   <i class="fas fa-info-circle me-1"></i>
-                  سيتم عرض المنتجات المتاحة للتبادل والمعتمدة فقط
+                  Only available and approved products will be shown
                 </div>
               </div>
 
@@ -98,7 +98,7 @@
               <div class="mb-4">
                 <label for="message" class="form-label fw-bold">
                   <i class="fas fa-comment me-2"></i>
-                  رسالة إضافية (اختياري)
+                  Additional Message (Optional)
                 </label>
                 <textarea
                   id="message"
@@ -106,7 +106,7 @@
                   [(ngModel)]="message"
                   name="message"
                   rows="4"
-                  placeholder="اكتب رسالتك هنا... مثل سبب اهتمامك بالتبادل أو أي تفاصيل إضافية">
+                  placeholder="Write your message here... e.g. why you’re interested in the exchange or any extra details">
                 </textarea>
               </div>
 
@@ -114,7 +114,7 @@
               <div class="d-flex justify-content-between align-items-center pt-3">
                 <button type="button" class="btn btn-outline-secondary btn-lg" routerLink="/products">
                   <i class="fas fa-arrow-right me-2"></i>
-                  رجوع
+                  Back
                 </button>
                 <button 
                   type="submit" 
@@ -122,7 +122,7 @@
                   [disabled]="!selectedProductId || isSubmitting">
                   <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
                   <i class="fas fa-paper-plane me-2" *ngIf="!isSubmitting"></i>
-                  {{ isSubmitting ? 'جاري الإرسال...' : 'إرسال طلب التبادل' }}
+                  {{ isSubmitting ? 'Sending...' : 'Submit Exchange Request' }}
                 </button>
               </div>
             </form>
