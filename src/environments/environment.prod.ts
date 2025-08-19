@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: "https://localhost:65162",
+  apiUrl: "http://bikya-api.duckdns.org",
 }

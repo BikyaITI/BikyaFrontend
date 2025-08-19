@@ -28,7 +28,7 @@ export interface WebhookResponse {
 
 @Injectable({ providedIn: 'root' })
 export class StripeWebhookService {
-  private webhookUrl = 'https://localhost:65162/api/Wallet/Payment/webhook'; // Backend webhook endpoint
+  private webhookUrl = 'http://bikya-api.duckdns.org/api/Wallet/Payment/webhook'; // Backend webhook endpoint
 
   constructor(
     private http: HttpClient,
