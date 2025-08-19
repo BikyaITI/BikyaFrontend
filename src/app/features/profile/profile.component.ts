@@ -6,18 +6,19 @@ import { UserService } from "../../core/services/user.service"
 import { ProductService } from "../../core/services/product.service"
 import { IProduct } from "../../core/models/product.model"
 import { ReviewService } from "../../core/services/review.service"
-import { Router } from "@angular/router"
+import { Router, RouterLink } from "@angular/router"
 import { ReviewComponent } from "../review/review.component"
 import { IUser, UserStats, IUpdateProfileRequest, IChangePasswordRequest } from "../../core/models/user.model"
 import { filter, take } from 'rxjs/operators';
 import { ToastrService } from "ngx-toastr"
 import { OrederReview } from "../../core/models/order.model"
 import { OrderService } from "../../core/services/order.service"
+import { ReviewFormComponent } from "../review-form/review-form.component"
 
 @Component({
   selector: "app-profile",
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ReviewComponent],
+  imports: [CommonModule, ReactiveFormsModule, ReviewComponent,ReviewFormComponent],
   templateUrl:'./profile.component.html',
   styleUrl: './profile.component.scss'
 })
