@@ -1,0 +1,37 @@
+# .github/workflows/angular-ci.yml
+
+# Name of the workflow
+name: Angular Frontend CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "deploy" ]
+
+jobs:
+  # A single job called "run-app"
+  run-app:
+    # The type of runner that the job will run on.
+    # Replace 'ubuntu-latest' with the label of your specific frontend runner if you have one.
+    runs-on: frontend
+
+    # A sequence of tasks that will be executed as part of the job
+    steps:
+      # Step 1: Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Sets up a specific version of Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24' # You can change this to your desired Node.js version
+          cache: 'npm'      # Caches npm dependencies for faster builds
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Start Angular App
+        run: npx ng serve 
+
