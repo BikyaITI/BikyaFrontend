@@ -26,6 +26,7 @@
     "date-fns": "^4.1.0",
     "highlight.js": "^11.11.1",
     "jwt-decode": "^4.0.0",
+    "ng": "^0.0.0",
     "ng2-charts": "^4.0.0",
     "ngx-toastr": "^19.0.0",
     "nodemodule": "^0.3.0",
