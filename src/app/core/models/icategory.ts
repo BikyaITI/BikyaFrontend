@@ -11,6 +11,7 @@ export interface ICategory {
   id: number;
   name: string;
   description?: string;
+  icon:File
   iconUrl?: string;
   parentCategoryId?: number |null;
   parentName?: string;

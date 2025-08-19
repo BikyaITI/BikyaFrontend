@@ -190,7 +190,7 @@
           </div>
         </div>
         <hr />
-        <div class="d-flex justify-content-between">
+        <div class="d-flex justify-content-between" *ngIf="!isSwapOrder">
           <span>Subtotal</span>
           <span>{{
             product && product.price && orderRequest.quantity
