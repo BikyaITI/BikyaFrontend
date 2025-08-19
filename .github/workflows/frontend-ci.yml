@@ -1,7 +1,7 @@
 # .github/workflows/angular-ci.yml
 
 # Name of the workflow
-name: Angular Frontend CI
+name: Angular Frontend CI/CD
 
 # Controls when the workflow will run
 on:
@@ -10,8 +10,8 @@ on:
     branches: [ "deploy" ]
 
 jobs:
-  # A single job called "run-app"
-  run-app:
+  # A single job called "build-and-publish"
+  build-and-publish:
     # The type of runner that the job will run on.
     # Replace 'ubuntu-latest' with the label of your specific frontend runner if you have one.
     runs-on: frontend
@@ -29,9 +29,24 @@ jobs:
           node-version: '24' # You can change this to your desired Node.js version
           cache: 'npm'      # Caches npm dependencies for faster builds
 
+      # Step 3: Install project dependencies from package-lock.json
       - name: Install Dependencies
         run: npm install
 
-      - name: Start Angular App
-        run: npx ng serve 
+      # Step 4: Build the Angular application for production
+      # The output will be placed in the 'dist/' directory by default.
+      - name: Build Angular App
+        run: npx ng build --configuration production
+
+      # Step 5: Upload the build output as a workflow artifact
+      # This makes the 'dist' folder available for other jobs or for download.
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          # Name of the artifact to be uploaded.
+          name: angular-build-artifact
+          # Path to the files/directory to upload.
+          # The Angular CLI builds the app into the 'dist/<project-name>' directory.
+          # We upload the entire 'dist' folder.
+          path: ./dist
 
