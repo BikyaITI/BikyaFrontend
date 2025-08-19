@@ -32,7 +32,7 @@ export class CheckoutComponent implements OnInit {
         return mainImage.imageUrl;
       }
       const ensured = mainImage.imageUrl.startsWith('/') ? mainImage.imageUrl : `/${mainImage.imageUrl}`;
-      return `http://bikya-api.duckdns.org${ensured}`;
+      return `https://bikya-api.duckdns.org${ensured}`;
     }
     
     return 'product.png';

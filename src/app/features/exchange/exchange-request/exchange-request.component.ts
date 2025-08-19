@@ -137,7 +137,7 @@ export class ExchangeRequestComponent implements OnInit {
       }
       // Prepend the API base URL if it's a relative path
       if (!imageUrl.startsWith('http')) {
-        imageUrl = 'http://bikya-api.duckdns.org' + imageUrl;
+        imageUrl = 'https://bikya-api.duckdns.org' + imageUrl;
       }
     }
 

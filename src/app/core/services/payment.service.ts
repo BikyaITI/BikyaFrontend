@@ -12,7 +12,7 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
-  private baseUrl = 'http://bikya-api.duckdns.org/api/Wallet/Payment';
+  private baseUrl = 'https://bikya-api.duckdns.org/api/Wallet/Payment';
 
   constructor(private http: HttpClient) {}
 
