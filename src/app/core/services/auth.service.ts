@@ -4,7 +4,7 @@ import { BehaviorSubject,  Observable, tap } from "rxjs"
 import  { ApiResponse } from "../models/api-response.model"
 import  {  LoginRequest, RegisterRequest, AuthResponse, IUser } from "../models/user.model"
 import { environment } from "../../../environments/environment"
-import { jwtDecode } from 'jwt-decode'; 
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: "root",
@@ -82,8 +82,8 @@ export class AuthService {
   register(request: RegisterRequest): Observable<ApiResponse<AuthResponse>> {
     console.log('AuthService: Register request:', request); // Debug
     console.log('AuthService: Register URL:', `${this.API_URL}/register`); // Debug
-    
-    return this.http.post<ApiResponse<AuthResponse>>(`${this.API_URL}/register-test`, request).pipe(
+
+    return this.http.post<ApiResponse<AuthResponse>>(`${this.API_URL}/register`, request).pipe(
       tap((response) => {
         console.log('AuthService: Register response:', response); // Debug
         if (response.success) {
@@ -192,7 +192,7 @@ return this.http.post<ApiResponse<boolean>>(`${environment.apiUrl}/api/Identity/
 
     localStorage.setItem("token", authResponse.token);
     localStorage.setItem("refreshToken", authResponse.refreshToken);
-  
+
     // حفظ معلومات المستخدم
     if (authResponse.user) {
       console.log('AuthService: Saving user data:', authResponse.user); // Debug
