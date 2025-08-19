@@ -85,14 +85,14 @@
             <!-- أزرار التنقل -->
             <div class="d-flex justify-content-between mt-3">
               <button
-                class="btn btn-outline-primary"
+                class="btn btn-outline-custom-primary"
                 (click)="prevP()"
                 [disabled]="currentPage === 0"
               >
                 ‹ Prev
               </button>
               <button
-                class="btn btn-outline-primary"
+                class="btn btn-outline-custom-primary"
                 (click)="nextP()"
                 [disabled]="
                   (currentPage + 1) * itemsPerPage >=

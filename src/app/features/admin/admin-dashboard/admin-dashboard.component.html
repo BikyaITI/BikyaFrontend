@@ -1,5 +1,5 @@
 
-  <!-- Loading Spinner -->
+   <!-- Loading Spinner -->
   <div *ngIf="isLoading" class="text-center my-5">
     <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
       <span class="visually-hidden">Loading...</span>
@@ -292,13 +292,15 @@
     </div>
   </div>
 
+
   <style>
+    
     .dashboard-container {
-      padding: 2rem;
-      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      padding: 20px;
+      background: var(--beige-100);
       min-height: 100vh;
     }
-
+     
     .dashboard-header {
       background: white;
       padding: 2rem;
@@ -309,14 +311,14 @@
     .dashboard-title {
       font-size: 2.5rem;
       font-weight: 800;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background:var(--gradient-primary);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
     .btn-refresh {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: var(--gradient-primary);
       border: none;
       color: white;
       padding: 0.75rem 1.5rem;
@@ -331,7 +333,7 @@
     }
 
     .btn-home {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      background:var(--gradient-secondary);
       border: none;
       color: white;
       padding: 0.75rem 1.5rem;
@@ -405,15 +407,15 @@
     }
 
     .users-card .stat-bg {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: var(--gradient-primary);
     }
 
     .products-card .stat-bg {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      background: var(--gradient-secondary);
     }
 
     .categories-card .stat-bg {
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      background: var(--gradient-accent);
     }
 
     .orders-card .stat-bg {
@@ -433,20 +435,21 @@
     }
 
     .users-card .stat-icon {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
+  background: linear-gradient(135deg, #a3abf0 0%, #b299c9 100%);
+}
 
-    .products-card .stat-icon {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    }
+.products-card .stat-icon {
+  background: linear-gradient(135deg, #f7cffa 0%, #f8969a 100%);
+}
 
-    .categories-card .stat-icon {
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    }
+.categories-card .stat-icon {
+  background: linear-gradient(135deg, #8fc8fe 0%, #80f0fc 100%);
+}
 
-    .orders-card .stat-icon {
-      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-    }
+.orders-card .stat-icon {
+  background: linear-gradient(135deg, #7eeeb2 0%, #66f3e2 100%);
+}
+
 
     .stat-value {
       font-size: 2.5rem;
@@ -514,7 +517,7 @@
       justify-content: center;
       font-size: 1.5rem;
       color: white;
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      background: linear-gradient(135deg, #8fc8fe 0%, #80f0fc 100%);
     }
 
     .financial-content {
@@ -559,7 +562,7 @@
     }
 
     .revenue-card {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #3d405b 0%, #81b29a 100%);
       border-radius: 25px;
       padding: 3rem;
       color: white;
@@ -714,7 +717,7 @@
     }
 
     .view-all-link:hover {
-      color: #667eea;
+      color: var(--gradient-secondary);
     }
 
     .activity-body {
@@ -760,13 +763,14 @@
       font-size: 0.875rem;
     }
 
-    .product-icon {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
+   .product-icon {
+  background: linear-gradient(135deg, #a3abf0 0%, #b299c9 100%);
+}
 
-    .order-icon {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    }
+.order-icon {
+  background: linear-gradient(135deg, #f7cffa 0%, #f8969a 100%);
+}
+
 
     .activity-content {
       flex: 1;

@@ -35,3 +35,15 @@
   border: none;
   cursor: not-allowed;
 }
+
+.btn-outline-custom-primary {
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  background: transparent;
+  transition: all 0.3s ease;
+}
+.btn-outline-custom-primary:hover,
+.btn-outline-custom-primary:focus {
+  background: var(--primary-color);
+  color: #fff;
+}

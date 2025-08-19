@@ -150,10 +150,10 @@
           </div>
 
           <!-- Pagination -->
-          <nav aria-label="Products pagination" class="mt-5" *ngIf="filteredProducts.length > 0">
+          <!-- <nav aria-label="Products pagination" class="mt-5" *ngIf="filteredProducts.length > 0">
             <ul class="pagination justify-content-center">
               <li class="page-item" [class.disabled]="currentPage === 1">
-                <a class="page-link" href="#" (click)="goToPage(currentPage - 1);$event.preventDefault()"
+                <a class="page-link bg-gradient-primary" href="#" (click)="goToPage(currentPage - 1);$event.preventDefault()"
                   tabindex="-1">Previous</a>
               </li>
               <li class="page-item" *ngFor="let page of getPageNumbers()" [class.active]="page === currentPage">
@@ -163,7 +163,44 @@
                 <a class="page-link" href="#" (click)="goToPage(currentPage + 1); $event.preventDefault()">Next</a>
               </li>
             </ul>
-          </nav>
+          </nav> -->
+          <nav aria-label="Products pagination" class="mt-5" *ngIf="filteredProducts.length > 0">
+  <ul class="pagination justify-content-center">
+    <!-- Previous Button -->
+    <li class="page-item" [class.disabled]="currentPage === 1">
+      <a
+        class="page-link bg-gradient-primary"
+        href="#"
+        (click)="goToPage(currentPage - 1); $event.preventDefault()"
+        tabindex="-1"
+      >
+        Previous
+      </a>
+    </li>
+
+    <!-- Page Numbers -->
+    <li
+      class="page-item"
+      *ngFor="let page of getPageNumbers()"
+      [class.active]="page === currentPage"
+    >
+      <a class="page-link" href="#" (click)="goToPage(page); $event.preventDefault()">
+        {{ page }}
+      </a>
+    </li>
+
+    <!-- Next Button -->
+    <li class="page-item" [class.disabled]="currentPage === totalPages">
+      <a
+        class="page-link bg-gradient-primary"
+        href="#"
+        (click)="goToPage(currentPage + 1); $event.preventDefault()"
+      >
+        Next
+      </a>
+    </li>
+  </ul>
+</nav>
 
         </div>
       </div>

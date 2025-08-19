@@ -1,19 +1,17 @@
-<div class="container ">
+<div class="container p-4">
   <h3 class="mb-4 fw-bold"><i class="bi bi-card-checklist me-2"></i>Categories List</h3>
 
   <div *ngIf="apiError" class="alert alert-danger">{{ apiError }}</div>
 
   <div class="table-responsive">
-    <table class="table table-hover align-middle shadow-sm rounded">
-      <thead class="table-primary">
-        <tr>
+    <table class="table table-hover align-middle table-custom">
+      <tr class="tp">
           <th>Name</th>
           <th>Description</th>
           <th>Icon</th>
           <th>Parent</th>
           <th>Actions</th>
         </tr>
-      </thead>
       <tbody>
         <tr *ngFor="let category of categories">
           <td>{{ category.name }}</td>
@@ -101,7 +99,7 @@
       <button class="btn btn-primary me-2" type="button" (click)="addCategoryGroup()">
         <i class="bi bi-plus-circle"></i> Add Another
       </button>
-      <button class="btn btn-success" type="submit">
+      <button class="btn btn-custom-secondary" type="submit">
         <i class="bi bi-check-circle"></i> Submit
       </button>
     </div>

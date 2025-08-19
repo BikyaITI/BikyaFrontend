@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container p-4">
   <h2 class="mb-4">Admin Product Management</h2>
   
   <!-- Loading Spinner -->
@@ -38,7 +38,7 @@
   
   <!-- Products Table -->
   <div class="table-responsive">
-    <table class="table table-striped" *ngIf="!isLoading && products.length" role="table" aria-label="Products list">
+    <table class="table table-hover align-middle table-custom" *ngIf="!isLoading && products.length" role="table" aria-label="Products list">
       <thead class="table-dark">
         <tr>
           <th scope="col">ID</th>

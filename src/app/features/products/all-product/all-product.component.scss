@@ -5,3 +5,50 @@
     border-bottom: 1px solid var(--beige-500);
     padding:0 0  20px ;
 }
+/* Pagination container */
+.pagination {
+  gap: 0.4rem; /* مسافة بين الأزرار */
+}
+
+/* أزرار الأرقام العادية */
+.page-link {
+  background-color: #f2cc8f;  /* بيج فاتح */
+  color: #3d405b;             /* نص داكن */
+  border: 1px solid #e07a5f;  /* إطار خفيف كورال */
+  transition: all 0.3s ease;
+  font-weight: 500;
+  min-width: 40px;
+  text-align: center;
+}
+
+/* زر الصفحة الحالية */
+.page-item.active .page-link {
+  background: linear-gradient(135deg, #81b29a 0%, #3d405b 100%);
+  border: none;
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Hover effect */
+.page-link:hover:not(.disabled) {
+  background: linear-gradient(135deg, #e07a5f 0%, #f2cc8f 100%);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Disabled buttons */
+.page-item.disabled .page-link {
+  background-color: #f2cc8f;
+  color: #a29c91; /* لون رمادي فاتح للنص */
+  border-color: #dcd6c9;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Previous/Next buttons خاصة */
+.page-link.bg-gradient-primary {
+  background: linear-gradient(135deg, #81b29a 0%, #3d405b 100%);
+  color: #fff;
+  border: none;
+}

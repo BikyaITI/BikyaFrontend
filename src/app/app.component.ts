@@ -4,7 +4,7 @@ import { RouterOutlet } from "@angular/router"
 import { NavbarComponent } from "./shared/components/navbar/navbar.component"
 import { PublicProfileComponent } from "./features/public-profile/public-profile.component";
 import { ChatbotComponent } from "./shared/components/chatbot/chatbot.component";
-import { FooterComponent } from "./shared/footer/footer.component";
+import { FooterComponent } from "./shared/components/footer/footer.component";
 
 
 @Component({
@@ -19,7 +19,7 @@ import { FooterComponent } from "./shared/footer/footer.component";
     <router-outlet></router-outlet>
     <app-chatbot></app-chatbot>
   </main>
-        <app-footer></app-footer>
+    <app-footer></app-footer>
 
 </div>
 

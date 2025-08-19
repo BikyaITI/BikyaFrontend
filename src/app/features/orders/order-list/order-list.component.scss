@@ -2,13 +2,6 @@
     background-color: var(--beige-100);
     padding: 2rem;
 }
-.order-card {
-     transition: transform 0.2s ease-in-out;
- }
-
- .order-card:hover {
-     transform: translateY(-2px);
- }
 
  .nav-tabs .nav-link {
      color: #6c757d;
@@ -34,3 +27,31 @@
  .btn-group-vertical .btn:last-child {
      margin-bottom: 0;
  }
+ .order-card {
+  border-radius: 12px; /* حواف دائرية أكثر أناقة */
+  transition: transform 0.3s, box-shadow 0.3s;
+    background-color: var(--beige-50); /* بيج فاتح */
+    border: 1px solid #e07b5f7a; /* حدود خفيفة بيج أغمق */
+    box-shadow: 1px 4px 12px #e07b5f7a(0, 0, 0, 0.1); /* ظل ناعم */
+     transition: transform 0.2s ease-in-out;
+}
+
+.order-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+   
+}
+
+.order-card .card-header {
+    background-color: var(--beige-50); /* خلفية بيج فاتح */
+    border-radius: 12px; /* حواف دائرية أكثر أناقة */
+
+}
+
+.order-card .badge {
+  padding: 0.5em 0.8em;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+

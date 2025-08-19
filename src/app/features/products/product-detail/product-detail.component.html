@@ -96,7 +96,7 @@
               </div>
             </div>
             <div>
-              <a class="mb-0 d-block" [routerLink]="isMyProduct() ? '/profile' : ['/users', product.userId]">
+              <a class="mb-0 d-block font-weight-bold" [routerLink]="isMyProduct() ? '/profile' : ['/users', product.userId]">
                 {{ product.userName || 'Unknown Seller' }}
               </a>
 
@@ -153,7 +153,7 @@
 
           <div class="row g-2 mt-2">
             <div class="col-md-6">
-              <button class="btn btn-outline-danger w-100 mb-3" [class.active]="product.isInWishlist"
+              <button class="btn btn-custom-secondary w-100 mb-3" [class.active]="product.isInWishlist"
                 [disabled]="!currentUser" title="add to wishlist" (click)="ToggleWishlist(product)">
                 <i class="bi bi-heart"></i> Add to Wishlist
               </button>

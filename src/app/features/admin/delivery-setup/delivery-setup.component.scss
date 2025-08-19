@@ -1,6 +1,6 @@
 .delivery-setup-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background:linear-gradient(135deg, #3d405b 0%, #81b29a 100%);
   padding: 40px 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   direction: rtl;
@@ -23,7 +23,7 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #3d405b 0%, #81b29a 100%);
   }
 }
 
@@ -37,7 +37,7 @@
     width: 80px;
     height: 80px;
     margin: 0 auto 20px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #3d405b 0%, #81b29a 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -97,11 +97,11 @@
   }
 
   &.account-info {
-    border-left: 4px solid #667eea;
+    border-left: 4px solid var(--primary-color);
   }
 
   &.warning-info {
-    border-left: 4px solid #f6ad55;
+    border-left: 4px solid var(--secondary-color);
   }
 
   .card-header {
@@ -120,11 +120,11 @@
       color: white;
 
       &.warning {
-        background: linear-gradient(135deg, #f6ad55, #ed8936);
+        background: var(--gradient-secondary);
       }
 
       &:not(.warning) {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: linear-gradient(135deg, #3d405b 0%, #81b29a 100%);
       }
 
       svg {
@@ -187,7 +187,7 @@
   text-align: center;
 
   .setup-button {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #3d405b 0%, #81b29a 100%);
     color: white;
     border: none;
     border-radius: 12px;
