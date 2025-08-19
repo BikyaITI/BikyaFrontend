@@ -17,7 +17,9 @@
           <td>{{ category.name }}</td>
           <td>{{ category.description }}</td>
           <td>
-            <img *ngIf="category.iconUrl" [src]="category.iconUrl" class="rounded-circle" width="40" height="40" />
+            <img *ngIf="category.iconUrl" [src]="getImageUrl(category.iconUrl!)" class="rounded-circle" width="40" height="40"  
+            (error)="onImageError($event)" alt="{{ category.name}} icon" />
+          
           </td>
           <td>{{ category.parentName || '—' }}</td>
           <td>
@@ -63,13 +65,13 @@
             </div>
 
             <!-- Upload Image -->
-            <!-- <div class="col-md-6">
+            <div class="col-md-6">
               <label class="form-label">Upload Image</label>
               <input type="file" class="form-control" (change)="handleImageChange($event, 'add', i)" />
               <div *ngIf="getPreviewUrl(category)" class="mt-2">
                 <img [src]="getPreviewUrl(category)" class="img-thumbnail" style="max-height: 150px;" />
               </div>
-            </div> -->
+            </div>
 
             <!-- Parent Category -->
             <div class="col-md-6">
@@ -153,13 +155,13 @@
               </div>
             </div>
 
-            <!-- <div class="col-md-6">
+            <div class="col-md-6">
               <label class="form-label">Upload New Image</label>
               <input type="file" class="form-control" (change)="handleImageChange($event, 'edit')" />
               <div *ngIf="isEditing && selectedCategory?.iconUrl" class="mt-2">
-                <img [src]="selectedCategory.iconUrl" alt="Preview" class="img-thumbnail" style="max-height: 150px;" />
+                <img [src]="getImageUrl(selectedImageUrl!) " alt="Preview" class="img-thumbnail" style="max-height: 150px;" />
               </div>
-            </div> -->
+            </div>
 
             <div class="col-md-6">
               <label class="form-label">Parent Category</label>

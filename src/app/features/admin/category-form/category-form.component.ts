@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLinkActive } from '@angular/router';
 import { CategoryService } from '../../../core/services/category.service';
 import { ICategory } from '../../../core/models/icategory';
+import { environment } from '../../../../environments/environment';
 
 
 @Component({
@@ -25,7 +26,7 @@ export class CategoryFormComponent implements OnInit {
   categoryForm!: FormGroup;
   apiError = '';
   selectedCategory: ICategory | null = null;
-  selectedImageUrl: string | ArrayBuffer | null = null;
+  selectedImageUrl: string | null = null;
   isEditing = false;
   showConfirm = false;
   categoryIdToDelete: number | null = null;
@@ -60,6 +61,7 @@ export class CategoryFormComponent implements OnInit {
       name: ['', Validators.required],
       description: ['', Validators.required],
       iconUrl: [''],
+      icon:[File, Validators.required],
       parentCategoryId: [null],
       parentName: ['']
     });
@@ -85,7 +87,15 @@ export class CategoryFormComponent implements OnInit {
     const newCategories = this.categoryArray.value as ICategory[];
 
     newCategories.forEach((cat: ICategory) => {
-      this.categoryService.create(cat).subscribe({
+      const formData = new FormData();
+      formData.append('name', cat.name);
+      formData.append('description', cat.description??'');
+      formData.append('icon',cat.icon );
+      formData.append('parentCategoryId', cat.parentCategoryId ? cat.parentCategoryId.toString() : '');
+      formData.append('parentName', cat.parentName ?? '');
+
+
+      this.categoryService.create(formData).subscribe({
         next: (res) => {
           this.loadCategories();
           console.log(res.message);
@@ -149,6 +159,7 @@ export class CategoryFormComponent implements OnInit {
           parentCategoryId: this.selectedCategory.parentCategoryId,
           parentname : this.selectedCategory.parentName
         });
+        this.selectedImageUrl = this.selectedCategory.iconUrl || null;
 
         this.isEditing = true;
       },
@@ -161,7 +172,15 @@ export class CategoryFormComponent implements OnInit {
   //  Submit updated category
   submitEditForm() {
     if (this.selectedCategory) {
-      this.categoryService.update(this.selectedCategory.id, this.selectedCategory).subscribe({
+      const formData = new FormData();
+      formData.append('name', this.selectedCategory.name);
+      formData.append('description', this.selectedCategory.description ?? '');
+      formData.append('icon', this.selectedCategory.icon);
+      formData.append('iconUrl', this.selectedCategory.iconUrl ?? '');
+      formData.append('parentCategoryId', this.selectedCategory.parentCategoryId ? this.selectedCategory.parentCategoryId.toString() : '');
+      formData.append('parentName', this.selectedCategory.parentName ?? '');
+
+      this.categoryService.update(this.selectedCategory.id, formData).subscribe({
         next: (res) => {
           this.loadCategories();
           this.isEditing = false;
@@ -192,10 +211,11 @@ export class CategoryFormComponent implements OnInit {
 
         if (mode === 'add' && index !== undefined) {
           const formGroup = this.categoryArray.at(index);
-          formGroup.patchValue({ iconUrl: base64 });
+          formGroup.patchValue({ icon: file,iconUrl: base64 });
           (formGroup as any).previewUrl = base64; //  preview only
         } else if (mode === 'edit' && this.selectedCategory) {
-          this.selectedCategory.iconUrl = base64;
+          this.selectedCategory.icon = file;
+          // this.selectedCategory.iconUrl = base64;
           this.selectedImageUrl = base64;
         }
       };
@@ -256,4 +276,23 @@ export class CategoryFormComponent implements OnInit {
     }
     this.closeConfirm();
   }
+  getImageUrl(url:string): string {
+    if (!url) {
+        return 'product.png';
+    }
+  
+    if (url.startsWith('data:') || url.startsWith('http')) {
+      return url; // base64 or external URL → return as-is
+      }
+  
+      console.log('Image URL:', url);
+    console.log('Image URL:', `${environment.apiUrl}${url}`);
+       return url
+          ? `${environment.apiUrl}${url}`
+          : 'product.png';
+    }
+  
+    onImageError(event: Event) {
+      (event.target as HTMLImageElement).src = 'product.png';
+    }
 }

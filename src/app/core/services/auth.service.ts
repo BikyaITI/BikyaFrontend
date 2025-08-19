@@ -83,7 +83,7 @@ export class AuthService {
     console.log('AuthService: Register request:', request); // Debug
     console.log('AuthService: Register URL:', `${this.API_URL}/register`); // Debug
     
-    return this.http.post<ApiResponse<AuthResponse>>(`${this.API_URL}/register-test`, request).pipe(
+    return this.http.post<ApiResponse<AuthResponse>>(`${this.API_URL}/register`, request).pipe(
       tap((response) => {
         console.log('AuthService: Register response:', response); // Debug
         if (response.success) {
@@ -191,8 +191,7 @@ return this.http.post<ApiResponse<boolean>>(`${environment.apiUrl}/api/Identity/
     }
 
     localStorage.setItem("token", authResponse.token);
-    localStorage.setItem("refreshToken", authResponse.refreshToken);
-  
+  localStorage.setItem("refreshToken", authResponse.refreshToken);
     // حفظ معلومات المستخدم
     if (authResponse.user) {
       console.log('AuthService: Saving user data:', authResponse.user); // Debug
