@@ -116,7 +116,7 @@ h6 {
 .lead {
   font-size: 1.125rem;
   font-weight: 400;
-  color: var(--beige-600);
+  color: var(--beige-700);
 }
 
 /* Logo and Branding */
@@ -144,7 +144,7 @@ h6 {
 
 .brand-name {
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--primary-color);
   text-decoration: none;
 }
@@ -162,7 +162,7 @@ h6 {
 
 .nav-link {
   font-weight: 500;
-  color: var(--beige-600) !important;
+  color: var(--beige-800) !important;
   transition: var(--transition-fast);
   position: relative;
 }
@@ -234,7 +234,7 @@ h6 {
 }
 
 .btn-outline-primary {
-  color: var(--accent-color);
+  color: var(--beige-800);
   border: 1px solid var(--primary-color);
   background: transparent;
 }
