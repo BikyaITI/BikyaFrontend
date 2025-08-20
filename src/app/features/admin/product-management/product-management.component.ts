@@ -256,7 +256,7 @@ export class ProductManagementComponent implements OnInit {
 
   getStatusText(product: IProduct): string {
     if (product.isApproved === true) return 'Approved';
-    if (product.isApproved === false) return 'Rejected';
+    if (product.isApproved === false) return 'Not Approved';
     return 'Pending';
   }
 

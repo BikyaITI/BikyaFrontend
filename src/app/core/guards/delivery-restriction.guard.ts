@@ -18,11 +18,11 @@ export class DeliveryRestrictionGuard implements CanActivate {
       return true;
     }
 
-    // إذا لم يكن هناك توكن، توجيه لصفحة تسجيل الدخول
-    if (!token) {
-      this.router.navigate(['/login']);
-      return false;
-    }
+    // // إذا لم يكن هناك توكن، توجيه لصفحة تسجيل الدخول
+    // if (!token) {
+    //   this.router.navigate(['/login']);
+    //   return false;
+    // }
 
     // إذا كان المستخدم موظف توصيل، منع الوصول لجميع الصفحات غير التوصيل
     if (userRoles && userRoles.includes('Delivery')) {

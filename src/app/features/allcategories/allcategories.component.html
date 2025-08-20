@@ -17,10 +17,11 @@
           <div class="card category-card text-center h-100 shadow-sm border-0 rounded-4">
             <div class="image-wrapper" style="height: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
               <img 
-                [src]="category.iconUrl || 'https://via.placeholder.com/300x200?text=No+Image'" 
+                [src]="getImageUrl(category.iconUrl! )" 
                 alt="{{ category.name }}" 
                 class="card-img-top"
                 style="object-fit: contain; max-height: 100%;"
+                (error)="onImageError($event)"
               />
             </div>
             <div class="card-body">

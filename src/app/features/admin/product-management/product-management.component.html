@@ -45,6 +45,7 @@
           <th scope="col">Title</th>
           <th scope="col">Description</th>
           <th scope="col">Price</th>
+          <th scope="col">Approve</th>
           <th scope="col">Status</th>
           <th scope="col">Created</th>
           <th scope="col">Actions</th>
@@ -54,12 +55,15 @@
         <tr *ngFor="let product of products">
           <td>{{ product.id }}</td>
           <td>{{ product.title }}</td>
-          <td>{{ product.description | slice:0:50 }}{{ product.description.length > 50 ? '...' : '' }}</td>
+          <td>{{ product.description | slice:0:40 }}{{ product.description.length > 40 ? '...' : '' }}</td>
           <td>{{ product.price | currency:'':'':'1.' }} EGP</td>
           <td>
             <span class="badge" [class]="getStatusBadgeClass(product)" [attr.aria-label]="'Product status: ' + getStatusText(product)">
               {{ getStatusText(product) }}
             </span>
+          </td>
+          <td>
+            <span class="">{{product.status}}</span>
           </td>
           <td>{{ product.createdAt | date:'short' }}</td>
           <td>

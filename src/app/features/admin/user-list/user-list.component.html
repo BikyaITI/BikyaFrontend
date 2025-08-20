@@ -13,13 +13,13 @@
     <i class="fas fa-exclamation-triangle" aria-hidden="true"></i> {{ errorMessage }}
   </div>
   
-  <!-- Add Category Button -->
+  <!-- Add Category Button
 <button class="btn btn-custom-secondary mb-3" (click)="showAddCategory = true">
   <i class="fas fa-plus" aria-hidden="true"></i> Add New Category
 </button>
-  
-  <!-- Category Form -->
-  <app-category-form *ngIf="showAddCategory" (categoryAdded)="onCategoryAdded()" (cancel)="showAddCategory = false"></app-category-form>
+   -->
+  <!-- Category Form
+  <app-category-form *ngIf="showAddCategory" (categoryAdded)="onCategoryAdded()" (cancel)="showAddCategory = false"></app-category-form> -->
   
   <!-- Search and Filter Controls -->
   <div class="row mb-3">
@@ -60,7 +60,7 @@
           <th scope="col">ID</th>
           <th scope="col">Name</th>
           <th scope="col">Email</th>
-          <th scope="col">Status</th>
+          <!-- <th scope="col">Status</th> -->
           <th scope="col">Actions</th>
         </tr>
       </thead>
@@ -69,14 +69,14 @@
           <td>{{ user.id }}</td>
           <td>{{ user.FullName || user.fullName || 'N/A' }}</td>
           <td>{{ user.email }}</td>
-          <td>
+          <!-- <td>
             <span [class]="adminUserService.getUserStatusBadgeClass(user)" [attr.aria-label]="'User status: ' + getUserStatusText(user)">
               {{ getUserStatusText(user) }}
             </span>
-          </td>
+          </td> -->
           <td>
             <div class="btn-group" role="group" [attr.aria-label]="'Actions for user ' + (user.FullName || user.email)">
-              <button class="btn btn-danger btn-sm me-1" 
+              <button class="btn btn-danger btn-sm me-1 d-flex align-items-center justify-content-center gap-1" 
                       [disabled]="isDeleting[user.id]" 
                       (click)="confirmDelete(user)"
                       title="Delete user permanently"
@@ -84,7 +84,7 @@
                 <span *ngIf="isDeleting[user.id]" class="spinner-border spinner-border-sm" aria-hidden="true"></span>
                 <i class="fas fa-trash" *ngIf="!isDeleting[user.id]" aria-hidden="true"></i> Delete
               </button>
-              <button 
+              <!-- <button 
                 [class]="getLockButtonClass(user) + ' btn-sm me-1'" 
                 [disabled]="isLocking[user.id]" 
                 (click)="confirmLock(user)"
@@ -94,8 +94,8 @@
                 <i class="fas fa-lock" *ngIf="!adminUserService.isUserLocked(user) && !isLocking[user.id]" aria-hidden="true"></i>
                 <i class="fas fa-unlock" *ngIf="adminUserService.isUserLocked(user) && !isLocking[user.id]" aria-hidden="true"></i>
                 {{ getLockButtonText(user) }}
-              </button>
-              <button 
+              </button> -->
+              <!-- <button 
                 [class]="getAdminButtonClass(user) + ' btn-sm'" 
                 [disabled]="isAssigning[user.id]" 
                 (click)="assignAdmin(user)"
@@ -104,7 +104,7 @@
                 <span *ngIf="isAssigning[user.id]" class="spinner-border spinner-border-sm" aria-hidden="true"></span>
                 <i class="fas fa-user-shield" *ngIf="!isAssigning[user.id]" aria-hidden="true"></i>
                 {{ getAdminButtonText(user) }}
-              </button>
+              </button> -->
             </div>
           </td>
         </tr>

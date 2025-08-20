@@ -77,7 +77,7 @@ export interface WalletStats {
   providedIn: 'root'
 })
 export class WalletService {
-  private readonly baseUrl = 'https://localhost:65162/api/Wallet';
+  private readonly baseUrl = 'https://bikya-api.duckdns.org/api/Wallet';
   
   private walletBalanceSubject = new BehaviorSubject<number>(0);
   private pendingAmountSubject = new BehaviorSubject<number>(0);

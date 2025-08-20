@@ -32,11 +32,11 @@ getByIdWithProducts(id: number): Observable<ApiResponse<{ category: ICategory, p
   return this.http.get<ApiResponse<{ category: ICategory, products: IProduct[] }>>(`${this.baseUrl}/${id}/with-products`);
 }
 
-create(category: ICategory): Observable<ApiResponse<ICategory>> {
+create(category: FormData): Observable<ApiResponse<ICategory>> {
   return this.http.post<ApiResponse<ICategory>>(`${this.baseUrl}`, category);
 }
 
-update(id: number, category: ICategory): Observable<ApiResponse<ICategory>> {
+  update(id: number, category: FormData): Observable<ApiResponse<ICategory>> {
   return this.http.put<ApiResponse<ICategory>>(`${this.baseUrl}/${id}`, category);
 }
 
