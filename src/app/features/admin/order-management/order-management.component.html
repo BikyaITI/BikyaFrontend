@@ -1,29 +1,29 @@
 <div class="container">
   <h2 class="mb-4">Admin Order Management</h2>
-  
+
   <!-- Loading Spinner -->
   <div *ngIf="isLoading" class="my-3 text-center" role="status" aria-live="polite">
     <div class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Loading orders...</span>
     </div>
   </div>
-  
+
   <!-- Error Message -->
   <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
     <i class="fas fa-exclamation-triangle" aria-hidden="true"></i> {{ errorMessage }}
   </div>
-  
+
   <!-- Search and Filter Controls -->
   <div class="row mb-3">
     <div class="col-md-6">
       <label for="searchInput" class="visually-hidden">Search orders</label>
       <div class="input-group">
         <span class="input-group-text"><i class="fas fa-search" aria-hidden="true"></i></span>
-        <input type="text" 
+        <input type="text"
                id="searchInput"
-               class="form-control" 
-               placeholder="Search orders... (Press Enter to search)" 
-               [(ngModel)]="searchTerm" 
+               class="form-control"
+               placeholder="Search orders... (Press Enter to search)"
+               [(ngModel)]="searchTerm"
                (input)="searchOrders()"
                (keydown.enter)="searchOrders()"
                aria-label="Search orders by product, buyer, or seller">
@@ -40,7 +40,7 @@
       </button>
     </div>
   </div>
-  
+
   <!-- Orders Table -->
   <div class="table-responsive">
     <table class="table table-striped" *ngIf="!isLoading && orders.length" role="table" aria-label="Orders list">
@@ -88,7 +88,7 @@
             </span>
           </td>
           <td>
-            <!-- <select class="form-select form-select-sm"
+             <select class="form-select form-select-sm"
 
                     [ngClass]="{'border-success': order.isSwapOrder}"
                     [ngModel]="getStatusStringFromEnum(order.status)"
@@ -98,8 +98,8 @@
               <option [ngValue]="'Shipped'">Shipped</option>
               <option [ngValue]="'Completed'">Completed</option>
               <option [ngValue]="'Cancelled'">Cancelled</option>
-            </select> -->
-            <span [class]="getStatusBadgeClass(order)" > {{order.status}}</span>
+            </select>
+            <!-- <span [class]="getStatusBadgeClass(order)" > {{order.status}}</span> -->
           </td>
           <td>{{ order.createdAt ? (order.createdAt | date:'short') : 'N/A' }}</td>
           <td>
@@ -112,8 +112,8 @@
           </td>
           <td>
             <div class="btn-group" role="group">
-              <button 
-                type="button" 
+              <button
+                type="button"
                 class="btn btn-md btn-outline-danger"
                 [disabled]="isCancelling[order.id]"
                 (click)="cancelOrder(order.id)"
@@ -121,9 +121,9 @@
                 <i class="fas fa-times" *ngIf="!isCancelling[order.id]"></i>
                 <span class="spinner-border spinner-border-sm" *ngIf="isCancelling[order.id]"></span>
               </button>
-              
-              <!-- <button 
-                type="button" 
+
+              <!-- <button
+                type="button"
                 class="btn btn-sm btn-outline-success"
                 [disabled]="isProcessing[order.id]"
                 (click)="completeOrder(order.id)"
@@ -137,7 +137,7 @@
       </tbody>
     </table>
   </div>
-  
+
   <!-- No Orders Message -->
   <div *ngIf="!isLoading && !orders.length" class="alert alert-info" role="status">
     <i class="fas fa-info-circle" aria-hidden="true"></i> No orders found.
